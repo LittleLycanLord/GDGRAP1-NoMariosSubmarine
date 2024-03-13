@@ -2,10 +2,14 @@
 #include "glad/glad.h"
 #include "GLFW/glfw3.h"
 // clang-format on
+#include "GameObjects/Cameras/Camera.hpp"
+#include "GameObjects/Cameras/PerspectiveCamera/PerspectiveCamera.hpp"
+#include "GameObjects/Cameras/OrthographicCamera/OrthographicCamera.hpp"
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 #include "glm/gtc/type_ptr.hpp"
 #include "iostream"
+#include "stdafx.h"
 #include "string"
 
 #define TINYOBJLOADER_IMPLEMENTATION
@@ -15,23 +19,12 @@
 #include "stb_image.h"
 
 using namespace std;
-
-//* - - - - - SYSTEM SETTINGS - - - - -
-const float WINDOW_WIDTH             = 600.f;
-const float WINDOW_HEIGHT            = 600.f;
-const bool DRAW_SKYBOX               = false;
-//* - - - - - END OF SYSTEM SETTINGS - - - - -
+using namespace models;
 
 //* - - - - - SPEEDS - - - - -
 const float ROTATE_SPEED             = 0.05f;
 const float MOVE_SPEED               = 1.0f;
 //* - - - - - END OF SPEEDS - - - - -
-
-//* - - - - - ROTATION AXES - - - - -
-const glm::vec3 rotateAroundTheXAxis = glm::vec3(1.0f, 0.0f, 0.0f);
-const glm::vec3 rotateAroundTheYAxis = glm::vec3(0.0f, 1.0f, 0.0f);
-const glm::vec3 rotateAroundTheZAxis = glm::vec3(0.0f, 0.0f, 1.0f);
-//* - - - - - END OF ROTATION AXES - - - - -
 
 //* - - - - - MODEL TRANSFORM - - - - -
 glm::vec3 modelPosition              = glm::vec3(0.0f);
@@ -361,6 +354,9 @@ int main(void) {
     //* - - - - - END OF SKYBOX TEXTURING - - - - -
 
     //* - - - - - CAMERA PART 1 - - - - -
+    PerspectiveCamera* perspectiveCamera = new PerspectiveCamera("Main", 90.0f);
+    //OrthographicCamera
+    Camera* mainCamera             = perspectiveCamera;
     glm::vec3 cameraPosition       = glm::vec3(0.f, 0.f, 5.f);
     glm::mat4 cameraPositionMatrix = glm::translate(glm::mat4(1.0f), cameraPosition * -1.0f);
     glm::mat4 cameraProjection     = glm::perspective(glm::radians(90.f), WINDOW_WIDTH / WINDOW_HEIGHT, 0.1f, 100.f);
@@ -395,7 +391,7 @@ int main(void) {
 
     //* - - - - - LIGHTS - - - - -
     glm::vec3 lightPosition        = glm::vec3(-1.f, -1.f, 0.f);
-    glm::vec3 lightColor           = glm::vec3(0.f, 1.f, 0.f);
+    glm::vec3 lightColor           = glm::vec3(1.f, 1.f, 1.f);
     float ambientStrength          = 0.1f;
     glm::vec3 ambientColor         = lightColor;
     float specularStrength         = 0.5f;
@@ -434,11 +430,11 @@ int main(void) {
         glUseProgram(lightingProgram);
 
         //* - - - - - MODEL TRANSFORM - - - - -
-        modelTransform             = glm::translate(glm::mat4(1.0f), modelPosition);
-        modelTransform             = glm::scale(modelTransform, modelScale);
-        modelTransform             = glm::rotate(modelTransform, glm::radians(modelOrientation.x), rotateAroundTheXAxis);
-        modelTransform             = glm::rotate(modelTransform, glm::radians(modelOrientation.y), rotateAroundTheYAxis);
-        modelTransform             = glm::rotate(modelTransform, glm::radians(modelOrientation.z), rotateAroundTheZAxis);
+        modelTransform                       = glm::translate(glm::mat4(1.0f), modelPosition);
+        modelTransform                       = glm::scale(modelTransform, modelScale);
+        modelTransform                       = glm::rotate(modelTransform, glm::radians(modelOrientation.x), rotateAroundTheXAxis);
+        modelTransform                       = glm::rotate(modelTransform, glm::radians(modelOrientation.y), rotateAroundTheYAxis);
+        modelTransform                       = glm::rotate(modelTransform, glm::radians(modelOrientation.z), rotateAroundTheZAxis);
 
         unsigned int cameraProjectionAddress = glGetUniformLocation(lightingProgram, "projection");
         glUniformMatrix4fv(cameraProjectionAddress, 1, GL_FALSE, glm::value_ptr(cameraProjection));

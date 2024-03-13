@@ -139,10 +139,18 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="GameObjects\Cameras\Camera.cpp" />
+    <ClCompile Include="GameObjects\Cameras\OrthographicCamera\OrthographicCamera.cpp" />
+    <ClCompile Include="GameObjects\Cameras\PerspectiveCamera\PerspectiveCamera.cpp" />
+    <ClCompile Include="GameObjects\Lights\Light.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="glad.c" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="GameObjects\Cameras\Camera.hpp" />
+    <ClInclude Include="GameObjects\Cameras\OrthographicCamera\OrthographicCamera.hpp" />
+    <ClInclude Include="GameObjects\Cameras\PerspectiveCamera\PerspectiveCamera.hpp" />
+    <ClInclude Include="GameObjects\Lights\Light.hpp" />
     <ClInclude Include="stb_image.h" />
     <ClInclude Include="tiny_obj_loader.h" />
   </ItemGroup>
