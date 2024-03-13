@@ -14,6 +14,8 @@ using namespace models;
 PerspectiveCamera::PerspectiveCamera(std::string name, float fieldOfView)
     : Camera(name + " Perspective Camera", glm::perspective(1.0f, 1.0f, 1.0f, 1.0f)) {
     if (DEBUG_MODE) std::cout << this->name + " initialized!" << std::endl;
+
+    std::cout << "stinky" << std::endl;
 }
 
 //* ╔═════════╗
