@@ -420,29 +420,53 @@ int main(void) {
 
     std::vector<Light*> lights  = {};
     std::vector<DirectionalLight*> directionalLights = {
-       new DirectionalLight("Red Light",
+       new DirectionalLight("Red Directional Light",
+                            false,
                             glm::vec3(0.f, -1.f, 0.f),  //? Direction
                             glm::vec3(1.f, 0.f, 0.f),   //? Color
                             0.1f,                       //? Ambient Strength
                             glm::vec3(1.f, 0.f, 0.f),   //? Ambient Color
                             0.5f,                       //?Specular Strength
                             16,                         //?Specular Phong
-                            2.0f),                     //? Brightness
-       new DirectionalLight("Blue Light",
+                            2.0f),                      //? Brightness
+       new DirectionalLight("Blue Directional Light",
+                            false,
                             glm::vec3(0.f, 1.f, 0.f),  //? Direction
                             glm::vec3(0.f, 0.f, 1.f),  //? Color
                             0.1f,                      //? Ambient Strength
                             glm::vec3(0.f, 0.f, 1.f),  //? Ambient Color
                             0.5f,                      //?Specular Strength
                             16,                        //?Specular Phong
-                            2.0f)                     //? Brightness
+                            2.0f)                      //? Brightness
     };
     for (DirectionalLight* directionalLight : directionalLights) lights.push_back(directionalLight);
 
-    std::vector<PointLight*> pointLights = {};
+    std::vector<PointLight*> pointLights = {
+       new PointLight("Green Point Light",
+                      false,
+                      glm::vec3(0.f, -1.f, 0.f),  //? Position
+                      glm::vec3(0.f, 1.f, 0.f),   //? Color
+                      0.1f,                       //? Ambient Strength
+                      glm::vec3(0.f, 1.f, 0.f),   //? Ambient Color
+                      0.5f,                       //?Specular Strength
+                      16,                         //?Specular Phong
+                      2.0f),                      //? Brightness
+    };
     for (PointLight* pointLight : pointLights) lights.push_back(pointLight);
 
-    std::vector<SpotLight*> spotLights = {};
+    std::vector<SpotLight*> spotLights = {
+       new SpotLight("White Spotlight",
+                     true,
+                     glm::vec3(0.f, 5.f, 0.f),  //? Position
+                     glm::vec3(0.f, -1.f, 0.f),   //? Direction
+                     12.5f,                      //? Cone Size
+                     glm::vec3(1.f, 1.f, 1.f),   //? Color
+                     0.1f,                       //? Ambient Strength
+                     glm::vec3(1.f, 1.f, 1.f),   //? Ambient Color
+                     0.5f,                       //?Specular Strength
+                     16,                         //?Specular Phong
+                     10.0f),                      //? Brightness
+    };
     for (SpotLight* spotLight : spotLights) lights.push_back(spotLight);
 
     //* - - - - - END OF LIGHTS - - - - -
@@ -506,45 +530,135 @@ int main(void) {
 
         GLuint directionalLightCountAddress =
             glGetUniformLocation(lightingProgram, "directionalLightCount");
-        glUniform1f(directionalLightCountAddress, directionalLights.size());
+        glUniform1i(directionalLightCountAddress, directionalLights.size());
 
         for (int i = 0; i < directionalLights.size(); i++) {
-            std::string address         = "directionalLights[" + std::to_string(i) + "].direction";
+            if (directionalLights[i]->enabled) {
+                std::string address = "directionalLights[" + std::to_string(i) + "].direction";
 
-            GLuint lightPositionAddress = glGetUniformLocation(lightingProgram, address.c_str());
-            glUniform3fv(lightPositionAddress, 1, glm::value_ptr(directionalLights[i]->direction));
+                GLuint lightDirectionAddress =
+                    glGetUniformLocation(lightingProgram, address.c_str());
+                glUniform3fv(
+                    lightDirectionAddress, 1, glm::value_ptr(directionalLights[i]->direction));
 
-            address                  = "directionalLights[" + std::to_string(i) + "].color";
-            GLuint lightColorAddress = glGetUniformLocation(lightingProgram, address.c_str());
-            glUniform3fv(lightColorAddress, 1, glm::value_ptr(directionalLights[i]->color));
+                address                  = "directionalLights[" + std::to_string(i) + "].color";
+                GLuint lightColorAddress = glGetUniformLocation(lightingProgram, address.c_str());
+                glUniform3fv(lightColorAddress, 1, glm::value_ptr(directionalLights[i]->color));
 
-            address = "directionalLights[" + std::to_string(i) + "].ambientStrength";
-            GLuint ambientStrengthAddress = glGetUniformLocation(lightingProgram, address.c_str());
-            glUniform1f(ambientStrengthAddress, directionalLights[i]->ambientStrength);
+                address = "directionalLights[" + std::to_string(i) + "].ambientStrength";
+                GLuint ambientStrengthAddress =
+                    glGetUniformLocation(lightingProgram, address.c_str());
+                glUniform1f(ambientStrengthAddress, directionalLights[i]->ambientStrength);
 
-            address = "directionalLights[" + std::to_string(i) + "].ambientColor";
-            GLuint ambientColorAddress = glGetUniformLocation(lightingProgram, address.c_str());
-            glUniform3fv(
-                ambientColorAddress, 1, glm::value_ptr(directionalLights[i]->ambientColor));
+                address = "directionalLights[" + std::to_string(i) + "].ambientColor";
+                GLuint ambientColorAddress = glGetUniformLocation(lightingProgram, address.c_str());
+                glUniform3fv(
+                    ambientColorAddress, 1, glm::value_ptr(directionalLights[i]->ambientColor));
 
-            address = "directionalLights[" + std::to_string(i) + "].specularStrength";
-            GLuint specularStrengthAddress = glGetUniformLocation(lightingProgram, address.c_str());
-            glUniform1f(specularStrengthAddress, directionalLights[i]->specularStrength);
+                address = "directionalLights[" + std::to_string(i) + "].specularStrength";
+                GLuint specularStrengthAddress =
+                    glGetUniformLocation(lightingProgram, address.c_str());
+                glUniform1f(specularStrengthAddress, directionalLights[i]->specularStrength);
 
-            address = "directionalLights[" + std::to_string(i) + "].specularPhong";
-            GLuint specularPhongAddress = glGetUniformLocation(lightingProgram, address.c_str());
-            glUniform1f(specularPhongAddress, directionalLights[i]->specularPhong);
+                address = "directionalLights[" + std::to_string(i) + "].specularPhong";
+                GLuint specularPhongAddress =
+                    glGetUniformLocation(lightingProgram, address.c_str());
+                glUniform1f(specularPhongAddress, directionalLights[i]->specularPhong);
 
-            address                  = "directionalLights[" + std::to_string(i) + "].brightness";
-            GLuint brightnessAddress = glGetUniformLocation(lightingProgram, address.c_str());
-            glUniform1f(brightnessAddress, directionalLights[i]->brightness);
+                address = "directionalLights[" + std::to_string(i) + "].brightness";
+                GLuint brightnessAddress = glGetUniformLocation(lightingProgram, address.c_str());
+                glUniform1f(brightnessAddress, directionalLights[i]->brightness);
+            }
         }
 
         GLuint pointLightCountAddress = glGetUniformLocation(lightingProgram, "pointLightCount");
-        glUniform1f(pointLightCountAddress, pointLights.size());
+        glUniform1i(pointLightCountAddress, pointLights.size());
+
+        for (int i = 0; i < pointLights.size(); i++) {
+            if (pointLights[i]->enabled) {
+                std::string address = "pointLights[" + std::to_string(i) + "].position";
+
+                GLuint lightPositionAddress =
+                    glGetUniformLocation(lightingProgram, address.c_str());
+                glUniform3fv(lightPositionAddress, 1, glm::value_ptr(pointLights[i]->position));
+
+                address                  = "pointLights[" + std::to_string(i) + "].color";
+                GLuint lightColorAddress = glGetUniformLocation(lightingProgram, address.c_str());
+                glUniform3fv(lightColorAddress, 1, glm::value_ptr(pointLights[i]->color));
+
+                address = "pointLights[" + std::to_string(i) + "].ambientStrength";
+                GLuint ambientStrengthAddress =
+                    glGetUniformLocation(lightingProgram, address.c_str());
+                glUniform1f(ambientStrengthAddress, pointLights[i]->ambientStrength);
+
+                address                    = "pointLights[" + std::to_string(i) + "].ambientColor";
+                GLuint ambientColorAddress = glGetUniformLocation(lightingProgram, address.c_str());
+                glUniform3fv(ambientColorAddress, 1, glm::value_ptr(pointLights[i]->ambientColor));
+
+                address = "pointLights[" + std::to_string(i) + "].specularStrength";
+                GLuint specularStrengthAddress =
+                    glGetUniformLocation(lightingProgram, address.c_str());
+                glUniform1f(specularStrengthAddress, pointLights[i]->specularStrength);
+
+                address = "pointLights[" + std::to_string(i) + "].specularPhong";
+                GLuint specularPhongAddress =
+                    glGetUniformLocation(lightingProgram, address.c_str());
+                glUniform1f(specularPhongAddress, pointLights[i]->specularPhong);
+
+                address                  = "pointLights[" + std::to_string(i) + "].brightness";
+                GLuint brightnessAddress = glGetUniformLocation(lightingProgram, address.c_str());
+                glUniform1f(brightnessAddress, pointLights[i]->brightness);
+            }
+        }
 
         GLuint spotLightCountAddress = glGetUniformLocation(lightingProgram, "spotLightCount");
-        glUniform1f(spotLightCountAddress, spotLights.size());
+        glUniform1i(spotLightCountAddress, spotLights.size());
+
+        for (int i = 0; i < spotLights.size(); i++) {
+            if (spotLights[i]->enabled) {
+                std::string address = "spotLights[" + std::to_string(i) + "].position";
+
+                GLuint lightPositionAddress =
+                    glGetUniformLocation(lightingProgram, address.c_str());
+                glUniform3fv(lightPositionAddress, 1, glm::value_ptr(spotLights[i]->position));
+
+                address = "spotLights[" + std::to_string(i) + "].direction";
+                GLuint lightDirectionAddress =
+                    glGetUniformLocation(lightingProgram, address.c_str());
+                glUniform3fv(lightDirectionAddress, 1, glm::value_ptr(spotLights[i]->direction));
+
+                address                = "spotLights[" + std::to_string(i) + "].coneSize";
+                GLuint coneSizeAddress = glGetUniformLocation(lightingProgram, address.c_str());
+                glUniform1f(coneSizeAddress, spotLights[i]->coneSize);
+
+                address                  = "spotLights[" + std::to_string(i) + "].color";
+                GLuint lightColorAddress = glGetUniformLocation(lightingProgram, address.c_str());
+                glUniform3fv(lightColorAddress, 1, glm::value_ptr(spotLights[i]->color));
+
+                address = "spotLights[" + std::to_string(i) + "].ambientStrength";
+                GLuint ambientStrengthAddress =
+                    glGetUniformLocation(lightingProgram, address.c_str());
+                glUniform1f(ambientStrengthAddress, spotLights[i]->ambientStrength);
+
+                address                    = "spotLights[" + std::to_string(i) + "].ambientColor";
+                GLuint ambientColorAddress = glGetUniformLocation(lightingProgram, address.c_str());
+                glUniform3fv(ambientColorAddress, 1, glm::value_ptr(spotLights[i]->ambientColor));
+
+                address = "spotLights[" + std::to_string(i) + "].specularStrength";
+                GLuint specularStrengthAddress =
+                    glGetUniformLocation(lightingProgram, address.c_str());
+                glUniform1f(specularStrengthAddress, spotLights[i]->specularStrength);
+
+                address = "spotLights[" + std::to_string(i) + "].specularPhong";
+                GLuint specularPhongAddress =
+                    glGetUniformLocation(lightingProgram, address.c_str());
+                glUniform1f(specularPhongAddress, spotLights[i]->specularPhong);
+
+                address                  = "spotLights[" + std::to_string(i) + "].brightness";
+                GLuint brightnessAddress = glGetUniformLocation(lightingProgram, address.c_str());
+                glUniform1f(brightnessAddress, spotLights[i]->brightness);
+            }
+        }
 
         GLuint cameraPositionAddress = glGetUniformLocation(lightingProgram, "cameraPosition");
         glUniform3fv(cameraPositionAddress, 1, glm::value_ptr(cameraPosition));

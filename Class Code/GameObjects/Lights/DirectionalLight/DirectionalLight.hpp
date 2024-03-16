@@ -15,6 +15,7 @@ public:
     //* ╚═══════════════════════════════╝
 public:
     DirectionalLight(std::string name,
+                     bool enabled,
                      glm::vec3 direction,
                      glm::vec3 color,
                      float ambientStrength,
@@ -27,7 +28,9 @@ public:
     //* ║ Methods ║
     //* ╚═════════╝
 public:
-    void update(std::vector<glm::vec3> vectorUpdates, std::vector<float> floatUpdates);
+    void update(bool enabled,
+                std::vector<glm::vec3> vectorUpdates,
+                std::vector<float> floatUpdates);
 
     //* ╔═══════════════════╗
     //* ║ Getters & Setters ║

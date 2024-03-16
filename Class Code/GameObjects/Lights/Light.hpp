@@ -8,6 +8,7 @@ class Light {
     //* ╚════════════╝
 public:
     std::string name;
+    bool enabled;
     glm::vec3 color;
     float ambientStrength;
     glm::vec3 ambientColor;
@@ -19,6 +20,7 @@ public:
     //* ╚═══════════════════════════════╝
 public:
     Light(std::string name,
+          bool enabled,
           glm::vec3 color,
           float ambientStrength,
           glm::vec3 ambientColor,
@@ -30,7 +32,7 @@ public:
     //* ╚═════════╝
 public:
 private:
-    virtual void update(std::vector<glm::vec3> vectorUpdates, std::vector<float> floatUpdates) = 0;
+    virtual void update(bool enabled, std::vector<glm::vec3> vectorUpdates, std::vector<float> floatUpdates) = 0;
 
     //* ╔═══════════════════╗
     //* ║ Getters & Setters ║

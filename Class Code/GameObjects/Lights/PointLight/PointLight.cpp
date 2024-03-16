@@ -6,6 +6,7 @@ using namespace models;
 //* ║ Constructors & Deconstructors ║
 //* ╚═══════════════════════════════╝
 PointLight::PointLight(std::string name,
+                       bool enabled,
                        glm::vec3 position,
                        glm::vec3 color,
                        float ambientStrength,
@@ -14,6 +15,7 @@ PointLight::PointLight(std::string name,
                        float specularPhong,
                        float brightness)
     : Light(name,
+            enabled,
             color,
             ambientStrength,
             ambientColor,
@@ -24,12 +26,15 @@ PointLight::PointLight(std::string name,
 //* ╔═════════╗
 //* ║ Methods ║
 //* ╚═════════╝
-void PointLight::update(std::vector<glm::vec3> vectorUpdates, std::vector<float> floatUpdates) {
+void PointLight::update(bool enabled,
+                        std::vector<glm::vec3> vectorUpdates,
+                        std::vector<float> floatUpdates) {
     this->color            = vectorUpdates[0];
     this->ambientStrength  = floatUpdates[0];
     this->ambientColor     = vectorUpdates[1];
     this->specularStrength = floatUpdates[1];
     this->specularPhong    = floatUpdates[2];
+    this->brightness       = floatUpdates[3];
 
     this->position         = vectorUpdates[2];
 }

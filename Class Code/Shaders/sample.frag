@@ -31,31 +31,31 @@ struct DirectionalLight {
 };  
 uniform DirectionalLight directionalLights[10];
 
-// uniform int pointLightCount;
-// struct PointLight {    
-//     vec3 position;
-//     vec3 color;
-//     float ambientStrength;
-//     vec3 ambientColor;
-//     float specularStrength;
-//     float specularPhong;
-//     float brightness;
-// };  
-// uniform PointLight pointLights[pointLightCount];
+uniform int pointLightCount;
+struct PointLight {    
+    vec3 position;
+    vec3 color;
+    float ambientStrength;
+    vec3 ambientColor;
+    float specularStrength;
+    float specularPhong;
+    float brightness;
+};  
+uniform PointLight pointLights[10];
 
-// uniform int spotLightCount;
-// struct SpotLight {    
-//     vec3 position;
-//     vec3 direction;
-//     float coneSize;
-//     vec3 color;
-//     float ambientStrength;
-//     vec3 ambientColor;
-//     float specularStrength;
-//     float specularPhong;
-//     float brightness;
-// };  
-// uniform SpotLight spotLights[spotLightCount];
+uniform int spotLightCount;
+struct SpotLight {    
+    vec3 position;
+    vec3 direction;
+    float coneSize;
+    vec3 color;
+    float ambientStrength;
+    vec3 ambientColor;
+    float specularStrength;
+    float specularPhong;
+    float brightness;
+};  
+uniform SpotLight spotLights[10];
 
 vec4 directionalLighting(int i, vec3 normal, vec3 viewDirection) {
     float diffusion = max(dot(normal, directionalLights[i].direction), 0.0);
@@ -72,53 +72,77 @@ vec4 directionalLighting(int i, vec3 normal, vec3 viewDirection) {
 }
 
 
-// vec4 pointLighting(PointLight light, vec3 normal, vec3 viewDirection) {
-// // Add Attenuation while accounting for Brightness
-//     float distance    = length(light.position - fragmentPosition);
-//     float attenuation = 1.0 / (distance * distance) * light.brightness;    
+vec4 pointLighting(int i, vec3 normal, vec3 viewDirection) {
+// Add Attenuation while accounting for Brightness
+    float distance    = length(pointLights[i].position - fragmentPosition);
+    float attenuation = 1.0 / (distance * distance) * pointLights[i].brightness;    
 
-//     vec3 lightDirection = normalize(light.position - fragmentPosition);
+    vec3 lightDirection = normalize(pointLights[i].position - fragmentPosition);
 
-//     float diffusion = max(dot(normal, lightDirection), 0.0);
-//     vec3 diffusedLight = diffusion * light.color;
+    float diffusion = max(dot(normal, lightDirection), 0.0);
+    vec3 diffusedLight = diffusion * pointLights[i].color;
 
-//     vec3 ambientLight = light.ambientStrength * light.ambientColor;
-//     vec3 reflectDirection = reflect(-lightDirection, normal);
+    vec3 ambientLight = pointLights[i].ambientStrength * pointLights[i].ambientColor;
+    vec3 reflectDirection = reflect(-lightDirection, normal);
 
-//     float specular = pow(max(dot(reflectDirection, viewDirection), 0.1), light.specularPhong);
-//     vec3 specularColor = specular * light.specularStrength * light.color;
+    float specular = pow(max(dot(reflectDirection, viewDirection), 0.1), pointLights[i].specularPhong);
+    vec3 specularColor = specular * pointLights[i].specularStrength * pointLights[i].color;
 
-//     // Apply the Attenuation
-//     diffusedLight *= attenuation;
-//     ambientLight *= attenuation;
-//     specularColor *= attenuation;
+    // Apply the Attenuation
+    diffusedLight *= attenuation;
+    ambientLight *= attenuation;
+    specularColor *= attenuation;
 
-//     //     - Use Lighting -                     - Use Texture -
-//     return vec4(specularColor + diffusedLight + ambientLight, 1.0);
-// }
+    //     - Use Lighting -                     - Use Texture -
+    return vec4(specularColor + diffusedLight + ambientLight, 1.0) * pointLights[i].brightness;
+}
 
-// vec4 spotLighting(SpotLight light, vec3 normal, vec3 viewDirection) {
-	
-// }
+vec4 spotLighting(int i, vec3 normal, vec3 viewDirection) {
+	vec3 lightDirection = normalize(spotLights[i].position - fragmentPosition);
+    float theta = dot(lightDirection, normalize(-lightDirection));
+    float spotLightFeathering = 17.5f;
+    float epsilon = spotLights[i].coneSize - spotLightFeathering;
+    float feathering = clamp((theta - spotLightFeathering) / epsilon, 0.0f, 1.0f);
+    //? Reference: https://learnopengl.com/Lighting/Light-casters
 
+    float distance    = length(spotLights[i].position - fragmentPosition);
+    float attenuation = 1.0 / (distance * distance) * spotLights[i].brightness;    
+
+    float diffusion = max(dot(normal, lightDirection), 0.0);
+    vec3 diffusedLight = diffusion * spotLights[i].color;
+
+    vec3 ambientLight = spotLights[i].ambientStrength * spotLights[i].ambientColor;
+    vec3 reflectDirection = reflect(-lightDirection, normal);
+
+    float specular = pow(max(dot(reflectDirection, viewDirection), 0.1), spotLights[i].specularPhong);
+    vec3 specularColor = specular * spotLights[i].specularStrength * spotLights[i].color;
+
+    // Apply the Attenuation
+    diffusedLight *= attenuation;
+    ambientLight *= attenuation;
+    specularColor *= attenuation;
+
+    // Apply the Feathering
+    diffusedLight *= feathering;
+    specularColor *= feathering;
+
+    //     - Use Lighting -                     - Use Texture -
+    return vec4(specularColor + diffusedLight + ambientLight, 1.0) * spotLights[i].brightness;
+}
 
 void main() {
     vec3 normal = normalize(normalCoordinate);
     vec3 viewDirection = normalize(cameraPosition - fragmentPosition);
 
-    for(int i = 0; i < 10; i++) {
+    for(int i = 0; i < directionalLightCount; i++) {
         FragmentColor += directionalLighting(i, normal, viewDirection);
     }
-
-    // float diffusion = max(dot(normal, directionalLights[0].direction), 0.0);
-    // vec3 diffusedLight = diffusion * directionalLights[0].color;
-
-    // vec3 ambientLight = directionalLights[0].ambientStrength * directionalLights[0].ambientColor;
-    
-    // vec3 reflectDirection = reflect(-directionalLights[0].direction, normal);
-
-    // float specular = pow(max(dot(reflectDirection, viewDirection), 0.1), directionalLights[0].specularPhong);
-    // vec3 specularColor = specular * directionalLights[0].specularStrength * directionalLights[0].color;
+    for(int i = 0; i < pointLightCount; i++) {
+        FragmentColor += pointLighting(i, normal, viewDirection);
+    }
+    for(int i = 0; i < spotLightCount; i++) {
+        FragmentColor += spotLighting(i, normal, viewDirection);
+    }
 
     //                       - Use Lighting -                     - Use Texture -
     FragmentColor = FragmentColor * texture(modelTexture, textureCoordinate);

@@ -6,6 +6,7 @@ using namespace models;
 //* ║ Constructors & Deconstructors ║
 //* ╚═══════════════════════════════╝
 SpotLight::SpotLight(std::string name,
+                     bool enabled,
                      glm::vec3 position,
                      glm::vec3 direction,
                      float coneSize,
@@ -16,6 +17,7 @@ SpotLight::SpotLight(std::string name,
                      float specularPhong,
                      float brightness)
     : Light(name,
+            enabled,
             color,
             ambientStrength,
             ambientColor,
@@ -29,16 +31,17 @@ SpotLight::SpotLight(std::string name,
 //* ╔═════════╗
 //* ║ Methods ║
 //* ╚═════════╝
-void SpotLight::update(std::vector<glm::vec3> vectorUpdates, std::vector<float> floatUpdates) {
+void SpotLight::update(bool enabled, std::vector<glm::vec3> vectorUpdates, std::vector<float> floatUpdates) {
     this->color            = vectorUpdates[0];
     this->ambientStrength  = floatUpdates[0];
     this->ambientColor     = vectorUpdates[1];
     this->specularStrength = floatUpdates[1];
     this->specularPhong    = floatUpdates[2];
+    this->brightness       = floatUpdates[3];
 
     this->position         = vectorUpdates[2];
     this->direction        = vectorUpdates[3];
-    this->coneSize         = floatUpdates[3];
+    this->coneSize         = floatUpdates[4];
 }
 
 //* ╔═══════════════════╗

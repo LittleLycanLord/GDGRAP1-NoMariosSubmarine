@@ -6,12 +6,14 @@ using namespace models;
 //* ║ Constructors & Deconstructors ║
 //* ╚═══════════════════════════════╝
 Light::Light(std::string name,
+             bool enabled,
              glm::vec3 color,
              float ambientStrength,
              glm::vec3 ambientColor,
              float specularStrength,
              float specularPhong, float brightness)
     : name(name),
+      enabled(enabled),
       color(color),
       ambientStrength(ambientStrength),
       ambientColor(ambientColor),

@@ -17,6 +17,7 @@ public:
     //* ╚═══════════════════════════════╝
 public:
     SpotLight(std::string name,
+              bool enabled,
               glm::vec3 position,
               glm::vec3 direction,
               float coneSize,
@@ -26,12 +27,14 @@ public:
               float specularStrength,
               float specularPhong,
               float brightness);
-              
+
     //* ╔═════════╗
     //* ║ Methods ║
     //* ╚═════════╝
 public:
-    void update(std::vector<glm::vec3> vectorUpdates, std::vector<float> floatUpdates);
+    void update(bool enabled,
+                std::vector<glm::vec3> vectorUpdates,
+                std::vector<float> floatUpdates);
 
     //* ╔═══════════════════╗
     //* ║ Getters & Setters ║
