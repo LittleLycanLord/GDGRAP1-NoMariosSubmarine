@@ -3,8 +3,12 @@
 #include "GLFW/glfw3.h"
 // clang-format on
 #include "GameObjects/Cameras/Camera.hpp"
-#include "GameObjects/Cameras/PerspectiveCamera/PerspectiveCamera.hpp"
 #include "GameObjects/Cameras/OrthographicCamera/OrthographicCamera.hpp"
+#include "GameObjects/Cameras/PerspectiveCamera/PerspectiveCamera.hpp"
+#include "GameObjects/Lights/DirectionalLight/DirectionalLight.hpp"
+#include "GameObjects/Lights/Light.hpp"
+#include "GameObjects/Lights/PointLight/PointLight.hpp"
+#include "GameObjects/Lights/SpotLight/SpotLight.hpp"
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 #include "glm/gtc/type_ptr.hpp"
@@ -22,23 +26,25 @@ using namespace std;
 using namespace models;
 
 //* - - - - - SPEEDS - - - - -
-const float ROTATE_SPEED             = 0.05f;
-const float MOVE_SPEED               = 1.0f;
+const float ROTATE_SPEED   = 0.05f;
+const float MOVE_SPEED     = 1.0f;
 //* - - - - - END OF SPEEDS - - - - -
 
 //* - - - - - MODEL TRANSFORM - - - - -
-glm::vec3 modelPosition              = glm::vec3(0.0f);
-glm::vec3 modelScale                 = glm::vec3(0.05f);
-glm::vec3 modelOrientation           = glm::vec3(0.0f);
-glm::mat4 modelTransform             = glm::mat4(1.0f);
+glm::vec3 modelPosition    = glm::vec3(0.0f);
+glm::vec3 modelScale       = glm::vec3(0.05f);
+glm::vec3 modelOrientation = glm::vec3(0.0f);
+glm::mat4 modelTransform   = glm::mat4(1.0f);
 //* - - - - - END OF MODEL TRANSFORM - - - - -
 
 //? Reserved GLFW Function for Keyboard Inputs
-void Key_Callback(GLFWwindow* window,  //? Which window did we get the event?
-                  int key,             //? What key was pressed?
-                  int scancode,        //? What exact physical key was pressed?
-                  int action,          //? What is being done to the key? [GLFW_PRESS, GLFW_REPEAT or GLFW_RELEASE]
-                  int mods) {          //? Which modifer keys are held? [alt, control, shift, Super, num lock, and caps lock]
+void Key_Callback(
+    GLFWwindow* window,  //? Which window did we get the event?
+    int key,             //? What key was pressed?
+    int scancode,        //? What exact physical key was pressed?
+    int action,  //? What is being done to the key? [GLFW_PRESS, GLFW_REPEAT or GLFW_RELEASE]
+    int mods) {  //? Which modifer keys are held? [alt, control, shift, Super, num lock, and caps
+                 // lock]
 
     switch (key) {
         //* Translation
@@ -127,7 +133,8 @@ int main(void) {
     //* - - - - - MODEL TEXTURE LOADING - - - - -
     int textureWidth, textureHeight, textureColorChannels;
     stbi_set_flip_vertically_on_load(true);
-    unsigned char* texBytes = stbi_load("Assets/partenza.jpg", &textureWidth, &textureHeight, &textureColorChannels, 0.f);
+    unsigned char* texBytes =
+        stbi_load("Assets/partenza.jpg", &textureWidth, &textureHeight, &textureColorChannels, 0.f);
 
     GLuint texture;
     glGenTextures(1, &texture);
@@ -162,20 +169,21 @@ int main(void) {
                              texBytes);
                 break;
         }
-        //? Mipmap: Low resolution versions of our texture for if we view the model from far away, we won't need to load as much detail
+        //? Mipmap: Low resolution versions of our texture for if we view the model from far away,
+        // we won't need to load as much detail
         glGenerateMipmap(GL_TEXTURE_2D);
         stbi_image_free(texBytes);
     }
     //* - - - - - END OF MODEL TEXTURE LOADING - - - - -
 
     //* - - - - - SHADER CREATION - - - - -
-    std::fstream lightingVertexFile("Shaders/directional.vert");
+    std::fstream lightingVertexFile("Shaders/sample.vert");
     std::stringstream lightingVertexBuffer;
     lightingVertexBuffer << lightingVertexFile.rdbuf();
     std::string lightingVertexString    = lightingVertexBuffer.str();
     const char* lightingVertexCharArray = lightingVertexString.c_str();
 
-    std::fstream lightingFragmentFile("Shaders/directional.frag");
+    std::fstream lightingFragmentFile("Shaders/sample.frag");
     std::stringstream lightingFragmentBuffer;
     lightingFragmentBuffer << lightingFragmentFile.rdbuf();
     std::string lightingFragmentString    = lightingFragmentBuffer.str();
@@ -255,7 +263,10 @@ int main(void) {
     glGenBuffers(1, &modelVBO);
     glBindVertexArray(modelVAO);
     glBindBuffer(GL_ARRAY_BUFFER, modelVBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * fullVertexData.size(), fullVertexData.data(), GL_DYNAMIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER,
+                 sizeof(GLfloat) * fullVertexData.size(),
+                 fullVertexData.data(),
+                 GL_DYNAMIC_DRAW);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
     GLintptr normalPtr = 3 * sizeof(float);
@@ -292,7 +303,8 @@ int main(void) {
     };
 
     //* Define our skybox's fragments
-    //* Note: Each face consist of two triangles, thus each face is made up of a pair of vertex triplets (cuz triangles have three corners, duh)
+    //* Note: Each face consist of two triangles, thus each face is made up of a pair of vertex
+    // triplets (cuz triangles have three corners, duh)
     unsigned int skyboxFragments[]{
        // clang-format off
         1, 2, 6, 6, 5, 1, //? Right Face
@@ -344,7 +356,15 @@ int main(void) {
         unsigned char* data = stbi_load(skyboxTexturePaths[i].c_str(), &w, &h, &skyCChannel, 0.f);
 
         if (data) {
-            glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0.f, GL_RGB, w, h, 0.f, GL_RGB, GL_UNSIGNED_BYTE, data);
+            glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
+                         0.f,
+                         GL_RGB,
+                         w,
+                         h,
+                         0.f,
+                         GL_RGB,
+                         GL_UNSIGNED_BYTE,
+                         data);
 
             stbi_image_free(data);
         }
@@ -354,48 +374,77 @@ int main(void) {
     //* - - - - - END OF SKYBOX TEXTURING - - - - -
 
     //* - - - - - CAMERA PART 1 - - - - -
-    PerspectiveCamera* perspectiveCamera = new PerspectiveCamera("Main", 90.0f);
-    //OrthographicCamera
-    Camera* mainCamera             = perspectiveCamera;
+    // PerspectiveCamera* perspectiveCamera = new PerspectiveCamera("Main", 90.0f);
+    // OrthographicCamera
+    // Camera* mainCamera                   = perspectiveCamera;
     glm::vec3 cameraPosition       = glm::vec3(0.f, 0.f, 5.f);
     glm::mat4 cameraPositionMatrix = glm::translate(glm::mat4(1.0f), cameraPosition * -1.0f);
-    glm::mat4 cameraProjection     = glm::perspective(glm::radians(90.f), WINDOW_WIDTH / WINDOW_HEIGHT, 0.1f, 100.f);
+    glm::mat4 cameraProjection =
+        glm::perspective(glm::radians(90.f), WINDOW_WIDTH / WINDOW_HEIGHT, 0.1f, 100.f);
     //* - - - - - END OF CAMERA PART 1 - - - - -
 
     //* - - - - - WORLD FACTS - - - - -
-    glm::vec3 WorldUp              = glm::vec3(0.f, 1.0f, 0.f);
-    glm::vec3 Center               = glm::vec3(0.f, 0.f, 0.f);
-    glm::vec3 ForwardVector        = glm::vec3(Center - cameraPosition);
-    ForwardVector                  = glm::normalize(ForwardVector);
-    glm::vec3 RightVector          = glm::normalize(glm::cross(ForwardVector, WorldUp));
-    glm::vec3 UpVector             = glm::normalize(glm::cross(RightVector, ForwardVector));
+    glm::vec3 WorldUp           = glm::vec3(0.f, 1.0f, 0.f);
+    glm::vec3 Center            = glm::vec3(0.f, 0.f, 0.f);
+    glm::vec3 ForwardVector     = glm::vec3(Center - cameraPosition);
+    ForwardVector               = glm::normalize(ForwardVector);
+    glm::vec3 RightVector       = glm::normalize(glm::cross(ForwardVector, WorldUp));
+    glm::vec3 UpVector          = glm::normalize(glm::cross(RightVector, ForwardVector));
     //* - - - - - END OF WORLD FACTS - - - - -
 
     //* - - - - - CAMERA PART 2 - - - - -
-    glm::mat4 cameraOrientation    = glm::mat4(1.f);
+    glm::mat4 cameraOrientation = glm::mat4(1.f);
 
-    cameraOrientation[0][0]        = RightVector.x;
-    cameraOrientation[1][0]        = RightVector.y;
-    cameraOrientation[2][0]        = RightVector.z;
+    cameraOrientation[0][0]     = RightVector.x;
+    cameraOrientation[1][0]     = RightVector.y;
+    cameraOrientation[2][0]     = RightVector.z;
 
-    cameraOrientation[0][1]        = UpVector.x;
-    cameraOrientation[1][1]        = UpVector.y;
-    cameraOrientation[2][1]        = UpVector.z;
+    cameraOrientation[0][1]     = UpVector.x;
+    cameraOrientation[1][1]     = UpVector.y;
+    cameraOrientation[2][1]     = UpVector.z;
 
-    cameraOrientation[0][2]        = -ForwardVector.x;
-    cameraOrientation[1][2]        = -ForwardVector.y;
-    cameraOrientation[2][2]        = -ForwardVector.z;
+    cameraOrientation[0][2]     = -ForwardVector.x;
+    cameraOrientation[1][2]     = -ForwardVector.y;
+    cameraOrientation[2][2]     = -ForwardVector.z;
 
-    glm::mat4 cameraView           = cameraOrientation * cameraPositionMatrix;
+    glm::mat4 cameraView        = cameraOrientation * cameraPositionMatrix;
     //* - - - - - END OF CAMERA PART 2 - - - - -
 
     //* - - - - - LIGHTS - - - - -
-    glm::vec3 lightPosition        = glm::vec3(-1.f, -1.f, 0.f);
-    glm::vec3 lightColor           = glm::vec3(1.f, 1.f, 1.f);
-    float ambientStrength          = 0.1f;
-    glm::vec3 ambientColor         = lightColor;
-    float specularStrength         = 0.5f;
-    float specularPhong            = 16;
+    glm::vec3 lightPosition     = glm::vec3(-1.f, -1.f, 0.f);
+    glm::vec3 lightColor        = glm::vec3(1.f, 1.f, 1.f);
+    float ambientStrength       = 0.1f;
+    glm::vec3 ambientColor      = lightColor;
+    float specularStrength      = 0.5f;
+    float specularPhong         = 16;
+
+    std::vector<Light*> lights  = {};
+    std::vector<DirectionalLight*> directionalLights = {
+       new DirectionalLight("Red Light",
+                            glm::vec3(0.f, -1.f, 0.f),  //? Direction
+                            glm::vec3(1.f, 0.f, 0.f),   //? Color
+                            0.1f,                       //? Ambient Strength
+                            glm::vec3(1.f, 0.f, 0.f),   //? Ambient Color
+                            0.5f,                       //?Specular Strength
+                            16,                         //?Specular Phong
+                            2.0f),                     //? Brightness
+       new DirectionalLight("Blue Light",
+                            glm::vec3(0.f, 1.f, 0.f),  //? Direction
+                            glm::vec3(0.f, 0.f, 1.f),  //? Color
+                            0.1f,                      //? Ambient Strength
+                            glm::vec3(0.f, 0.f, 1.f),  //? Ambient Color
+                            0.5f,                      //?Specular Strength
+                            16,                        //?Specular Phong
+                            2.0f)                     //? Brightness
+    };
+    for (DirectionalLight* directionalLight : directionalLights) lights.push_back(directionalLight);
+
+    std::vector<PointLight*> pointLights = {};
+    for (PointLight* pointLight : pointLights) lights.push_back(pointLight);
+
+    std::vector<SpotLight*> spotLights = {};
+    for (SpotLight* spotLight : spotLights) lights.push_back(spotLight);
+
     //* - - - - - END OF LIGHTS - - - - -
 
     //* - - - - - RUNTIME - - - - -
@@ -430,11 +479,14 @@ int main(void) {
         glUseProgram(lightingProgram);
 
         //* - - - - - MODEL TRANSFORM - - - - -
-        modelTransform                       = glm::translate(glm::mat4(1.0f), modelPosition);
-        modelTransform                       = glm::scale(modelTransform, modelScale);
-        modelTransform                       = glm::rotate(modelTransform, glm::radians(modelOrientation.x), rotateAroundTheXAxis);
-        modelTransform                       = glm::rotate(modelTransform, glm::radians(modelOrientation.y), rotateAroundTheYAxis);
-        modelTransform                       = glm::rotate(modelTransform, glm::radians(modelOrientation.z), rotateAroundTheZAxis);
+        modelTransform = glm::translate(glm::mat4(1.0f), modelPosition);
+        modelTransform = glm::scale(modelTransform, modelScale);
+        modelTransform =
+            glm::rotate(modelTransform, glm::radians(modelOrientation.x), rotateAroundTheXAxis);
+        modelTransform =
+            glm::rotate(modelTransform, glm::radians(modelOrientation.y), rotateAroundTheYAxis);
+        modelTransform =
+            glm::rotate(modelTransform, glm::radians(modelOrientation.z), rotateAroundTheZAxis);
 
         unsigned int cameraProjectionAddress = glGetUniformLocation(lightingProgram, "projection");
         glUniformMatrix4fv(cameraProjectionAddress, 1, GL_FALSE, glm::value_ptr(cameraProjection));
@@ -449,29 +501,71 @@ int main(void) {
         //* - - - - - MODEL LIGHTING - - - - -
         glBindVertexArray(modelVAO);
 
-        GLuint modelTextureAddress = glGetUniformLocation(lightingProgram, "tex0");
+        GLuint modelTextureAddress = glGetUniformLocation(lightingProgram, "modelTexture");
         glBindTexture(GL_TEXTURE_2D, texture);
 
-        GLuint lightPositionAddress = glGetUniformLocation(lightingProgram, "lightPos");
-        glUniform3fv(lightPositionAddress, 1, glm::value_ptr(lightPosition));
+        GLuint directionalLightCountAddress =
+            glGetUniformLocation(lightingProgram, "directionalLightCount");
+        glUniform1f(directionalLightCountAddress, directionalLights.size());
 
-        GLuint lightColorAddress = glGetUniformLocation(lightingProgram, "lightColor");
-        glUniform3fv(lightColorAddress, 1, glm::value_ptr(lightColor));
+        for (int i = 0; i < directionalLights.size(); i++) {
+            std::string address         = "directionalLights[" + std::to_string(i) + "].direction";
 
-        GLuint ambientStrengthAddress = glGetUniformLocation(lightingProgram, "ambientStr");
-        glUniform1f(ambientStrengthAddress, ambientStrength);
+            GLuint lightPositionAddress = glGetUniformLocation(lightingProgram, address.c_str());
+            glUniform3fv(lightPositionAddress, 1, glm::value_ptr(directionalLights[i]->direction));
 
-        GLuint ambientColorAddress = glGetUniformLocation(lightingProgram, "ambientColor");
-        glUniform3fv(ambientColorAddress, 1, glm::value_ptr(ambientColor));
+            address                  = "directionalLights[" + std::to_string(i) + "].color";
+            GLuint lightColorAddress = glGetUniformLocation(lightingProgram, address.c_str());
+            glUniform3fv(lightColorAddress, 1, glm::value_ptr(directionalLights[i]->color));
 
-        GLuint cameraPositionAddress = glGetUniformLocation(lightingProgram, "cameraPos");
+            address = "directionalLights[" + std::to_string(i) + "].ambientStrength";
+            GLuint ambientStrengthAddress = glGetUniformLocation(lightingProgram, address.c_str());
+            glUniform1f(ambientStrengthAddress, directionalLights[i]->ambientStrength);
+
+            address = "directionalLights[" + std::to_string(i) + "].ambientColor";
+            GLuint ambientColorAddress = glGetUniformLocation(lightingProgram, address.c_str());
+            glUniform3fv(
+                ambientColorAddress, 1, glm::value_ptr(directionalLights[i]->ambientColor));
+
+            address = "directionalLights[" + std::to_string(i) + "].specularStrength";
+            GLuint specularStrengthAddress = glGetUniformLocation(lightingProgram, address.c_str());
+            glUniform1f(specularStrengthAddress, directionalLights[i]->specularStrength);
+
+            address = "directionalLights[" + std::to_string(i) + "].specularPhong";
+            GLuint specularPhongAddress = glGetUniformLocation(lightingProgram, address.c_str());
+            glUniform1f(specularPhongAddress, directionalLights[i]->specularPhong);
+
+            address                  = "directionalLights[" + std::to_string(i) + "].brightness";
+            GLuint brightnessAddress = glGetUniformLocation(lightingProgram, address.c_str());
+            glUniform1f(brightnessAddress, directionalLights[i]->brightness);
+        }
+
+        GLuint pointLightCountAddress = glGetUniformLocation(lightingProgram, "pointLightCount");
+        glUniform1f(pointLightCountAddress, pointLights.size());
+
+        GLuint spotLightCountAddress = glGetUniformLocation(lightingProgram, "spotLightCount");
+        glUniform1f(spotLightCountAddress, spotLights.size());
+
+        GLuint cameraPositionAddress = glGetUniformLocation(lightingProgram, "cameraPosition");
         glUniform3fv(cameraPositionAddress, 1, glm::value_ptr(cameraPosition));
 
-        GLuint specularStrengthAddress = glGetUniformLocation(lightingProgram, "specStr");
-        glUniform1f(specularStrengthAddress, specularStrength);
+        // GLuint lightPositionAddress = glGetUniformLocation(lightingProgram, "lightPos");
+        // glUniform3fv(lightPositionAddress, 1, glm::value_ptr(lightPosition));
 
-        GLuint specularPhongAddress = glGetUniformLocation(lightingProgram, "specPhong");
-        glUniform1f(specularPhongAddress, specularPhong);
+        // GLuint lightColorAddress = glGetUniformLocation(lightingProgram, "lightColor");
+        // glUniform3fv(lightColorAddress, 1, glm::value_ptr(lightColor));
+
+        // GLuint ambientStrengthAddress = glGetUniformLocation(lightingProgram, "ambientStr");
+        // glUniform1f(ambientStrengthAddress, ambientStrength);
+
+        // GLuint ambientColorAddress = glGetUniformLocation(lightingProgram, "ambientColor");
+        // glUniform3fv(ambientColorAddress, 1, glm::value_ptr(ambientColor));
+
+        // GLuint specularStrengthAddress = glGetUniformLocation(lightingProgram, "specStr");
+        // glUniform1f(specularStrengthAddress, specularStrength);
+
+        // GLuint specularPhongAddress = glGetUniformLocation(lightingProgram, "specPhong");
+        // glUniform1f(specularPhongAddress, specularPhong);
         //* - - - - - END OF MODEL LIGHTING - - - - -
 
         //* - - - - - MODEL RENDERING - - - - -

@@ -12,7 +12,7 @@ using namespace models;
 // td          - Our Near and Far clipping planes are 0.01f and 1000.0f respectively
 
 PerspectiveCamera::PerspectiveCamera(std::string name, float fieldOfView)
-    : Camera(name + " Perspective Camera", glm::perspective(1.0f, 1.0f, 1.0f, 1.0f)) {
+    : Camera(name + " Perspective", glm::perspective(1.0f, 1.0f, 1.0f, 1.0f)) {
     if (DEBUG_MODE) std::cout << this->name + " initialized!" << std::endl;
 }
 
