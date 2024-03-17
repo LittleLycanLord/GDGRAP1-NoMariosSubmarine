@@ -27,12 +27,12 @@ using namespace models;
 
 //* - - - - - SPEEDS - - - - -
 const float ROTATE_SPEED   = 0.05f;
-const float MOVE_SPEED     = 1.0f;
+const float MOVE_SPEED     = 0.1f;
 //* - - - - - END OF SPEEDS - - - - -
 
 //* - - - - - MODEL TRANSFORM - - - - -
 glm::vec3 modelPosition    = glm::vec3(0.0f);
-glm::vec3 modelScale       = glm::vec3(0.05f);
+glm::vec3 modelScale       = glm::vec3(1.0f);
 glm::vec3 modelOrientation = glm::vec3(0.0f);
 glm::mat4 modelTransform   = glm::mat4(1.0f);
 //* - - - - - END OF MODEL TRANSFORM - - - - -
@@ -134,7 +134,7 @@ int main(void) {
     int textureWidth, textureHeight, textureColorChannels;
     stbi_set_flip_vertically_on_load(true);
     unsigned char* texBytes =
-        stbi_load("Assets/partenza.jpg", &textureWidth, &textureHeight, &textureColorChannels, 0.f);
+        stbi_load("Assets/Submarine.png", &textureWidth, &textureHeight, &textureColorChannels, 0.f);
 
     GLuint texture;
     glGenTextures(1, &texture);
@@ -231,7 +231,7 @@ int main(void) {
     //* - - - - - END OF SHADER CREATION - - - - -
 
     //* - - - - - MODEL LOADING - - - - -
-    std::string path = "Assets/djSword.obj";
+    std::string path = "Assets/MeepballSub.obj";
     std::vector<tinyobj::shape_t> shapes;
     std::vector<tinyobj::material_t> material;
     std::string warning, error;
