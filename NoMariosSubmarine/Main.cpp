@@ -250,54 +250,6 @@ int main(void) {
     glfwSetKeyCallback(window, Key_Callback);
     //* - - - - - END OF WINDOW CREATION - - - - -
 
-    //* - - - - - MODEL TEXTURE LOADING - - - - -
-    // int textureWidth, textureHeight, textureColorChannels;
-    // stbi_set_flip_vertically_on_load(true);
-    // unsigned char* texBytes =
-    //     stbi_load("Assets/Submarine.png", &textureWidth, &textureHeight, &textureColorChannels,
-    //     0);
-
-    // GLuint texture;
-    // glGenTextures(1, &texture);
-    // glActiveTexture(GL_TEXTURE0);
-    // glBindTexture(GL_TEXTURE_2D, texture);
-
-    // if (!texBytes) {
-    //     cout << "ERROR: Model texture failed to load" << endl;
-    //     return -1;
-    // } else {
-    //     switch (textureColorChannels) {
-    //         case 3:
-    //             glTexImage2D(GL_TEXTURE_2D,
-    //                          0,  //? <- Texture Index
-    //                          GL_RGB,
-    //                          textureWidth,
-    //                          textureHeight,
-    //                          0,
-    //                          GL_RGB,
-    //                          GL_UNSIGNED_BYTE,
-    //                          texBytes);
-    //             break;
-    //         case 4:
-    //             glTexImage2D(GL_TEXTURE_2D,
-    //                          0,  //? <- Texture Index
-    //                          GL_RGBA,
-    //                          textureWidth,
-    //                          textureHeight,
-    //                          0,
-    //                          GL_RGBA,
-    //                          GL_UNSIGNED_BYTE,
-    //                          texBytes);
-    //             break;
-    //     }
-    //     //? Mipmap: Low resolution versions of our texture for if we view the model from far
-    //     away,
-    //     // we won't need to load as much detail
-    //     glGenerateMipmap(GL_TEXTURE_2D);
-    //     stbi_image_free(texBytes);
-    // }
-    //* - - - - - END OF MODEL TEXTURE LOADING - - - - -
-
     //* - - - - - SHADER CREATION - - - - -
     fstream lightingVertexFile("Shaders/main.vert");
     stringstream lightingVertexBuffer;
@@ -339,67 +291,20 @@ int main(void) {
     glShaderSource(skyboxFragmentShader, 1, &skyboxFragmentCharArray, NULL);
     glCompileShader(skyboxFragmentShader);
 
-    GLuint lightingProgram = glCreateProgram();
-    glAttachShader(lightingProgram, lightingVertexShader);
-    glAttachShader(lightingProgram, lightingFragmentShader);
+    GLuint lightingShaderProgram = glCreateProgram();
+    glAttachShader(lightingShaderProgram, lightingVertexShader);
+    glAttachShader(lightingShaderProgram, lightingFragmentShader);
 
-    glLinkProgram(lightingProgram);
+    glLinkProgram(lightingShaderProgram);
 
-    GLuint skyboxProgram = glCreateProgram();
-    glAttachShader(skyboxProgram, skyboxVertexShader);
-    glAttachShader(skyboxProgram, skyboxFragmentShader);
+    GLuint skyboxShaderProgram = glCreateProgram();
+    glAttachShader(skyboxShaderProgram, skyboxVertexShader);
+    glAttachShader(skyboxShaderProgram, skyboxFragmentShader);
 
-    glLinkProgram(skyboxProgram);
+    glLinkProgram(skyboxShaderProgram);
     //* - - - - - END OF SHADER CREATION - - - - -
 
     //* - - - - - MODEL LOADING - - - - -
-    // string path = "Assets/MeepballSub.obj";
-    // vector<tinyobj::shape_t> shapes;
-    // vector<tinyobj::material_t> material;
-    // string warning, error;
-    // tinyobj::attrib_t attributes;
-    // vector<GLfloat> fullVertexData;
-
-    // if (!tinyobj::LoadObj(&attributes, &shapes, &material, &warning, &error, path.c_str())) {
-    //     cout << "ERROR: Model failed to load" << endl;
-    //     return -1;
-    // } else {
-    //     for (int i = 0; i < shapes[0].mesh.indices.size(); i++) {
-    //         tinyobj::index_t vData = shapes[0].mesh.indices[i];
-    //         //* Positions
-    //         fullVertexData.push_back(attributes.vertices[(vData.vertex_index * 3)]);
-    //         fullVertexData.push_back(attributes.vertices[(vData.vertex_index * 3) + 1]);
-    //         fullVertexData.push_back(attributes.vertices[(vData.vertex_index * 3) + 2]);
-    //         //* Normals
-    //         fullVertexData.push_back(attributes.normals[(vData.normal_index * 3)]);
-    //         fullVertexData.push_back(attributes.normals[(vData.normal_index * 3) + 1]);
-    //         fullVertexData.push_back(attributes.normals[(vData.normal_index * 3) + 2]);
-    //         //* UVs
-    //         fullVertexData.push_back(attributes.texcoords[(vData.texcoord_index * 2)]);
-    //         fullVertexData.push_back(attributes.texcoords[(vData.texcoord_index * 2) + 1]);
-    //     }
-    // }
-
-    // GLuint modelVAO, modelVBO;
-    // glGenVertexArrays(1, &modelVAO);
-    // glGenBuffers(1, &modelVBO);
-    // glBindVertexArray(modelVAO);
-    // glBindBuffer(GL_ARRAY_BUFFER, modelVBO);
-    // glBufferData(GL_ARRAY_BUFFER,
-    //              sizeof(GLfloat) * fullVertexData.size(),
-    //              fullVertexData.data(),
-    //              GL_DYNAMIC_DRAW);
-    // glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
-    // glEnableVertexAttribArray(0);
-    // GLintptr normalPtr = 3 * sizeof(float);
-    // glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)normalPtr);
-    // glEnableVertexAttribArray(1);
-    // GLintptr uvPtr = 6 * sizeof(float);
-    // glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)uvPtr);
-    // glEnableVertexAttribArray(2);
-    // glBindBuffer(GL_ARRAY_BUFFER, 0);
-    // glBindVertexArray(0);
-
     vector<Model3D*> models = {new Model3D("Submarine",
                                            "Assets/MeepballSub.obj",
                                            0,
@@ -522,7 +427,7 @@ int main(void) {
     glm::vec3 cameraViewCenter     = glm::vec3(0.f, 0.f, -1.f);
     glm::mat4 cameraPositionMatrix = glm::translate(glm::mat4(1.0f), cameraPosition * -1.0f);
     glm::mat4 cameraProjection =
-        glm::perspective(glm::radians(90.f), float(WINDOW_WIDTH / WINDOW_HEIGHT), 0.1f, 100.f);
+        glm::perspective(glm::radians(60.f), float(WINDOW_WIDTH / WINDOW_HEIGHT), 0.1f, 100.f);
     //* - - - - - END OF CAMERA PART 1 - - - - -
 
     //* - - - - - WORLD FACTS - - - - -
@@ -621,20 +526,24 @@ int main(void) {
     while (!glfwWindowShouldClose(window)) {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+        //* - - - - - UPDATE - - - - -
         // modelOrientation.y += ROTATE_SPEED;
+        //* - - - - - END OF UPDATE - - - - -
 
-        //* - - - - - SKYBOX RENDERING - - - - -
+        //* - - - - - SKYBOX SHADER SWITCH - - - - -
         glDepthMask(GL_FALSE);
         glDepthFunc(GL_LEQUAL);
-        glUseProgram(skyboxProgram);
+        glUseProgram(skyboxShaderProgram);
+        //* - - - - - END OF SKYBOX SHADER SWITCH - - - - -
 
+        //* - - - - - SKYBOX RENDERING - - - - -
         glm::mat4 skyboxView           = glm::mat4(1.f);
         skyboxView                     = glm::mat4(glm::mat3(cameraView));
 
-        unsigned int skyboxViewAddress = glGetUniformLocation(skyboxProgram, "view");
+        unsigned int skyboxViewAddress = glGetUniformLocation(skyboxShaderProgram, "view");
         glUniformMatrix4fv(skyboxViewAddress, 1, GL_FALSE, glm::value_ptr(skyboxView));
 
-        unsigned skyboxProjectionAddress = glGetUniformLocation(skyboxProgram, "projection");
+        unsigned skyboxProjectionAddress = glGetUniformLocation(skyboxShaderProgram, "projection");
         glUniformMatrix4fv(skyboxProjectionAddress, 1, GL_FALSE, glm::value_ptr(cameraProjection));
 
         glBindVertexArray(skyboxVAO);
@@ -643,32 +552,34 @@ int main(void) {
         if (DRAW_SKYBOX) glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
         //* - - - - - END OF SKYBOX RENDERING - - - - -
 
+        //* - - - - - LIGHTING SHADER SWITCH - - - - -
         glDepthMask(GL_TRUE);
         glDepthFunc(GL_LESS);
-        glUseProgram(lightingProgram);
+        glUseProgram(lightingShaderProgram);
+        //* - - - - - END OF LIGHTING SHADER SWITCH - - - - -
 
         //* - - - - - CAMERA UPDATE - - - - -
-        unsigned int cameraProjectionAddress = glGetUniformLocation(lightingProgram, "projection");
+        unsigned int cameraProjectionAddress = glGetUniformLocation(lightingShaderProgram, "projection");
         glUniformMatrix4fv(cameraProjectionAddress, 1, GL_FALSE, glm::value_ptr(cameraProjection));
 
-        unsigned int cameraViewAddress = glGetUniformLocation(lightingProgram, "view");
+        unsigned int cameraViewAddress = glGetUniformLocation(lightingShaderProgram, "view");
         glUniformMatrix4fv(cameraViewAddress, 1, GL_FALSE, glm::value_ptr(cameraView));
 
-        GLuint cameraPositionAddress = glGetUniformLocation(lightingProgram, "cameraPosition");
+        GLuint cameraPositionAddress = glGetUniformLocation(lightingShaderProgram, "cameraPosition");
         glUniform3fv(cameraPositionAddress, 1, glm::value_ptr(cameraPosition));
         //* - - - - - END OF CAMERA UPDATE - - - - -
 
         //* - - - - - MODEL UPDATE - - - - -
 
-        //* - - - - - MODEL LIGHTING - - - - -
         for (Model3D* model : models) {
-            glBindVertexArray(model->getVAO());
+            //* - - - - - MODEL LIGHTING - - - - -
+            glBindVertexArray(*model->getVAO());
 
-            GLuint modelTextureAddress = glGetUniformLocation(lightingProgram, "modelTexture");
+            GLuint modelTextureAddress = glGetUniformLocation(lightingShaderProgram, "modelTexture");
             glBindTexture(GL_TEXTURE_2D, model->getTexture().getTexture());
 
             GLuint directionalLightCountAddress =
-                glGetUniformLocation(lightingProgram, "directionalLightCount");
+                glGetUniformLocation(lightingShaderProgram, "directionalLightCount");
             glUniform1i(directionalLightCountAddress, GLint(directionalLights.size()));
 
             for (int i = 0; i < directionalLights.size(); i++) {
@@ -676,45 +587,45 @@ int main(void) {
                     string address = "directionalLights[" + to_string(i) + "].direction";
 
                     GLuint lightDirectionAddress =
-                        glGetUniformLocation(lightingProgram, address.c_str());
+                        glGetUniformLocation(lightingShaderProgram, address.c_str());
                     glUniform3fv(
                         lightDirectionAddress, 1, glm::value_ptr(directionalLights[i]->direction));
 
                     address = "directionalLights[" + to_string(i) + "].color";
                     GLuint lightColorAddress =
-                        glGetUniformLocation(lightingProgram, address.c_str());
+                        glGetUniformLocation(lightingShaderProgram, address.c_str());
                     glUniform3fv(lightColorAddress, 1, glm::value_ptr(directionalLights[i]->color));
 
                     address = "directionalLights[" + to_string(i) + "].ambientStrength";
                     GLuint ambientStrengthAddress =
-                        glGetUniformLocation(lightingProgram, address.c_str());
+                        glGetUniformLocation(lightingShaderProgram, address.c_str());
                     glUniform1f(ambientStrengthAddress, directionalLights[i]->ambientStrength);
 
                     address = "directionalLights[" + to_string(i) + "].ambientColor";
                     GLuint ambientColorAddress =
-                        glGetUniformLocation(lightingProgram, address.c_str());
+                        glGetUniformLocation(lightingShaderProgram, address.c_str());
                     glUniform3fv(
                         ambientColorAddress, 1, glm::value_ptr(directionalLights[i]->ambientColor));
 
                     address = "directionalLights[" + to_string(i) + "].specularStrength";
                     GLuint specularStrengthAddress =
-                        glGetUniformLocation(lightingProgram, address.c_str());
+                        glGetUniformLocation(lightingShaderProgram, address.c_str());
                     glUniform1f(specularStrengthAddress, directionalLights[i]->specularStrength);
 
                     address = "directionalLights[" + to_string(i) + "].specularPhong";
                     GLuint specularPhongAddress =
-                        glGetUniformLocation(lightingProgram, address.c_str());
+                        glGetUniformLocation(lightingShaderProgram, address.c_str());
                     glUniform1f(specularPhongAddress, directionalLights[i]->specularPhong);
 
                     address = "directionalLights[" + to_string(i) + "].brightness";
                     GLuint brightnessAddress =
-                        glGetUniformLocation(lightingProgram, address.c_str());
+                        glGetUniformLocation(lightingShaderProgram, address.c_str());
                     glUniform1f(brightnessAddress, directionalLights[i]->brightness);
                 }
             }
 
             GLuint pointLightCountAddress =
-                glGetUniformLocation(lightingProgram, "pointLightCount");
+                glGetUniformLocation(lightingShaderProgram, "pointLightCount");
             glUniform1i(pointLightCountAddress, GLint(pointLights.size()));
 
             for (int i = 0; i < pointLights.size(); i++) {
@@ -722,43 +633,43 @@ int main(void) {
                     string address = "pointLights[" + to_string(i) + "].position";
 
                     GLuint lightPositionAddress =
-                        glGetUniformLocation(lightingProgram, address.c_str());
+                        glGetUniformLocation(lightingShaderProgram, address.c_str());
                     glUniform3fv(lightPositionAddress, 1, glm::value_ptr(pointLights[i]->position));
 
                     address = "pointLights[" + to_string(i) + "].color";
                     GLuint lightColorAddress =
-                        glGetUniformLocation(lightingProgram, address.c_str());
+                        glGetUniformLocation(lightingShaderProgram, address.c_str());
                     glUniform3fv(lightColorAddress, 1, glm::value_ptr(pointLights[i]->color));
 
                     address = "pointLights[" + to_string(i) + "].ambientStrength";
                     GLuint ambientStrengthAddress =
-                        glGetUniformLocation(lightingProgram, address.c_str());
+                        glGetUniformLocation(lightingShaderProgram, address.c_str());
                     glUniform1f(ambientStrengthAddress, pointLights[i]->ambientStrength);
 
                     address = "pointLights[" + to_string(i) + "].ambientColor";
                     GLuint ambientColorAddress =
-                        glGetUniformLocation(lightingProgram, address.c_str());
+                        glGetUniformLocation(lightingShaderProgram, address.c_str());
                     glUniform3fv(
                         ambientColorAddress, 1, glm::value_ptr(pointLights[i]->ambientColor));
 
                     address = "pointLights[" + to_string(i) + "].specularStrength";
                     GLuint specularStrengthAddress =
-                        glGetUniformLocation(lightingProgram, address.c_str());
+                        glGetUniformLocation(lightingShaderProgram, address.c_str());
                     glUniform1f(specularStrengthAddress, pointLights[i]->specularStrength);
 
                     address = "pointLights[" + to_string(i) + "].specularPhong";
                     GLuint specularPhongAddress =
-                        glGetUniformLocation(lightingProgram, address.c_str());
+                        glGetUniformLocation(lightingShaderProgram, address.c_str());
                     glUniform1f(specularPhongAddress, pointLights[i]->specularPhong);
 
                     address = "pointLights[" + to_string(i) + "].brightness";
                     GLuint brightnessAddress =
-                        glGetUniformLocation(lightingProgram, address.c_str());
+                        glGetUniformLocation(lightingShaderProgram, address.c_str());
                     glUniform1f(brightnessAddress, pointLights[i]->brightness);
                 }
             }
 
-            GLuint spotLightCountAddress = glGetUniformLocation(lightingProgram, "spotLightCount");
+            GLuint spotLightCountAddress = glGetUniformLocation(lightingShaderProgram, "spotLightCount");
             glUniform1i(spotLightCountAddress, GLint(spotLights.size()));
 
             for (int i = 0; i < spotLights.size(); i++) {
@@ -766,48 +677,48 @@ int main(void) {
                     string address = "spotLights[" + to_string(i) + "].position";
 
                     GLuint lightPositionAddress =
-                        glGetUniformLocation(lightingProgram, address.c_str());
+                        glGetUniformLocation(lightingShaderProgram, address.c_str());
                     glUniform3fv(lightPositionAddress, 1, glm::value_ptr(spotLights[i]->position));
 
                     address = "spotLights[" + to_string(i) + "].direction";
                     GLuint lightDirectionAddress =
-                        glGetUniformLocation(lightingProgram, address.c_str());
+                        glGetUniformLocation(lightingShaderProgram, address.c_str());
                     glUniform3fv(
                         lightDirectionAddress, 1, glm::value_ptr(spotLights[i]->direction));
 
                     address                = "spotLights[" + to_string(i) + "].coneSize";
-                    GLuint coneSizeAddress = glGetUniformLocation(lightingProgram, address.c_str());
+                    GLuint coneSizeAddress = glGetUniformLocation(lightingShaderProgram, address.c_str());
                     glUniform1f(coneSizeAddress, spotLights[i]->coneSize);
 
                     address = "spotLights[" + to_string(i) + "].color";
                     GLuint lightColorAddress =
-                        glGetUniformLocation(lightingProgram, address.c_str());
+                        glGetUniformLocation(lightingShaderProgram, address.c_str());
                     glUniform3fv(lightColorAddress, 1, glm::value_ptr(spotLights[i]->color));
 
                     address = "spotLights[" + to_string(i) + "].ambientStrength";
                     GLuint ambientStrengthAddress =
-                        glGetUniformLocation(lightingProgram, address.c_str());
+                        glGetUniformLocation(lightingShaderProgram, address.c_str());
                     glUniform1f(ambientStrengthAddress, spotLights[i]->ambientStrength);
 
                     address = "spotLights[" + to_string(i) + "].ambientColor";
                     GLuint ambientColorAddress =
-                        glGetUniformLocation(lightingProgram, address.c_str());
+                        glGetUniformLocation(lightingShaderProgram, address.c_str());
                     glUniform3fv(
                         ambientColorAddress, 1, glm::value_ptr(spotLights[i]->ambientColor));
 
                     address = "spotLights[" + to_string(i) + "].specularStrength";
                     GLuint specularStrengthAddress =
-                        glGetUniformLocation(lightingProgram, address.c_str());
+                        glGetUniformLocation(lightingShaderProgram, address.c_str());
                     glUniform1f(specularStrengthAddress, spotLights[i]->specularStrength);
 
                     address = "spotLights[" + to_string(i) + "].specularPhong";
                     GLuint specularPhongAddress =
-                        glGetUniformLocation(lightingProgram, address.c_str());
+                        glGetUniformLocation(lightingShaderProgram, address.c_str());
                     glUniform1f(specularPhongAddress, spotLights[i]->specularPhong);
 
                     address = "spotLights[" + to_string(i) + "].brightness";
                     GLuint brightnessAddress =
-                        glGetUniformLocation(lightingProgram, address.c_str());
+                        glGetUniformLocation(lightingShaderProgram, address.c_str());
                     glUniform1f(brightnessAddress, spotLights[i]->brightness);
                 }
             }
@@ -815,7 +726,7 @@ int main(void) {
 
             //* - - - - - MODEL TRANSFORM - - - - -
             model->update();
-            unsigned int modelTransformAddress = glGetUniformLocation(lightingProgram, "transform");
+            unsigned int modelTransformAddress = glGetUniformLocation(lightingShaderProgram, "transform");
             glUniformMatrix4fv(
                 modelTransformAddress, 1, GL_FALSE, glm::value_ptr(model->getPositionMatrix()));
             //* - - - - - END OF MODEL TRANSFORM - - - - -
@@ -826,167 +737,17 @@ int main(void) {
             //* - - - - - END OF MODEL RENDERING - - - - -
         }
 
-        // //* - - - - - MODEL LIGHTING - - - - -
-        // glBindVertexArray(modelVAO);
-
-        // GLuint modelTextureAddress = glGetUniformLocation(lightingProgram, "modelTexture");
-        // glBindTexture(GL_TEXTURE_2D, texture);
-
-        // GLuint directionalLightCountAddress =
-        //     glGetUniformLocation(lightingProgram, "directionalLightCount");
-        // glUniform1i(directionalLightCountAddress, GLint(directionalLights.size()));
-
-        // for (int i = 0; i < directionalLights.size(); i++) {
-        //     if (directionalLights[i]->enabled) {
-        //         string address = "directionalLights[" + to_string(i) + "].direction";
-
-        //         GLuint lightDirectionAddress =
-        //             glGetUniformLocation(lightingProgram, address.c_str());
-        //         glUniform3fv(
-        //             lightDirectionAddress, 1, glm::value_ptr(directionalLights[i]->direction));
-
-        //         address                  = "directionalLights[" + to_string(i) + "].color";
-        //         GLuint lightColorAddress = glGetUniformLocation(lightingProgram,
-        //         address.c_str()); glUniform3fv(lightColorAddress, 1,
-        //         glm::value_ptr(directionalLights[i]->color));
-
-        //         address = "directionalLights[" + to_string(i) + "].ambientStrength";
-        //         GLuint ambientStrengthAddress =
-        //             glGetUniformLocation(lightingProgram, address.c_str());
-        //         glUniform1f(ambientStrengthAddress, directionalLights[i]->ambientStrength);
-
-        //         address = "directionalLights[" + to_string(i) + "].ambientColor";
-        //         GLuint ambientColorAddress = glGetUniformLocation(lightingProgram,
-        //         address.c_str()); glUniform3fv(
-        //             ambientColorAddress, 1, glm::value_ptr(directionalLights[i]->ambientColor));
-
-        //         address = "directionalLights[" + to_string(i) + "].specularStrength";
-        //         GLuint specularStrengthAddress =
-        //             glGetUniformLocation(lightingProgram, address.c_str());
-        //         glUniform1f(specularStrengthAddress, directionalLights[i]->specularStrength);
-
-        //         address = "directionalLights[" + to_string(i) + "].specularPhong";
-        //         GLuint specularPhongAddress =
-        //             glGetUniformLocation(lightingProgram, address.c_str());
-        //         glUniform1f(specularPhongAddress, directionalLights[i]->specularPhong);
-
-        //         address = "directionalLights[" + to_string(i) + "].brightness";
-        //         GLuint brightnessAddress = glGetUniformLocation(lightingProgram,
-        //         address.c_str()); glUniform1f(brightnessAddress,
-        //         directionalLights[i]->brightness);
-        //     }
-        // }
-
-        // GLuint pointLightCountAddress = glGetUniformLocation(lightingProgram, "pointLightCount");
-        // glUniform1i(pointLightCountAddress, GLint(pointLights.size()));
-
-        // for (int i = 0; i < pointLights.size(); i++) {
-        //     if (pointLights[i]->enabled) {
-        //         string address = "pointLights[" + to_string(i) + "].position";
-
-        //         GLuint lightPositionAddress =
-        //             glGetUniformLocation(lightingProgram, address.c_str());
-        //         glUniform3fv(lightPositionAddress, 1, glm::value_ptr(pointLights[i]->position));
-
-        //         address                  = "pointLights[" + to_string(i) + "].color";
-        //         GLuint lightColorAddress = glGetUniformLocation(lightingProgram,
-        //         address.c_str()); glUniform3fv(lightColorAddress, 1,
-        //         glm::value_ptr(pointLights[i]->color));
-
-        //         address = "pointLights[" + to_string(i) + "].ambientStrength";
-        //         GLuint ambientStrengthAddress =
-        //             glGetUniformLocation(lightingProgram, address.c_str());
-        //         glUniform1f(ambientStrengthAddress, pointLights[i]->ambientStrength);
-
-        //         address                    = "pointLights[" + to_string(i) + "].ambientColor";
-        //         GLuint ambientColorAddress = glGetUniformLocation(lightingProgram,
-        //         address.c_str()); glUniform3fv(ambientColorAddress, 1,
-        //         glm::value_ptr(pointLights[i]->ambientColor));
-
-        //         address = "pointLights[" + to_string(i) + "].specularStrength";
-        //         GLuint specularStrengthAddress =
-        //             glGetUniformLocation(lightingProgram, address.c_str());
-        //         glUniform1f(specularStrengthAddress, pointLights[i]->specularStrength);
-
-        //         address = "pointLights[" + to_string(i) + "].specularPhong";
-        //         GLuint specularPhongAddress =
-        //             glGetUniformLocation(lightingProgram, address.c_str());
-        //         glUniform1f(specularPhongAddress, pointLights[i]->specularPhong);
-
-        //         address                  = "pointLights[" + to_string(i) + "].brightness";
-        //         GLuint brightnessAddress = glGetUniformLocation(lightingProgram,
-        //         address.c_str()); glUniform1f(brightnessAddress, pointLights[i]->brightness);
-        //     }
-        // }
-
-        // GLuint spotLightCountAddress = glGetUniformLocation(lightingProgram, "spotLightCount");
-        // glUniform1i(spotLightCountAddress, GLint(spotLights.size()));
-
-        // for (int i = 0; i < spotLights.size(); i++) {
-        //     if (spotLights[i]->enabled) {
-        //         string address = "spotLights[" + to_string(i) + "].position";
-
-        //         GLuint lightPositionAddress =
-        //             glGetUniformLocation(lightingProgram, address.c_str());
-        //         glUniform3fv(lightPositionAddress, 1, glm::value_ptr(spotLights[i]->position));
-
-        //         address = "spotLights[" + to_string(i) + "].direction";
-        //         GLuint lightDirectionAddress =
-        //             glGetUniformLocation(lightingProgram, address.c_str());
-        //         glUniform3fv(lightDirectionAddress, 1, glm::value_ptr(spotLights[i]->direction));
-
-        //         address                = "spotLights[" + to_string(i) + "].coneSize";
-        //         GLuint coneSizeAddress = glGetUniformLocation(lightingProgram, address.c_str());
-        //         glUniform1f(coneSizeAddress, spotLights[i]->coneSize);
-
-        //         address                  = "spotLights[" + to_string(i) + "].color";
-        //         GLuint lightColorAddress = glGetUniformLocation(lightingProgram,
-        //         address.c_str()); glUniform3fv(lightColorAddress, 1,
-        //         glm::value_ptr(spotLights[i]->color));
-
-        //         address = "spotLights[" + to_string(i) + "].ambientStrength";
-        //         GLuint ambientStrengthAddress =
-        //             glGetUniformLocation(lightingProgram, address.c_str());
-        //         glUniform1f(ambientStrengthAddress, spotLights[i]->ambientStrength);
-
-        //         address                    = "spotLights[" + to_string(i) + "].ambientColor";
-        //         GLuint ambientColorAddress = glGetUniformLocation(lightingProgram,
-        //         address.c_str()); glUniform3fv(ambientColorAddress, 1,
-        //         glm::value_ptr(spotLights[i]->ambientColor));
-
-        //         address = "spotLights[" + to_string(i) + "].specularStrength";
-        //         GLuint specularStrengthAddress =
-        //             glGetUniformLocation(lightingProgram, address.c_str());
-        //         glUniform1f(specularStrengthAddress, spotLights[i]->specularStrength);
-
-        //         address = "spotLights[" + to_string(i) + "].specularPhong";
-        //         GLuint specularPhongAddress =
-        //             glGetUniformLocation(lightingProgram, address.c_str());
-        //         glUniform1f(specularPhongAddress, spotLights[i]->specularPhong);
-
-        //         address                  = "spotLights[" + to_string(i) + "].brightness";
-        //         GLuint brightnessAddress = glGetUniformLocation(lightingProgram,
-        //         address.c_str()); glUniform1f(brightnessAddress, spotLights[i]->brightness);
-        //     }
-        // }
-
-        // GLuint cameraPositionAddress = glGetUniformLocation(lightingProgram, "cameraPosition");
-        // glUniform3fv(cameraPositionAddress, 1, glm::value_ptr(cameraPosition));
-        // //* - - - - - END OF MODEL LIGHTING - - - - -
-
-        // //* - - - - - MODEL RENDERING - - - - -
-        // glUniform1i(modelTextureAddress, 0);
-        // glDrawArrays(GL_TRIANGLES, 0, GLint(fullVertexData.size() / 8));
-        //* - - - - - END OF MODEL RENDERING - - - - -
         //* - - - - - END OF MODEL UPDATE - - - - -
         glfwSwapBuffers(window);
-
         glfwPollEvents();
     }
     //* - - - - - END OF RUNTIME - - - - -
 
     //* - - - - - CLEAN UP - - - - -
-    // glDeleteVertexArrays(1, &modelVAO);
+    for(Model3D* model : models) {
+        glDeleteVertexArrays(1, model->getVAO());
+        glDeleteBuffers(1, model->getVBO());
+    }
     // glDeleteBuffers(1, &modelVBO);
     glDeleteShader(lightingVertexShader);
     glDeleteShader(lightingFragmentShader);

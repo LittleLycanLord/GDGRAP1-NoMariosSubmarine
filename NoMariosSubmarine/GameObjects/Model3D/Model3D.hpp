@@ -20,6 +20,7 @@ protected:
     glm::vec3 orientation;
     std::vector<GLfloat> fullVertexData;
     GLuint VAO;
+    GLuint VBO;
 
     //* ╔═══════════════════════════════╗
     //* ║ Constructors & Deconstructors ║
@@ -60,6 +61,7 @@ public:
     glm::mat4 getProjection();
     void setProjection(glm::mat4 projection);
     std::vector<GLfloat> getFullVertexData();
-    GLuint getVAO();
+    GLuint* getVAO();
+    GLuint* getVBO();
 };
 }  // namespace models

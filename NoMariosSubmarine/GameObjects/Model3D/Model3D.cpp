@@ -21,7 +21,9 @@ Model3D::Model3D(std::string name,
       position(position),
       positionMatrix(positionMatrix),
       scale(scale),
-      orientation(orientation) {
+      orientation(orientation),
+      VAO(0),
+      VBO(0) {
     if (DEBUG_MODE) std::cout << this->name + " initialized!" << std::endl;
 }
 
@@ -56,11 +58,10 @@ void Model3D::loadModel() {
         }
     }
 
-    GLuint VBO;
     glGenVertexArrays(1, &this->VAO);
-    glGenBuffers(1, &VBO);
+    glGenBuffers(1, &this->VBO);
     glBindVertexArray(this->VAO);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBindBuffer(GL_ARRAY_BUFFER, this->VBO);
     glBufferData(GL_ARRAY_BUFFER,
                  sizeof(GLfloat) * this->fullVertexData.size(),
                  this->fullVertexData.data(),
@@ -103,4 +104,5 @@ void Model3D::setScale(glm::vec3 scale) { this->scale = scale; }
 glm::vec3 Model3D::getOrientation() { return this->orientation; }
 void Model3D::setOrientation(glm::vec3 orientation) { this->orientation = orientation; }
 std::vector<GLfloat> Model3D::getFullVertexData() { return this->fullVertexData; }
-GLuint Model3D::getVAO() { return this->VAO; }  // namespace models
+GLuint* Model3D::getVAO() { return &this->VAO; }
+GLuint* Model3D::getVBO() { return &this->VBO; }  // namespace models
