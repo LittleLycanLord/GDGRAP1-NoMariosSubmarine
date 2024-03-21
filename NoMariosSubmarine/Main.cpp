@@ -299,13 +299,13 @@ int main(void) {
     //* - - - - - END OF MODEL TEXTURE LOADING - - - - -
 
     //* - - - - - SHADER CREATION - - - - -
-    fstream lightingVertexFile("Shaders/sample.vert");
+    fstream lightingVertexFile("Shaders/main.vert");
     stringstream lightingVertexBuffer;
     lightingVertexBuffer << lightingVertexFile.rdbuf();
     string lightingVertexString         = lightingVertexBuffer.str();
     const char* lightingVertexCharArray = lightingVertexString.c_str();
 
-    fstream lightingFragmentFile("Shaders/sample.frag");
+    fstream lightingFragmentFile("Shaders/main.frag");
     stringstream lightingFragmentBuffer;
     lightingFragmentBuffer << lightingFragmentFile.rdbuf();
     string lightingFragmentString         = lightingFragmentBuffer.str();
@@ -353,61 +353,71 @@ int main(void) {
     //* - - - - - END OF SHADER CREATION - - - - -
 
     //* - - - - - MODEL LOADING - - - - -
-    string path = "Assets/MeepballSub.obj";
-    vector<tinyobj::shape_t> shapes;
-    vector<tinyobj::material_t> material;
-    string warning, error;
-    tinyobj::attrib_t attributes;
-    vector<GLfloat> fullVertexData;
+    // string path = "Assets/MeepballSub.obj";
+    // vector<tinyobj::shape_t> shapes;
+    // vector<tinyobj::material_t> material;
+    // string warning, error;
+    // tinyobj::attrib_t attributes;
+    // vector<GLfloat> fullVertexData;
 
-    if (!tinyobj::LoadObj(&attributes, &shapes, &material, &warning, &error, path.c_str())) {
-        cout << "ERROR: Model failed to load" << endl;
-        return -1;
-    } else {
-        for (int i = 0; i < shapes[0].mesh.indices.size(); i++) {
-            tinyobj::index_t vData = shapes[0].mesh.indices[i];
-            //* Positions
-            fullVertexData.push_back(attributes.vertices[(vData.vertex_index * 3)]);
-            fullVertexData.push_back(attributes.vertices[(vData.vertex_index * 3) + 1]);
-            fullVertexData.push_back(attributes.vertices[(vData.vertex_index * 3) + 2]);
-            //* Normals
-            fullVertexData.push_back(attributes.normals[(vData.normal_index * 3)]);
-            fullVertexData.push_back(attributes.normals[(vData.normal_index * 3) + 1]);
-            fullVertexData.push_back(attributes.normals[(vData.normal_index * 3) + 2]);
-            //* UVs
-            fullVertexData.push_back(attributes.texcoords[(vData.texcoord_index * 2)]);
-            fullVertexData.push_back(attributes.texcoords[(vData.texcoord_index * 2) + 1]);
-        }
-    }
+    // if (!tinyobj::LoadObj(&attributes, &shapes, &material, &warning, &error, path.c_str())) {
+    //     cout << "ERROR: Model failed to load" << endl;
+    //     return -1;
+    // } else {
+    //     for (int i = 0; i < shapes[0].mesh.indices.size(); i++) {
+    //         tinyobj::index_t vData = shapes[0].mesh.indices[i];
+    //         //* Positions
+    //         fullVertexData.push_back(attributes.vertices[(vData.vertex_index * 3)]);
+    //         fullVertexData.push_back(attributes.vertices[(vData.vertex_index * 3) + 1]);
+    //         fullVertexData.push_back(attributes.vertices[(vData.vertex_index * 3) + 2]);
+    //         //* Normals
+    //         fullVertexData.push_back(attributes.normals[(vData.normal_index * 3)]);
+    //         fullVertexData.push_back(attributes.normals[(vData.normal_index * 3) + 1]);
+    //         fullVertexData.push_back(attributes.normals[(vData.normal_index * 3) + 2]);
+    //         //* UVs
+    //         fullVertexData.push_back(attributes.texcoords[(vData.texcoord_index * 2)]);
+    //         fullVertexData.push_back(attributes.texcoords[(vData.texcoord_index * 2) + 1]);
+    //     }
+    // }
 
-    GLuint modelVAO, modelVBO;
-    glGenVertexArrays(1, &modelVAO);
-    glGenBuffers(1, &modelVBO);
-    glBindVertexArray(modelVAO);
-    glBindBuffer(GL_ARRAY_BUFFER, modelVBO);
-    glBufferData(GL_ARRAY_BUFFER,
-                 sizeof(GLfloat) * fullVertexData.size(),
-                 fullVertexData.data(),
-                 GL_DYNAMIC_DRAW);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
-    GLintptr normalPtr = 3 * sizeof(float);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)normalPtr);
-    glEnableVertexAttribArray(1);
-    GLintptr uvPtr = 6 * sizeof(float);
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)uvPtr);
-    glEnableVertexAttribArray(2);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glBindVertexArray(0);
+    // GLuint modelVAO, modelVBO;
+    // glGenVertexArrays(1, &modelVAO);
+    // glGenBuffers(1, &modelVBO);
+    // glBindVertexArray(modelVAO);
+    // glBindBuffer(GL_ARRAY_BUFFER, modelVBO);
+    // glBufferData(GL_ARRAY_BUFFER,
+    //              sizeof(GLfloat) * fullVertexData.size(),
+    //              fullVertexData.data(),
+    //              GL_DYNAMIC_DRAW);
+    // glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
+    // glEnableVertexAttribArray(0);
+    // GLintptr normalPtr = 3 * sizeof(float);
+    // glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)normalPtr);
+    // glEnableVertexAttribArray(1);
+    // GLintptr uvPtr = 6 * sizeof(float);
+    // glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)uvPtr);
+    // glEnableVertexAttribArray(2);
+    // glBindBuffer(GL_ARRAY_BUFFER, 0);
+    // glBindVertexArray(0);
 
     vector<Model3D*> models = {new Model3D("Submarine",
                                            "Assets/MeepballSub.obj",
                                            0,
                                            "Assets/Submarine.png",
-                                           glm::vec3(0.f, -1.f, 0.f),
+                                           glm::vec3(0.5f, -1.f, 0.f),
+                                           glm::mat4(1.0f),
+                                           glm::vec3(1.0f),
+                                           glm::vec3(0.0f)),
+                               new Model3D("Submarine",
+                                           "Assets/MeepballSub.obj",
+                                           0,
+                                           "Assets/Submarine.png",
+                                           glm::vec3(-0.5f, -1.f, 0.f),
                                            glm::mat4(1.0f),
                                            glm::vec3(1.0f),
                                            glm::vec3(0.0f))};
+
+    for (Model3D* model : models) model->loadModel();
     //* - - - - - END OF MODEL LOADING - - - - -
 
     //* - - - - - SKYBOX CREATION - - - - -
@@ -633,31 +643,24 @@ int main(void) {
         if (DRAW_SKYBOX) glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
         //* - - - - - END OF SKYBOX RENDERING - - - - -
 
-        //* - - - - - MODEL UPDATE - - - - -
         glDepthMask(GL_TRUE);
         glDepthFunc(GL_LESS);
         glUseProgram(lightingProgram);
 
-        //* - - - - - MODEL TRANSFORM - - - - -
-        modelTransform = glm::translate(glm::mat4(1.0f), modelPosition);
-        modelTransform = glm::scale(modelTransform, modelScale);
-        modelTransform =
-            glm::rotate(modelTransform, glm::radians(modelOrientation.x), rotateAroundTheXAxis);
-        modelTransform =
-            glm::rotate(modelTransform, glm::radians(modelOrientation.y), rotateAroundTheYAxis);
-        modelTransform =
-            glm::rotate(modelTransform, glm::radians(modelOrientation.z), rotateAroundTheZAxis);
-
+        //* - - - - - CAMERA UPDATE - - - - -
         unsigned int cameraProjectionAddress = glGetUniformLocation(lightingProgram, "projection");
         glUniformMatrix4fv(cameraProjectionAddress, 1, GL_FALSE, glm::value_ptr(cameraProjection));
 
-        unsigned int modelTransformAddress = glGetUniformLocation(lightingProgram, "transform");
-        glUniformMatrix4fv(modelTransformAddress, 1, GL_FALSE, glm::value_ptr(modelTransform));
-
         unsigned int cameraViewAddress = glGetUniformLocation(lightingProgram, "view");
         glUniformMatrix4fv(cameraViewAddress, 1, GL_FALSE, glm::value_ptr(cameraView));
-        //* - - - - - END OF MODEL TRANSFORM - - - - -
 
+        GLuint cameraPositionAddress = glGetUniformLocation(lightingProgram, "cameraPosition");
+        glUniform3fv(cameraPositionAddress, 1, glm::value_ptr(cameraPosition));
+        //* - - - - - END OF CAMERA UPDATE - - - - -
+
+        //* - - - - - MODEL UPDATE - - - - -
+
+        //* - - - - - MODEL LIGHTING - - - - -
         for (Model3D* model : models) {
             glBindVertexArray(model->getVAO());
 
@@ -808,13 +811,21 @@ int main(void) {
                     glUniform1f(brightnessAddress, spotLights[i]->brightness);
                 }
             }
+            //* - - - - - END OF MODEL LIGHTING - - - - -
 
-            GLuint cameraPositionAddress = glGetUniformLocation(lightingProgram, "cameraPosition");
-            glUniform3fv(cameraPositionAddress, 1, glm::value_ptr(cameraPosition));
+            //* - - - - - MODEL TRANSFORM - - - - -
+            model->update();
+            unsigned int modelTransformAddress = glGetUniformLocation(lightingProgram, "transform");
+            glUniformMatrix4fv(
+                modelTransformAddress, 1, GL_FALSE, glm::value_ptr(model->getPositionMatrix()));
+            //* - - - - - END OF MODEL TRANSFORM - - - - -
 
+            //* - - - - - MODEL RENDERING - - - - -
             glUniform1i(modelTextureAddress, model->getTexture().getTextureCount());
             glDrawArrays(GL_TRIANGLES, 0, GLint(model->getFullVertexData().size() / 8));
+            //* - - - - - END OF MODEL RENDERING - - - - -
         }
+
         // //* - - - - - MODEL LIGHTING - - - - -
         // glBindVertexArray(modelVAO);
 
@@ -975,8 +986,8 @@ int main(void) {
     //* - - - - - END OF RUNTIME - - - - -
 
     //* - - - - - CLEAN UP - - - - -
-    glDeleteVertexArrays(1, &modelVAO);
-    glDeleteBuffers(1, &modelVBO);
+    // glDeleteVertexArrays(1, &modelVAO);
+    // glDeleteBuffers(1, &modelVBO);
     glDeleteShader(lightingVertexShader);
     glDeleteShader(lightingFragmentShader);
     glDeleteShader(skyboxVertexShader);

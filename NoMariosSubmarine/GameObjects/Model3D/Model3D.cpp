@@ -36,7 +36,7 @@ void Model3D::loadModel() {
     tinyobj::attrib_t attributes;
 
     if (!tinyobj::LoadObj(
-            &attributes, &shapes, &material, &warning, &error, this->texturePath.c_str())) {
+            &attributes, &shapes, &material, &warning, &error, this->modelPath.c_str())) {
         cout << "ERROR: Model failed to load" << endl;
         return;
     } else {
@@ -77,7 +77,16 @@ void Model3D::loadModel() {
     glBindVertexArray(0);
 }
 void Model3D::update() { this->updatePositionMatrix(); }
-void Model3D::updatePositionMatrix() {}
+void Model3D::updatePositionMatrix() {
+    this->positionMatrix = glm::translate(glm::mat4(1.0f), this->position);
+    this->positionMatrix = glm::scale(this->positionMatrix, this->scale);
+    this->positionMatrix =
+        glm::rotate(this->positionMatrix, glm::radians(this->orientation.x), rotateAroundTheXAxis);
+    this->positionMatrix =
+        glm::rotate(this->positionMatrix, glm::radians(this->orientation.y), rotateAroundTheYAxis);
+    this->positionMatrix =
+        glm::rotate(this->positionMatrix, glm::radians(this->orientation.z), rotateAroundTheZAxis);
+}
 
 //* ╔═══════════════════╗
 //* ║ Getters & Setters ║
