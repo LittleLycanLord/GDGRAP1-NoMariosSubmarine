@@ -19,20 +19,14 @@ using namespace std;
 using namespace models;
 
 //* - - - - - SPEEDS - - - - -
-const float ROTATE_SPEED   = 0.05f;
-const float MOVE_SPEED     = 0.1f;
+const float ROTATE_SPEED = 0.05f;
+const float MOVE_SPEED   = 0.1f;
 //* - - - - - END OF SPEEDS - - - - -
 
-//* - - - - - MODEL TRANSFORM - - - - -
-glm::vec3 modelPosition    = glm::vec3(0.f, -1.f, 0.f);
-glm::vec3 modelScale       = glm::vec3(1.0f);
-glm::vec3 modelOrientation = glm::vec3(0.0f);
-glm::mat4 modelTransform   = glm::mat4(1.0f);
-//* - - - - - END OF MODEL TRANSFORM - - - - -
-
 //* - - - - - PROGRAMMING CHALLENGE 2 VARIABLES - - - - -
-bool controllingModel      = false;
-Light* activeLight         = NULL;
+bool controllingModel    = false;
+Light* activeLight       = NULL;
+Model3D* activeModel     = NULL;
 //* - - - - - END OF PROGRAMMING CHALLENGE 2 VARIABLES - - - - -
 
 //? Reserved GLFW Function for Keyboard Inputs
@@ -47,14 +41,21 @@ void Key_Callback(
     switch (key) {
         //* Switch between Light and Model
         case GLFW_KEY_SPACE:
-            controllingModel = !controllingModel;
-            break;
+            if (action == GLFW_PRESS) {
+                if (controllingModel)
+                    controllingModel = false;
+                else
+                    controllingModel = true;
+                break;
+            }
 
         //* Translation
         case GLFW_KEY_W:
             //* Move Forward
             if (controllingModel) {
-                modelPosition.z -= MOVE_SPEED;
+                activeModel->setPosition(glm::vec3(activeModel->getPosition().x,
+                                                   activeModel->getPosition().y,
+                                                   activeModel->getPosition().z - MOVE_SPEED));
             } else {
                 activeLight->update(true,
                                     {glm::vec3(0.0f),
@@ -67,7 +68,9 @@ void Key_Callback(
         case GLFW_KEY_A:
             //* Move Left
             if (controllingModel) {
-                modelPosition.x -= MOVE_SPEED;
+                activeModel->setPosition(glm::vec3(activeModel->getPosition().x - MOVE_SPEED,
+                                                   activeModel->getPosition().y,
+                                                   activeModel->getPosition().z));
             } else {
                 activeLight->update(true,
                                     {glm::vec3(0.0f),
@@ -80,7 +83,9 @@ void Key_Callback(
         case GLFW_KEY_S:
             //* Move Backward
             if (controllingModel) {
-                modelPosition.z += MOVE_SPEED;
+                activeModel->setPosition(glm::vec3(activeModel->getPosition().x,
+                                                   activeModel->getPosition().y,
+                                                   activeModel->getPosition().z + MOVE_SPEED));
             } else {
                 activeLight->update(true,
                                     {glm::vec3(0.0f),
@@ -93,7 +98,9 @@ void Key_Callback(
         case GLFW_KEY_D:
             //* Move Right
             if (controllingModel) {
-                modelPosition.x += MOVE_SPEED;
+                activeModel->setPosition(glm::vec3(activeModel->getPosition().x + MOVE_SPEED,
+                                                   activeModel->getPosition().y,
+                                                   activeModel->getPosition().z));
             } else {
                 activeLight->update(true,
                                     {glm::vec3(0.0f),
@@ -106,7 +113,9 @@ void Key_Callback(
         case GLFW_KEY_LEFT_SHIFT:
             //* Move Up
             if (controllingModel) {
-                modelPosition.y += MOVE_SPEED;
+                activeModel->setPosition(glm::vec3(activeModel->getPosition().x,
+                                                   activeModel->getPosition().y + MOVE_SPEED,
+                                                   activeModel->getPosition().z));
             } else {
                 activeLight->update(true,
                                     {glm::vec3(0.0f),
@@ -119,7 +128,9 @@ void Key_Callback(
         case GLFW_KEY_LEFT_CONTROL:
             //* Move Down
             if (controllingModel) {
-                modelPosition.y -= MOVE_SPEED;
+                activeModel->setPosition(glm::vec3(activeModel->getPosition().x,
+                                                   activeModel->getPosition().y - MOVE_SPEED,
+                                                   activeModel->getPosition().z));
             } else {
                 activeLight->update(true,
                                     {glm::vec3(0.0f),
@@ -134,7 +145,10 @@ void Key_Callback(
         case GLFW_KEY_Q:
             //* Spin CW
             if (controllingModel) {
-                modelOrientation.y -= ROTATE_SPEED;
+                activeModel->setOrientation(
+                    glm::vec3(activeModel->getOrientation().x,
+                              activeModel->getOrientation().y + ROTATE_SPEED,
+                              activeModel->getOrientation().z));
             } else {
                 activeLight->update(
                     true,
@@ -144,10 +158,12 @@ void Key_Callback(
             break;
 
         case GLFW_KEY_E:
-
             //* Spin CCW
             if (controllingModel) {
-                modelOrientation.y += ROTATE_SPEED;
+                activeModel->setOrientation(
+                    glm::vec3(activeModel->getOrientation().x,
+                              activeModel->getOrientation().y - ROTATE_SPEED,
+                              activeModel->getOrientation().z));
             } else {
                 activeLight->update(
                     true,
@@ -305,22 +321,25 @@ int main(void) {
     //* - - - - - END OF SHADER CREATION - - - - -
 
     //* - - - - - MODEL LOADING - - - - -
-    vector<Model3D*> models = {new Model3D("Submarine",
-                                           "Assets/MeepballSub.obj",
-                                           0,
-                                           "Assets/Submarine.png",
-                                           glm::vec3(0.5f, -1.f, 0.f),
-                                           glm::mat4(1.0f),
-                                           glm::vec3(1.0f),
-                                           glm::vec3(0.0f)),
-                               new Model3D("Submarine",
-                                           "Assets/MeepballSub.obj",
-                                           0,
-                                           "Assets/Submarine.png",
-                                           glm::vec3(-0.5f, -1.f, 0.f),
-                                           glm::mat4(1.0f),
-                                           glm::vec3(1.0f),
-                                           glm::vec3(0.0f))};
+    vector<Model3D*> models = {
+       new Model3D("Submarine",
+                   "Assets/MeepballSub.obj",
+                   0,
+                   "Assets/Submarine.png",
+                   glm::vec3(0.5f, -1.f, 0.f),
+                   glm::mat4(1.0f),
+                   glm::vec3(1.0f),
+                   glm::vec3(0.0f)),
+       //    new Model3D("Submarine",
+       //                "Assets/MeepballSub.obj",
+       //                0,
+       //                "Assets/Submarine.png",
+       //                glm::vec3(-0.5f, -1.f, 0.f),
+       //                glm::mat4(1.0f),
+       //                glm::vec3(1.0f),
+       //                glm::vec3(0.0f))
+    };
+    activeModel = models.front();
 
     for (Model3D* model : models) model->loadModel();
     //* - - - - - END OF MODEL LOADING - - - - -
@@ -559,13 +578,15 @@ int main(void) {
         //* - - - - - END OF LIGHTING SHADER SWITCH - - - - -
 
         //* - - - - - CAMERA UPDATE - - - - -
-        unsigned int cameraProjectionAddress = glGetUniformLocation(lightingShaderProgram, "projection");
+        unsigned int cameraProjectionAddress =
+            glGetUniformLocation(lightingShaderProgram, "projection");
         glUniformMatrix4fv(cameraProjectionAddress, 1, GL_FALSE, glm::value_ptr(cameraProjection));
 
         unsigned int cameraViewAddress = glGetUniformLocation(lightingShaderProgram, "view");
         glUniformMatrix4fv(cameraViewAddress, 1, GL_FALSE, glm::value_ptr(cameraView));
 
-        GLuint cameraPositionAddress = glGetUniformLocation(lightingShaderProgram, "cameraPosition");
+        GLuint cameraPositionAddress =
+            glGetUniformLocation(lightingShaderProgram, "cameraPosition");
         glUniform3fv(cameraPositionAddress, 1, glm::value_ptr(cameraPosition));
         //* - - - - - END OF CAMERA UPDATE - - - - -
 
@@ -575,7 +596,8 @@ int main(void) {
             //* - - - - - MODEL LIGHTING - - - - -
             glBindVertexArray(*model->getVAO());
 
-            GLuint modelTextureAddress = glGetUniformLocation(lightingShaderProgram, "modelTexture");
+            GLuint modelTextureAddress =
+                glGetUniformLocation(lightingShaderProgram, "modelTexture");
             glBindTexture(GL_TEXTURE_2D, model->getTexture().getTexture());
 
             GLuint directionalLightCountAddress =
@@ -669,7 +691,8 @@ int main(void) {
                 }
             }
 
-            GLuint spotLightCountAddress = glGetUniformLocation(lightingShaderProgram, "spotLightCount");
+            GLuint spotLightCountAddress =
+                glGetUniformLocation(lightingShaderProgram, "spotLightCount");
             glUniform1i(spotLightCountAddress, GLint(spotLights.size()));
 
             for (int i = 0; i < spotLights.size(); i++) {
@@ -686,8 +709,9 @@ int main(void) {
                     glUniform3fv(
                         lightDirectionAddress, 1, glm::value_ptr(spotLights[i]->direction));
 
-                    address                = "spotLights[" + to_string(i) + "].coneSize";
-                    GLuint coneSizeAddress = glGetUniformLocation(lightingShaderProgram, address.c_str());
+                    address = "spotLights[" + to_string(i) + "].coneSize";
+                    GLuint coneSizeAddress =
+                        glGetUniformLocation(lightingShaderProgram, address.c_str());
                     glUniform1f(coneSizeAddress, spotLights[i]->coneSize);
 
                     address = "spotLights[" + to_string(i) + "].color";
@@ -726,7 +750,8 @@ int main(void) {
 
             //* - - - - - MODEL TRANSFORM - - - - -
             model->update();
-            unsigned int modelTransformAddress = glGetUniformLocation(lightingShaderProgram, "transform");
+            unsigned int modelTransformAddress =
+                glGetUniformLocation(lightingShaderProgram, "transform");
             glUniformMatrix4fv(
                 modelTransformAddress, 1, GL_FALSE, glm::value_ptr(model->getPositionMatrix()));
             //* - - - - - END OF MODEL TRANSFORM - - - - -
@@ -744,11 +769,10 @@ int main(void) {
     //* - - - - - END OF RUNTIME - - - - -
 
     //* - - - - - CLEAN UP - - - - -
-    for(Model3D* model : models) {
+    for (Model3D* model : models) {
         glDeleteVertexArrays(1, model->getVAO());
         glDeleteBuffers(1, model->getVBO());
     }
-    // glDeleteBuffers(1, &modelVBO);
     glDeleteShader(lightingVertexShader);
     glDeleteShader(lightingFragmentShader);
     glDeleteShader(skyboxVertexShader);
