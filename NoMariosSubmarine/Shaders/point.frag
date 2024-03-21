@@ -2,6 +2,7 @@
 
 out vec4 FragmentColor;
 uniform sampler2D modelTexture;
+uniform sampler2D modelNormalTexture;
 in vec3 normalCoordinate;
 in vec2 textureCoordinate;
 in vec3 fragmentPosition;

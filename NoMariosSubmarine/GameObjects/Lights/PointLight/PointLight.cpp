@@ -29,14 +29,14 @@ PointLight::PointLight(std::string name,
 void PointLight::update(bool enabled,
                         std::vector<glm::vec3> vectorUpdates,
                         std::vector<float> floatUpdates) {
-    this->color            = vectorUpdates[0];
-    this->ambientStrength  = floatUpdates[0];
-    this->ambientColor     = vectorUpdates[1];
-    this->specularStrength = floatUpdates[1];
-    this->specularPhong    = floatUpdates[2];
-    this->brightness       = floatUpdates[3];
+    this->color            += vectorUpdates[0];
+    this->ambientStrength  += floatUpdates[0];
+    this->ambientColor     += vectorUpdates[1];
+    this->specularStrength += floatUpdates[1];
+    this->specularPhong    += floatUpdates[2];
+    this->brightness       += floatUpdates[3];
 
-    this->position         = vectorUpdates[2];
+    this->position         += vectorUpdates[2];
 }
 
 //* ╔═══════════════════╗

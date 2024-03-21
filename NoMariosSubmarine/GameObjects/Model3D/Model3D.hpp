@@ -1,4 +1,7 @@
 #pragma once
+
+#include "../../tiny_obj_loader.h"
+#include "../MyTexture/MyTexture.hpp"
 #include "stdafx.h"
 
 namespace models {
@@ -8,25 +11,36 @@ class Model3D {
     //* ╚════════════╝
 protected:
     std::string name;
+    MyTexture texture;
+    std::string texturePath;
+    std::string modelPath;
     glm::vec3 position;
     glm::mat4 positionMatrix;
+    glm::vec3 scale;
     glm::vec3 orientation;
-    glm::mat4 projection;
+    std::vector<GLfloat> fullVertexData;
+    GLuint VAO;
+
     //* ╔═══════════════════════════════╗
     //* ║ Constructors & Deconstructors ║
     //* ╚═══════════════════════════════╝
 public:
-    Model3D(std::string name, glm::mat4 projection);
+    Model3D(std::string name,
+            std::string modelPath,
+            int textureCount,
+            std::string texturePath,
+            glm::vec3 position,
+            glm::mat4 positionMatrix,
+            glm::vec3 scale,
+            glm::vec3 orientation);
+
     //* ╔═════════╗
     //* ║ Methods ║
     //* ╚═════════╝
 public:
-private:
+    void loadModel();
     void update();
-    // TODO 1: Given that we keep track of the position using a glm::vec3, updatePositionMatrix should update PositionMatrix based on the
-    // td    values in Position. [HINT: it's one line]
     void updatePositionMatrix();
-    virtual void updateProjection() = 0;
 
     //* ╔═══════════════════╗
     //* ║ Getters & Setters ║
@@ -34,13 +48,18 @@ private:
 public:
     std::string getName();
     void setName(std::string name);
+    MyTexture getTexture();
     glm::vec3 getPosition();
     void setPosition(glm::vec3 position);
     glm::mat4 getPositionMatrix();
     void setPositionMatrix(glm::mat4 positionMatrix);
+    glm::vec3 getScale();
+    void setScale(glm::vec3 scale);
     glm::vec3 getOrientation();
     void setOrientation(glm::vec3 orientation);
     glm::mat4 getProjection();
     void setProjection(glm::mat4 projection);
+    std::vector<GLfloat> getFullVertexData();
+    GLuint getVAO();
 };
 }  // namespace models

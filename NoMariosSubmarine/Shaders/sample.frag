@@ -2,10 +2,13 @@
 #extension GL_EXT_debug_printf : enable
 
 out vec4 FragmentColor;
-uniform sampler2D modelTexture;
+
 in vec3 normalCoordinate;
 in vec2 textureCoordinate;
 in vec3 fragmentPosition;
+
+uniform sampler2D modelTexture;
+uniform sampler2D modelNormalTexture;
 
 uniform vec3 lightPosition;
 uniform vec3 lightColor;
@@ -131,9 +134,18 @@ vec4 spotLighting(int i, vec3 normal, vec3 viewDirection) {
 }
 
 void main() {
+    //* - - - - - BLENDING - - - - -
+    vec4 pixelColor = texture(modelTexture, textureCoordinate);
+
+    if(pixelColor.a < 0.0001) {
+        discard;
+    }
+    //* - - - - - END OF BLENDING - - - - -
+    
     vec3 normal = normalize(normalCoordinate);
     vec3 viewDirection = normalize(cameraPosition - fragmentPosition);
 
+    //* - - - - - LIGHTING - - - - -
     for(int i = 0; i < directionalLightCount; i++) {
         FragmentColor += directionalLighting(i, normal, viewDirection);
     }
@@ -143,6 +155,8 @@ void main() {
     for(int i = 0; i < spotLightCount; i++) {
         FragmentColor += spotLighting(i, normal, viewDirection);
     }
+    //* - - - - - END OF LIGHTING - - - - -
+   
 
     //                       - Use Lighting -                     - Use Texture -
     FragmentColor = FragmentColor * texture(modelTexture, textureCoordinate);

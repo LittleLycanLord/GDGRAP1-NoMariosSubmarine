@@ -1,42 +1,48 @@
 #pragma once
+#include "glad/glad.h"
 #include "stdafx.h"
 
+#include "../../stb_image.h"
+
 namespace models {
-class Light {
+class MyTexture {
     //* ╔════════════╗
     //* ║ Attributes ║
     //* ╚════════════╝
-public:
-    std::string name;
-    bool enabled;
-    glm::vec3 color;
-    float ambientStrength;
-    glm::vec3 ambientColor;
-    float specularStrength;
-    float specularPhong;
-    float brightness;
+protected:
+    GLuint texture;
+    std::string texturePath;
+    int textureCount;
+    int width;
+    int height;
+    int colorChannels;
+
     //* ╔═══════════════════════════════╗
     //* ║ Constructors & Deconstructors ║
     //* ╚═══════════════════════════════╝
 public:
-    Light(std::string name,
-          bool enabled,
-          glm::vec3 color,
-          float ambientStrength,
-          glm::vec3 ambientColor,
-          float specularStrength,
-          float specularPhong,
-          float brightness);
+    MyTexture(std::string texturePath, int textureCount);
+
     //* ╔═════════╗
     //* ║ Methods ║
     //* ╚═════════╝
 public:
-private:
-    virtual void update(bool enabled, std::vector<glm::vec3> vectorUpdates, std::vector<float> floatUpdates) = 0;
+    void loadTexture();
 
     //* ╔═══════════════════╗
     //* ║ Getters & Setters ║
     //* ╚═══════════════════╝
 public:
+    GLuint getTexture();
+    void setTexture(GLuint texture);
+    std::string getTexturePath();
+    void setTexturePath(std::string texturePath);
+    int getWidth();
+    void setWidth(int width);
+    int getHeight();
+    void setHeight(int height);
+    int getColorChannels();
+    void setColorChannels(int colorChannels);
+    int getTextureCount();
 };
 }  // namespace models

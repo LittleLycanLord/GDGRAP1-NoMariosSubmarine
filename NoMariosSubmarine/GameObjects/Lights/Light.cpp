@@ -11,7 +11,8 @@ Light::Light(std::string name,
              float ambientStrength,
              glm::vec3 ambientColor,
              float specularStrength,
-             float specularPhong, float brightness)
+             float specularPhong,
+             float brightness)
     : name(name),
       enabled(enabled),
       color(color),
@@ -27,4 +28,5 @@ Light::Light(std::string name,
 //* ╔═══════════════════╗
 //* ║ Getters & Setters ║
 //* ╚═══════════════════╝
+bool Light::getEnabled() { return this->enabled; }
 // namespace models
