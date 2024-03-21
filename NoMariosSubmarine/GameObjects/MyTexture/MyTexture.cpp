@@ -9,7 +9,6 @@ using namespace std;
 MyTexture::MyTexture(std::string texturePath, int textureCount)
     : texturePath(texturePath),
       textureCount(textureCount) {
-    if (DEBUG_MODE) std::cout << this->texturePath + " initialized!" << std::endl;
 }
 
 //* ╔═════════╗
@@ -89,6 +88,7 @@ void MyTexture::loadTexture() {
         glGenerateMipmap(GL_TEXTURE_2D);
         stbi_image_free(texBytes);
     }
+    if (DEBUG_MODE) std::cout << this->texturePath + " loaded!" << std::endl;
 }
 
 //* ╔═══════════════════╗

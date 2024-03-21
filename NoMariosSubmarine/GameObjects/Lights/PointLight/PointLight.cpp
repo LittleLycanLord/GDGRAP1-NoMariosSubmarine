@@ -42,4 +42,6 @@ void PointLight::update(bool enabled,
 //* ╔═══════════════════╗
 //* ║ Getters & Setters ║
 //* ╚═══════════════════╝
+std::string PointLight::getName() { return this->name; }
+glm::vec3 PointLight::getPosition() { return this->position; }
 // namespace models

@@ -23,9 +23,7 @@ Model3D::Model3D(std::string name,
       scale(scale),
       orientation(orientation),
       VAO(0),
-      VBO(0) {
-    if (DEBUG_MODE) std::cout << this->name + " initialized!" << std::endl;
-}
+      VBO(0) {}
 
 //* ╔═════════╗
 //* ║ Methods ║
@@ -76,6 +74,8 @@ void Model3D::loadModel() {
     glEnableVertexAttribArray(2);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
+
+    if (DEBUG_MODE) std::cout << this->name + " loaded!" << std::endl;
 }
 void Model3D::update() { this->updatePositionMatrix(); }
 void Model3D::updatePositionMatrix() {
