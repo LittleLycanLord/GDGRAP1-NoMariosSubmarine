@@ -16,7 +16,7 @@ PerspectiveCamera::PerspectiveCamera(std::string name, float fieldOfView)
      fieldOfView(fieldOfView){
 
     setPosition(glm::vec3(glm::vec3(0.0f,0.0f,50.0f)));
-    setProjection(glm::perspective(glm::radians(this->fieldOfView), WINDOW_WIDTH / WINDOW_HEIGHT, 0.1f, 1000.f));
+    setProjection(glm::perspective(glm::radians(this->fieldOfView), float(WINDOW_WIDTH / WINDOW_HEIGHT), 0.1f, 1000.f));
 
     if (DEBUG_MODE) std::cout << this->name + " initialized!" << std::endl;
 
@@ -27,7 +27,7 @@ PerspectiveCamera::PerspectiveCamera(std::string name, float fieldOfView)
 //* ║ Methods ║
 //* ╚═════════╝
 void PerspectiveCamera::updateProjection() {
-    this->projection =  glm::perspective(glm::radians(this->fieldOfView), WINDOW_WIDTH / WINDOW_HEIGHT, 0.1f, 1000.f);    
+    this->projection =  glm::perspective(glm::radians(this->fieldOfView), float(WINDOW_WIDTH / WINDOW_HEIGHT), 0.1f, 1000.f);    
 }
 
 //* ╔═══════════════════╗
