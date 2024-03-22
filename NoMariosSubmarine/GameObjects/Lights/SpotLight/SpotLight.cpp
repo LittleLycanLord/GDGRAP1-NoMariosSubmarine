@@ -34,9 +34,9 @@ SpotLight::SpotLight(std::string name,
 void SpotLight::update(bool enabled,
                        std::vector<glm::vec3> vectorUpdates,
                        std::vector<float> floatUpdates) {
-    this->color += vectorUpdates[0];
+    this->color = vectorUpdates[0];
     this->ambientStrength += floatUpdates[0];
-    this->ambientColor += vectorUpdates[1];
+    this->ambientColor = vectorUpdates[1];
     this->specularStrength += floatUpdates[1];
     this->specularPhong += floatUpdates[2];
     this->brightness += floatUpdates[3];
@@ -44,11 +44,12 @@ void SpotLight::update(bool enabled,
     this->position += vectorUpdates[2];
     this->direction += vectorUpdates[3];
     this->coneSize += floatUpdates[4];
+
+    if (this->brightness < 0.0f) this->brightness = 0.0f;  //? Brightness clamp
 }
 
 //* ╔═══════════════════╗
 //* ║ Getters & Setters ║
 //* ╚═══════════════════╝
-std::string SpotLight::getName() { return this->name; }
 glm::vec3 SpotLight::getPosition() { return this->position; }
 // namespace models

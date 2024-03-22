@@ -28,5 +28,9 @@ Light::Light(std::string name,
 //* ╔═══════════════════╗
 //* ║ Getters & Setters ║
 //* ╚═══════════════════╝
+std::string Light::getName() { return this->name; }
 bool Light::getEnabled() { return this->enabled; }
+glm::vec3 Light::getColor() { return this->color; }
+glm::vec3 Light::getAmbientColor() { return this->ambientColor; }
+float Light::getBrightness() { return this->brightness; }
 // namespace models
