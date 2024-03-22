@@ -36,7 +36,6 @@ public:
     //* ║ Getters & Setters ║
     //* ╚═══════════════════╝
 public:
-    std::string getName();
     glm::vec3 getPosition();
 };
 }  // namespace models

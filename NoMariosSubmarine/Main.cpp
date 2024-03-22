@@ -18,16 +18,29 @@
 using namespace std;
 using namespace models;
 
-//* - - - - - SPEEDS - - - - -
-const float ROTATE_SPEED      = 90.f; //? In Degrees
-const float MOVE_SPEED        = 0.1f;
-const float BRIGHTNESS_CHANGE = 0.5f;
-//* - - - - - END OF SPEEDS - - - - -
+//* - - - - - LITERALS - - - - -
+const float ROTATE_SPEED                    = 10.f;  //? In Degrees
+const float MOVE_SPEED                      = 0.1f;
+const float ORBIT_SPEED                     = MOVE_SPEED * 0.005f;
+const float BRIGHTNESS_CHANGE               = 0.5f;
+const float ORBIT_RADIUS                    = 1.5f;
+//* - - - - - END OF LITERALS - - - - -
 
 //* - - - - - PROGRAMMING CHALLENGE 2 VARIABLES - - - - -
-bool controllingModel         = false;
-Light* activeLight            = NULL;
-Model3D* activeModel          = NULL;
+bool controllingModel                       = true;
+Light* activeLight                          = NULL;
+vector<DirectionalLight*> directionalLights = {};
+vector<PointLight*> pointLights             = {};
+vector<SpotLight*> spotLights               = {};
+vector<Light*> lights                       = {};
+Model3D* activeModel                        = NULL;
+vector<Model3D*> model3ds                   = {};
+
+int lightOrbitDirection                     = 0;
+//? 0: Forward
+//? 1: Left
+//? 2: Backward
+//? 3: Right
 //* - - - - - END OF PROGRAMMING CHALLENGE 2 VARIABLES - - - - -
 
 //? Reserved GLFW Function for Keyboard Inputs
@@ -36,17 +49,33 @@ void Key_Callback(
     int key,             //? What key was pressed?
     int scancode,        //? What exact physical key was pressed?
     int action,  //? What is being done to the key? [GLFW_PRESS, GLFW_REPEAT or GLFW_RELEASE]
-    int mods) {  //? Which modifer keys are held? [alt, control, shift, Super, num lock, and caps
+    int mods) {  //? Which modifer keys are held? [alt, control, shift, Super, num lock, and
+                 // caps
                  // lock]
 
     switch (key) {
         //* Switch between Light and Model
         case GLFW_KEY_SPACE:
             if (action == GLFW_PRESS) {
-                if (controllingModel)
+                if (controllingModel) {
+                    activeLight      = pointLights[0];
                     controllingModel = false;
-                else
+                    activeLight->update(true,
+                                        {glm::vec3(1.0f, 0.75f, 0.0f),
+                                         glm::vec3(1.0f, 0.75f, 0.0f),
+                                         glm::vec3(0.0f, 0.0f, 0.0f),
+                                         glm::vec3(0.0f)},
+                                        {0.0f, 0.0f, 0.0f, 0.0f, 0.0f});
+                } else {
+                    activeLight      = pointLights[0];
                     controllingModel = true;
+                    activeLight->update(true,
+                                        {glm::vec3(1.0f),
+                                         glm::vec3(1.0f),
+                                         glm::vec3(0.0f, 0.0f, 0.0f),
+                                         glm::vec3(0.0f)},
+                                        {0.0f, 0.0f, 0.0f, 0.0f, 0.0f});
+                }
             }
             break;
         //* Translation
@@ -63,9 +92,9 @@ void Key_Callback(
 
             } else {
                 activeLight->update(true,
-                                    {glm::vec3(0.0f),
-                                     glm::vec3(0.0f),
-                                     glm::vec3(0.0f, 0.0f, MOVE_SPEED),
+                                    {activeLight->getColor(),
+                                     activeLight->getAmbientColor(),
+                                     glm::vec3(0.0f, 0.0f, -MOVE_SPEED),
                                      glm::vec3(0.0f)},
                                     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f});
             }
@@ -82,8 +111,8 @@ void Key_Callback(
                               activeModel->getOrientation().z));
             } else {
                 activeLight->update(true,
-                                    {glm::vec3(0.0f),
-                                     glm::vec3(0.0f),
+                                    {activeLight->getColor(),
+                                     activeLight->getAmbientColor(),
                                      glm::vec3(-MOVE_SPEED, 0.0f, 0.0f),
                                      glm::vec3(0.0f)},
                                     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f});
@@ -101,9 +130,9 @@ void Key_Callback(
                               activeModel->getOrientation().z - ROTATE_SPEED));
             } else {
                 activeLight->update(true,
-                                    {glm::vec3(0.0f),
-                                     glm::vec3(0.0f),
-                                     glm::vec3(0.0f, 0.0f, -MOVE_SPEED),
+                                    {activeLight->getColor(),
+                                     activeLight->getAmbientColor(),
+                                     glm::vec3(0.0f, 0.0f, MOVE_SPEED),
                                      glm::vec3(0.0f)},
                                     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f});
             }
@@ -120,8 +149,8 @@ void Key_Callback(
                               activeModel->getOrientation().z));
             } else {
                 activeLight->update(true,
-                                    {glm::vec3(0.0f),
-                                     glm::vec3(0.0f),
+                                    {activeLight->getColor(),
+                                     activeLight->getAmbientColor(),
                                      glm::vec3(MOVE_SPEED, 0.0f, 0.0f),
                                      glm::vec3(0.0f)},
                                     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f});
@@ -135,8 +164,8 @@ void Key_Callback(
                                                    activeModel->getPosition().z));
             } else {
                 activeLight->update(true,
-                                    {glm::vec3(0.0f),
-                                     glm::vec3(0.0f),
+                                    {activeLight->getColor(),
+                                     activeLight->getAmbientColor(),
                                      glm::vec3(0.0f, MOVE_SPEED, 0.0f),
                                      glm::vec3(0.0f)},
                                     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f});
@@ -150,8 +179,8 @@ void Key_Callback(
                                                    activeModel->getPosition().z));
             } else {
                 activeLight->update(true,
-                                    {glm::vec3(0.0f),
-                                     glm::vec3(0.0f),
+                                    {activeLight->getColor(),
+                                     activeLight->getAmbientColor(),
                                      glm::vec3(0.0f, -MOVE_SPEED, 0.0f),
                                      glm::vec3(0.0f)},
                                     {0.0f, 0.0f, 0.0f, 0.0f, 0.0f});
@@ -167,10 +196,12 @@ void Key_Callback(
                               activeModel->getOrientation().y + ROTATE_SPEED,
                               activeModel->getOrientation().z));
             } else {
-                activeLight->update(
-                    true,
-                    {glm::vec3(0.0f), glm::vec3(0.0f), glm::vec3(0.0f), glm::vec3(0.0f)},
-                    {0.0f, 0.0f, 0.0f, 0.0f, 0.0f});
+                activeLight->update(true,
+                                    {activeLight->getColor(),
+                                     activeLight->getAmbientColor(),
+                                     glm::vec3(0.0f),
+                                     glm::vec3(0.0f)},
+                                    {0.0f, 0.0f, 0.0f, 0.0f, 0.0f});
             }
             break;
 
@@ -182,53 +213,56 @@ void Key_Callback(
                               activeModel->getOrientation().y - ROTATE_SPEED,
                               activeModel->getOrientation().z));
             } else {
-                activeLight->update(
-                    true,
-                    {glm::vec3(0.0f), glm::vec3(0.0f), glm::vec3(0.0f), glm::vec3(0.0f)},
-                    {0.0f, 0.0f, 0.0f, 0.0f, 0.0f});
+                activeLight->update(true,
+                                    {activeLight->getColor(),
+                                     activeLight->getAmbientColor(),
+                                     glm::vec3(0.0f),
+                                     glm::vec3(0.0f)},
+                                    {0.0f, 0.0f, 0.0f, 0.0f, 0.0f});
             }
             break;
 
         case GLFW_KEY_UP:
-
-            //* Look Up
             if (controllingModel) {
                 glm::vec3(activeModel->getOrientation().x - ROTATE_SPEED,
                           activeModel->getOrientation().y,
                           activeModel->getOrientation().z);
             } else {
-                activeLight->update(
-                    true,
-                    {glm::vec3(0.0f), glm::vec3(0.0f), glm::vec3(0.0f), glm::vec3(0.0f)},
-                    {0.0f, 0.0f, 0.0f, BRIGHTNESS_CHANGE, 0.0f});
+                activeLight->update(true,
+                                    {activeLight->getColor(),
+                                     activeLight->getAmbientColor(),
+                                     glm::vec3(0.0f),
+                                     glm::vec3(0.0f)},
+                                    {0.0f, 0.0f, 0.0f, BRIGHTNESS_CHANGE, 0.0f});
             }
             break;
         case GLFW_KEY_DOWN:
-
-            //* Look Down
             if (controllingModel) {
                 glm::vec3(activeModel->getOrientation().x + ROTATE_SPEED,
                           activeModel->getOrientation().y,
                           activeModel->getOrientation().z);
             } else {
-                activeLight->update(
-                    true,
-                    {glm::vec3(0.0f), glm::vec3(0.0f), glm::vec3(0.0f), glm::vec3(0.0f)},
-                    {0.0f, 0.0f, 0.0f, -BRIGHTNESS_CHANGE, 0.0f});
+                activeLight->update(true,
+                                    {activeLight->getColor(),
+                                     activeLight->getAmbientColor(),
+                                     glm::vec3(0.0f),
+                                     glm::vec3(0.0f)},
+                                    {0.0f, 0.0f, 0.0f, -BRIGHTNESS_CHANGE, 0.0f});
             }
             break;
         case GLFW_KEY_LEFT:
-
             //* Look Left
             if (controllingModel) {
                 glm::vec3(activeModel->getOrientation().x,
                           activeModel->getOrientation().y - ROTATE_SPEED,
                           activeModel->getOrientation().z);
             } else {
-                activeLight->update(
-                    true,
-                    {glm::vec3(0.0f), glm::vec3(0.0f), glm::vec3(0.0f), glm::vec3(0.0f)},
-                    {0.0f, 0.0f, 0.0f, -BRIGHTNESS_CHANGE, 0.0f});
+                directionalLights[0]->update(true,
+                                             {directionalLights[0]->getColor(),
+                                              directionalLights[0]->getAmbientColor(),
+                                              glm::vec3(0.0f),
+                                              glm::vec3(0.0f)},
+                                             {0.0f, 0.0f, 0.0f, -BRIGHTNESS_CHANGE, 0.0f});
             }
             break;
         case GLFW_KEY_RIGHT:
@@ -239,10 +273,12 @@ void Key_Callback(
                           activeModel->getOrientation().y + ROTATE_SPEED,
                           activeModel->getOrientation().z);
             } else {
-                activeLight->update(
-                    true,
-                    {glm::vec3(0.0f), glm::vec3(0.0f), glm::vec3(0.0f), glm::vec3(0.0f)},
-                    {0.0f, 0.0f, 0.0f, BRIGHTNESS_CHANGE, 0.0f});
+                directionalLights[0]->update(true,
+                                             {directionalLights[0]->getColor(),
+                                              directionalLights[0]->getAmbientColor(),
+                                              glm::vec3(0.0f),
+                                              glm::vec3(0.0f)},
+                                             {0.0f, 0.0f, 0.0f, BRIGHTNESS_CHANGE, 0.0f});
             }
             break;
             // case GLFW_KEY_RIGHT_SHIFT:
@@ -443,7 +479,7 @@ int main(void) {
     // PerspectiveCamera* perspectiveCamera = new PerspectiveCamera("Main", 90.0f);
     // OrthographicCamera
     // Camera* mainCamera                   = perspectiveCamera;
-    glm::vec3 cameraPosition       = glm::vec3(0.f, 0.f, 3.f);
+    glm::vec3 cameraPosition       = glm::vec3(0.f, 0.f, 5.f);
     glm::vec3 cameraViewCenter     = glm::vec3(0.f, 0.f, -1.f);
     glm::mat4 cameraPositionMatrix = glm::translate(glm::mat4(1.0f), cameraPosition * -1.0f);
     glm::mat4 cameraProjection =
@@ -486,33 +522,23 @@ int main(void) {
     float specularStrength      = 0.5f;
     float specularPhong         = 16;
 
-    vector<Light*> lights       = {};
-    vector<DirectionalLight*> directionalLights = {
-       new DirectionalLight("Red Directional Light",
-                            false,
-                            glm::vec3(0.f, -1.f, 0.f),  //? Direction
-                            glm::vec3(1.f, 0.f, 0.f),   //? Color
+    directionalLights           = {
+       new DirectionalLight("White Directional Light",
+                            true,
+                            glm::vec3(4.f, -5.f, 0.f),  //? Direction
+                            glm::vec3(1.f, 1.f, 1.f),   //? Color
                             0.1f,                       //? Ambient Strength
-                            glm::vec3(1.f, 0.f, 0.f),   //? Ambient Color
+                            glm::vec3(1.f, 1.f, 1.f),   //? Ambient Color
                             0.5f,                       //?Specular Strength
                             16,                         //?Specular Phong
                             2.0f),                      //? Brightness
-       new DirectionalLight("Blue Directional Light",
-                            false,
-                            glm::vec3(0.f, 1.f, 0.f),  //? Direction
-                            glm::vec3(0.f, 0.f, 1.f),  //? Color
-                            0.1f,                      //? Ambient Strength
-                            glm::vec3(0.f, 0.f, 1.f),  //? Ambient Color
-                            0.5f,                      //?Specular Strength
-                            16,                        //?Specular Phong
-                            2.0f)                      //? Brightness
     };
     for (DirectionalLight* directionalLight : directionalLights) lights.push_back(directionalLight);
 
-    vector<PointLight*> pointLights = {
+    pointLights = {
        new PointLight("White Point Light",
                       true,
-                      glm::vec3(0.f, 1.f, 0.f),  //? Position
+                      glm::vec3(0.f, 0.f, 0.f),  //? Position
                       glm::vec3(1.f, 1.f, 1.f),  //? Color
                       0.1f,                      //? Ambient Strength
                       glm::vec3(1.f, 1.f, 1.f),  //? Ambient Color
@@ -522,7 +548,7 @@ int main(void) {
     };
     for (PointLight* pointLight : pointLights) lights.push_back(pointLight);
 
-    vector<SpotLight*> spotLights = {
+    spotLights = {
        new SpotLight("White Spotlight",
                      false,
                      glm::vec3(0.f, 5.f, 0.f),   //? Position
@@ -543,50 +569,48 @@ int main(void) {
     //* - - - - - END OF LIGHTS - - - - -
 
     //* - - - - - MODEL LOADING - - - - -
-    vector<Model3D*> models = {
-       new Model3D("Submarine",               //? Model Name
-                   "Assets/MeepballSub.obj",  //? Model Path
-                   0,                         //? Texture Count
-                   "Assets/Submarine.png",    //? Texture Path
-                   glm::vec3(0.f, 0.f, 0.f),  //? Position
-                   glm::mat4(1.0f),           //? Position Matrix
-                   glm::vec3(1.0f),           //? Scale
-                   glm::vec3(0.0f)),          //? Orientation
-                                              //    new Model3D("Submarine",
-                                              //                "Assets/MeepballSub.obj",
-                                              //                0,
-                                              //                "Assets/Submarine.png",
-                                              //                glm::vec3(-0.5f, -1.f, 0.f),
-                                              //                glm::mat4(1.0f),
-                                              //                glm::vec3(1.0f),
-                                              //                glm::vec3(0.0f))
-    };
-    activeModel = models.front();
+    model3ds    = {new Model3D("Submarine",                      //? Model Name
+                            "Assets/MeepballSub.obj",         //? Model Path
+                            0,                                //? Texture Count
+                            "Assets/Submarine.png",           //? Texture Path
+                            glm::vec3(1.f, 0.f, 0.f),         //? Position
+                            glm::mat4(1.0f),                  //? Position Matrix
+                            glm::vec3(1.0f),                  //? Scale
+                            glm::vec3(0.0f, 180.0f, 0.0f)),   //? Orientation
+                   new Model3D("Submarine",                      //? Model Name
+                            "Assets/MeepballSub.obj",         //? Model Path
+                            0,                                //? Texture Count
+                            "Assets/Submarine.png",           //? Texture Path
+                            glm::vec3(-1.f, 0.f, 0.f),         //? Position
+                            glm::mat4(1.0f),                  //? Position Matrix
+                            glm::vec3(1.0f),                  //? Scale
+                            glm::vec3(0.0f, 180.0f, 0.0f))};  //? Orientation
+    activeModel = model3ds.front();
 
     for (PointLight* pointLight : pointLights) {
-        models.push_back(new Model3D("Light Ball",                //? Model Name
-                                     "Assets/LowPolySphere.obj",  //? Model Path
-                                     0,                           //? Texture Count
-                                     "Assets/LowPolySphere.png",  //? Texture Path
-                                     pointLight->getPosition(),   //? Position
-                                     glm::mat4(1.0f),             //? Position Matrix
-                                     glm::vec3(1.0f),             //? Scale
-                                     glm::vec3(0.0f)));           //? Orientation);
+        model3ds.push_back(new Model3D("Light Ball",                //? Model Name
+                                       "Assets/LowPolySphere.obj",  //? Model Path
+                                       0,                           //? Texture Count
+                                       "Assets/LowPolySphere.png",  //? Texture Path
+                                       pointLight->getPosition(),   //? Position
+                                       glm::mat4(1.0f),             //? Position Matrix
+                                       glm::vec3(0.25f),            //? Scale
+                                       glm::vec3(0.0f)));           //? Orientation);
         if (DEBUG_MODE) std::cout << "Point Light Ball created!" << std::endl;
     }
     for (SpotLight* spotLight : spotLights) {
-        models.push_back(new Model3D("Light Ball",                //? Model Name
-                                     "Assets/LowPolySphere.obj",  //? Model Path
-                                     0,                           //? Texture Count
-                                     "Assets/LowPolySphere.png",  //? Texture Path
-                                     spotLight->getPosition(),    //? Position
-                                     glm::mat4(1.0f),             //? Position Matrix
-                                     glm::vec3(1.0f),             //? Scale
-                                     glm::vec3(0.0f)));           //? Orientation);
+        model3ds.push_back(new Model3D("Light Ball",                //? Model Name
+                                       "Assets/LowPolySphere.obj",  //? Model Path
+                                       0,                           //? Texture Count
+                                       "Assets/LowPolySphere.png",  //? Texture Path
+                                       spotLight->getPosition(),    //? Position
+                                       glm::mat4(1.0f),             //? Position Matrix
+                                       glm::vec3(0.5f),             //? Scale
+                                       glm::vec3(0.0f)));           //? Orientation);
         if (DEBUG_MODE) std::cout << "Spot Light Ball created!" << std::endl;
     }
 
-    for (Model3D* model : models) model->loadModel();
+    for (Model3D* model : model3ds) model->loadModel();
     //* - - - - - END OF MODEL LOADING - - - - -
 
     //* - - - - - RUNTIME - - - - -
@@ -594,7 +618,44 @@ int main(void) {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         //* - - - - - UPDATE - - - - -
-        // modelOrientation.y += ROTATE_SPEED;
+        switch (lightOrbitDirection) {
+            case 0:  //? Forward
+                pointLights[0]->update(true,
+                                       {activeLight->getColor(),
+                                        activeLight->getAmbientColor(),
+                                        glm::vec3(0.0f, 0.0f, -ORBIT_SPEED),
+                                        glm::vec3(0.0f)},
+                                       {0.0f, 0.0f, 0.0f, 0.0f, 0.0f});
+                if (pointLights[0]->getPosition().z < -ORBIT_RADIUS) lightOrbitDirection++;
+                break;
+            case 1:  //? Left
+                pointLights[0]->update(true,
+                                       {activeLight->getColor(),
+                                        activeLight->getAmbientColor(),
+                                        glm::vec3(-ORBIT_SPEED, 0.0f, 0.0f),
+                                        glm::vec3(0.0f)},
+                                       {0.0f, 0.0f, 0.0f, 0.0f, 0.0f});
+                if (pointLights[0]->getPosition().x < -ORBIT_RADIUS) lightOrbitDirection++;
+                break;
+            case 2:  //? Backward
+                pointLights[0]->update(true,
+                                       {activeLight->getColor(),
+                                        activeLight->getAmbientColor(),
+                                        glm::vec3(0.0f, 0.0f, ORBIT_SPEED),
+                                        glm::vec3(0.0f)},
+                                       {0.0f, 0.0f, 0.0f, 0.0f, 0.0f});
+                if (pointLights[0]->getPosition().z > ORBIT_RADIUS) lightOrbitDirection++;
+                break;
+            case 3:  //? Right
+                pointLights[0]->update(true,
+                                       {activeLight->getColor(),
+                                        activeLight->getAmbientColor(),
+                                        glm::vec3(ORBIT_SPEED, 0.0f, 0.0f),
+                                        glm::vec3(0.0f)},
+                                       {0.0f, 0.0f, 0.0f, 0.0f, 0.0f});
+                if (pointLights[0]->getPosition().x > ORBIT_RADIUS) lightOrbitDirection = 0;
+                break;
+        }
         //* - - - - - END OF UPDATE - - - - -
 
         //* - - - - - SKYBOX SHADER SWITCH - - - - -
@@ -641,7 +702,7 @@ int main(void) {
         //* - - - - - LIGHT MODEL UPDATE - - - - -
         int i = 0;
         int j = 0;
-        for (Model3D* model : models) {
+        for (Model3D* model : model3ds) {
             if (model->getName() == "Light Ball") {
                 if (i < pointLights.size()) {
                     model->setEnabled(pointLights[i]->getEnabled());
@@ -660,7 +721,7 @@ int main(void) {
 
         //* - - - - - MODEL UPDATE - - - - -
 
-        for (Model3D* model : models) {
+        for (Model3D* model : model3ds) {
             //* - - - - - MODEL LIGHTING - - - - -
             glBindVertexArray(*model->getVAO());
 
@@ -838,7 +899,7 @@ int main(void) {
     //* - - - - - END OF RUNTIME - - - - -
 
     //* - - - - - CLEAN UP - - - - -
-    for (Model3D* model : models) {
+    for (Model3D* model : model3ds) {
         glDeleteVertexArrays(1, model->getVAO());
         glDeleteBuffers(1, model->getVBO());
     }

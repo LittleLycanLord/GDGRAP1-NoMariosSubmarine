@@ -15,7 +15,7 @@ public:
     float specularStrength;
     float specularPhong;
     float brightness;
-    
+
     //* ╔═══════════════════════════════╗
     //* ║ Constructors & Deconstructors ║
     //* ╚═══════════════════════════════╝
@@ -33,12 +33,18 @@ public:
     //* ║ Methods ║
     //* ╚═════════╝
 public:
-    virtual void update(bool enabled, std::vector<glm::vec3> vectorUpdates, std::vector<float> floatUpdates) = 0;
+    virtual void update(bool enabled,
+                        std::vector<glm::vec3> vectorUpdates,
+                        std::vector<float> floatUpdates) = 0;
 
     //* ╔═══════════════════╗
     //* ║ Getters & Setters ║
     //* ╚═══════════════════╝
 public:
+    std::string getName();
     bool getEnabled();
+    glm::vec3 getColor();
+    glm::vec3 getAmbientColor();
+    float getBrightness();
 };
 }  // namespace models
