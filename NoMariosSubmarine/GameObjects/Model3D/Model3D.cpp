@@ -15,6 +15,7 @@ Model3D::Model3D(std::string name,
                  glm::vec3 scale,
                  glm::vec3 orientation)
     : name(name),
+      enabled(true),
       texture(texturePath, textureCount),
       texturePath(texturePath),
       modelPath(modelPath),
@@ -94,6 +95,8 @@ void Model3D::updatePositionMatrix() {
 //* ╚═══════════════════╝
 std::string Model3D::getName() { return this->name; }
 void Model3D::setName(std::string name) { this->name = name; }
+bool Model3D::getEnabled() { return this->enabled; }
+void Model3D::setEnabled(bool enabled) { this->enabled = enabled; }
 MyTexture Model3D::getTexture() { return this->texture; }
 glm::vec3 Model3D::getPosition() { return this->position; }
 void Model3D::setPosition(glm::vec3 position) { this->position = position; }

@@ -11,6 +11,7 @@ class Model3D {
     //* ╚════════════╝
 protected:
     std::string name;
+    bool enabled;
     MyTexture texture;
     std::string texturePath;
     std::string modelPath;
@@ -49,6 +50,8 @@ public:
 public:
     std::string getName();
     void setName(std::string name);
+    bool getEnabled();
+    void setEnabled(bool enabled);
     MyTexture getTexture();
     glm::vec3 getPosition();
     void setPosition(glm::vec3 position);

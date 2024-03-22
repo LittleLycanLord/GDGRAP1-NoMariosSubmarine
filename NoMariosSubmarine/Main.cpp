@@ -19,7 +19,7 @@ using namespace std;
 using namespace models;
 
 //* - - - - - SPEEDS - - - - -
-const float ROTATE_SPEED      = 0.05f;
+const float ROTATE_SPEED      = 90.f; //? In Degrees
 const float MOVE_SPEED        = 0.1f;
 const float BRIGHTNESS_CHANGE = 0.5f;
 //* - - - - - END OF SPEEDS - - - - -
@@ -47,16 +47,20 @@ void Key_Callback(
                     controllingModel = false;
                 else
                     controllingModel = true;
-                break;
             }
-
+            break;
         //* Translation
         case GLFW_KEY_W:
             //* Move Forward
             if (controllingModel) {
-                activeModel->setPosition(glm::vec3(activeModel->getPosition().x,
-                                                   activeModel->getPosition().y,
-                                                   activeModel->getPosition().z - MOVE_SPEED));
+                // activeModel->setPosition(glm::vec3(activeModel->getPosition().x,
+                //                                    activeModel->getPosition().y,
+                //                                    activeModel->getPosition().z - MOVE_SPEED));
+                activeModel->setOrientation(
+                    glm::vec3(activeModel->getOrientation().x,
+                              activeModel->getOrientation().y,
+                              activeModel->getOrientation().z + ROTATE_SPEED));
+
             } else {
                 activeLight->update(true,
                                     {glm::vec3(0.0f),
@@ -69,9 +73,13 @@ void Key_Callback(
         case GLFW_KEY_A:
             //* Move Left
             if (controllingModel) {
-                activeModel->setPosition(glm::vec3(activeModel->getPosition().x - MOVE_SPEED,
-                                                   activeModel->getPosition().y,
-                                                   activeModel->getPosition().z));
+                // activeModel->setPosition(glm::vec3(activeModel->getPosition().x - MOVE_SPEED,
+                //                                    activeModel->getPosition().y,
+                //                                    activeModel->getPosition().z));
+                activeModel->setOrientation(
+                    glm::vec3(activeModel->getOrientation().x + ROTATE_SPEED,
+                              activeModel->getOrientation().y,
+                              activeModel->getOrientation().z));
             } else {
                 activeLight->update(true,
                                     {glm::vec3(0.0f),
@@ -84,9 +92,13 @@ void Key_Callback(
         case GLFW_KEY_S:
             //* Move Backward
             if (controllingModel) {
-                activeModel->setPosition(glm::vec3(activeModel->getPosition().x,
-                                                   activeModel->getPosition().y,
-                                                   activeModel->getPosition().z + MOVE_SPEED));
+                // activeModel->setPosition(glm::vec3(activeModel->getPosition().x,
+                //                                    activeModel->getPosition().y,
+                //                                    activeModel->getPosition().z + MOVE_SPEED));
+                activeModel->setOrientation(
+                    glm::vec3(activeModel->getOrientation().x,
+                              activeModel->getOrientation().y,
+                              activeModel->getOrientation().z - ROTATE_SPEED));
             } else {
                 activeLight->update(true,
                                     {glm::vec3(0.0f),
@@ -99,9 +111,13 @@ void Key_Callback(
         case GLFW_KEY_D:
             //* Move Right
             if (controllingModel) {
-                activeModel->setPosition(glm::vec3(activeModel->getPosition().x + MOVE_SPEED,
-                                                   activeModel->getPosition().y,
-                                                   activeModel->getPosition().z));
+                // activeModel->setPosition(glm::vec3(activeModel->getPosition().x + MOVE_SPEED,
+                //                                    activeModel->getPosition().y,
+                //                                    activeModel->getPosition().z));
+                activeModel->setOrientation(
+                    glm::vec3(activeModel->getOrientation().x - ROTATE_SPEED,
+                              activeModel->getOrientation().y,
+                              activeModel->getOrientation().z));
             } else {
                 activeLight->update(true,
                                     {glm::vec3(0.0f),
@@ -494,21 +510,21 @@ int main(void) {
     for (DirectionalLight* directionalLight : directionalLights) lights.push_back(directionalLight);
 
     vector<PointLight*> pointLights = {
-       new PointLight("Green Point Light",
-                      false,
-                      glm::vec3(0.f, -1.f, 0.f),  //? Position
-                      glm::vec3(0.f, 1.f, 0.f),   //? Color
-                      0.1f,                       //? Ambient Strength
-                      glm::vec3(0.f, 1.f, 0.f),   //? Ambient Color
-                      0.5f,                       //?Specular Strength
-                      16,                         //?Specular Phong
-                      2.0f),                      //? Brightness
+       new PointLight("White Point Light",
+                      true,
+                      glm::vec3(0.f, 1.f, 0.f),  //? Position
+                      glm::vec3(1.f, 1.f, 1.f),  //? Color
+                      0.1f,                      //? Ambient Strength
+                      glm::vec3(1.f, 1.f, 1.f),  //? Ambient Color
+                      0.5f,                      //?Specular Strength
+                      16,                        //?Specular Phong
+                      2.0f),                     //? Brightness
     };
     for (PointLight* pointLight : pointLights) lights.push_back(pointLight);
 
     vector<SpotLight*> spotLights = {
        new SpotLight("White Spotlight",
-                     true,
+                     false,
                      glm::vec3(0.f, 5.f, 0.f),   //? Position
                      glm::vec3(0.f, -1.f, 0.f),  //? Direction
                      12.5f,                      //? Cone Size
@@ -528,22 +544,22 @@ int main(void) {
 
     //* - - - - - MODEL LOADING - - - - -
     vector<Model3D*> models = {
-       new Model3D("Submarine",                 //? Model Name
-                   "Assets/MeepballSub.obj",    //? Model Path
-                   0,                           //? Texture Count
-                   "Assets/Submarine.png",      //? Texture Path
-                   glm::vec3(0.5f, -1.f, 0.f),  //? Position
-                   glm::mat4(1.0f),             //? Position Matrix
-                   glm::vec3(1.0f),             //? Scale
-                   glm::vec3(0.0f)),            //? Orientation
-                                                //    new Model3D("Submarine",
-                                                //                "Assets/MeepballSub.obj",
-                                                //                0,
-                                                //                "Assets/Submarine.png",
-                                                //                glm::vec3(-0.5f, -1.f, 0.f),
-                                                //                glm::mat4(1.0f),
-                                                //                glm::vec3(1.0f),
-                                                //                glm::vec3(0.0f))
+       new Model3D("Submarine",               //? Model Name
+                   "Assets/MeepballSub.obj",  //? Model Path
+                   0,                         //? Texture Count
+                   "Assets/Submarine.png",    //? Texture Path
+                   glm::vec3(0.f, 0.f, 0.f),  //? Position
+                   glm::mat4(1.0f),           //? Position Matrix
+                   glm::vec3(1.0f),           //? Scale
+                   glm::vec3(0.0f)),          //? Orientation
+                                              //    new Model3D("Submarine",
+                                              //                "Assets/MeepballSub.obj",
+                                              //                0,
+                                              //                "Assets/Submarine.png",
+                                              //                glm::vec3(-0.5f, -1.f, 0.f),
+                                              //                glm::mat4(1.0f),
+                                              //                glm::vec3(1.0f),
+                                              //                glm::vec3(0.0f))
     };
     activeModel = models.front();
 
@@ -628,10 +644,12 @@ int main(void) {
         for (Model3D* model : models) {
             if (model->getName() == "Light Ball") {
                 if (i < pointLights.size()) {
+                    model->setEnabled(pointLights[i]->getEnabled());
                     model->setPosition(pointLights[i]->getPosition());
                     i++;
                 } else {
                     if (j < spotLights.size()) {
+                        model->setEnabled(spotLights[j]->getEnabled());
                         model->setPosition(spotLights[j]->getPosition());
                         j++;
                     }
@@ -808,7 +826,8 @@ int main(void) {
 
             //* - - - - - MODEL RENDERING - - - - -
             glUniform1i(modelTextureAddress, model->getTexture().getTextureCount());
-            glDrawArrays(GL_TRIANGLES, 0, GLint(model->getFullVertexData().size() / 8));
+            if (model->getEnabled())
+                glDrawArrays(GL_TRIANGLES, 0, GLint(model->getFullVertexData().size() / 8));
             //* - - - - - END OF MODEL RENDERING - - - - -
         }
 
