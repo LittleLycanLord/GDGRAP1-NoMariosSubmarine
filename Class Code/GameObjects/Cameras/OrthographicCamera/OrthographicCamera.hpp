@@ -1,22 +1,23 @@
 #pragma once
+#include "../Camera.hpp"
+#include "stdafx.h"
 
 namespace models {
-class OrthographicCamera {
+class OrthographicCamera : public Camera {
     //* ╔════════════╗
     //* ║ Attributes ║
     //* ╚════════════╝
 private:
-
     //* ╔═══════════════════════════════╗
     //* ║ Constructors & Deconstructors ║
     //* ╚═══════════════════════════════╝
 public:
-
+    OrthographicCamera(std::string name);
     //* ╔═════════╗
     //* ║ Methods ║
     //* ╚═════════╝
 public:
-    void updateCameraProjection();
+    void updateProjection();
 
     //* ╔═══════════════════╗
     //* ║ Getters & Setters ║

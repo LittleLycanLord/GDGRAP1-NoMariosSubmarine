@@ -9,7 +9,7 @@ class PerspectiveCamera : public Camera {
     //* ╚════════════╝
 private:
     float fieldOfView;
-
+    
     //* ╔═══════════════════════════════╗
     //* ║ Constructors & Deconstructors ║
     //* ╚═══════════════════════════════╝

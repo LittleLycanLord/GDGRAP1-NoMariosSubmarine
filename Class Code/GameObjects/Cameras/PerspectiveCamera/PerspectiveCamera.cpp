@@ -12,7 +12,12 @@ using namespace models;
 // td          - Our Near and Far clipping planes are 0.01f and 1000.0f respectively
 
 PerspectiveCamera::PerspectiveCamera(std::string name, float fieldOfView)
-    : Camera(name + " Perspective Camera", glm::perspective(1.0f, 1.0f, 1.0f, 1.0f)) {
+    : Camera(name + " Perspective Camera", glm::perspective(1.0f, 1.0f, 1.0f, 1.0f)),
+     fieldOfView(fieldOfView){
+
+    setPosition(glm::vec3(glm::vec3(0.0f,0.0f,50.0f)));
+    setProjection(glm::perspective(glm::radians(this->fieldOfView), WINDOW_WIDTH / WINDOW_HEIGHT, 0.1f, 1000.f));
+
     if (DEBUG_MODE) std::cout << this->name + " initialized!" << std::endl;
 
     std::cout << "stinky" << std::endl;
@@ -21,7 +26,9 @@ PerspectiveCamera::PerspectiveCamera(std::string name, float fieldOfView)
 //* ╔═════════╗
 //* ║ Methods ║
 //* ╚═════════╝
-void PerspectiveCamera::updateProjection() {}
+void PerspectiveCamera::updateProjection() {
+    this->projection =  glm::perspective(glm::radians(this->fieldOfView), WINDOW_WIDTH / WINDOW_HEIGHT, 0.1f, 1000.f);    
+}
 
 //* ╔═══════════════════╗
 //* ║ Getters & Setters ║

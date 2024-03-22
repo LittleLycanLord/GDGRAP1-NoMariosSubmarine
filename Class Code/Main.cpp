@@ -22,7 +22,7 @@ using namespace std;
 using namespace models;
 
 //* - - - - - SPEEDS - - - - -
-const float ROTATE_SPEED             = 0.05f;
+const float ROTATE_SPEED             = 10.0f;
 const float MOVE_SPEED               = 1.0f;
 //* - - - - - END OF SPEEDS - - - - -
 
@@ -32,6 +32,37 @@ glm::vec3 modelScale                 = glm::vec3(0.05f);
 glm::vec3 modelOrientation           = glm::vec3(0.0f);
 glm::mat4 modelTransform             = glm::mat4(1.0f);
 //* - - - - - END OF MODEL TRANSFORM - - - - -
+
+ //* - - - - - CAMERA PART 1 - - - - -
+//PerspectiveCamera* PerspectiveView = new PerspectiveCamera("mainCamera", 90.0f);
+OrthographicCamera* PerspectiveView = new OrthographicCamera("Ortho Cam");
+
+double xpos, ypos;
+float x_mod = 0, y_mod = 0;
+
+static void cursor_position_callback(GLFWwindow* window, double xpos, double ypos)
+{
+    //if (x_mod >= 20) {}
+    x_mod = xpos/300.0f;
+    y_mod = ypos/300.0f;
+
+    std::cout << "X MOD IS: " << x_mod << std::endl;
+    std::cout << "y MOD IS: " << y_mod << std::endl;
+}
+
+void cursor_enter_callback(GLFWwindow* window, int entered)
+{
+    if (entered)
+    {
+        std::cout << "mouse enters window" << std::endl;
+        glfwSetCursorPosCallback(window, cursor_position_callback);
+    }
+    else
+    {
+        std::cout << "mouse leaves window" << std::endl;
+    }
+}
+//* - - - - - END OF CAMERA PART 1 - - - - -
 
 //? Reserved GLFW Function for Keyboard Inputs
 void Key_Callback(GLFWwindow* window,  //? Which window did we get the event?
@@ -46,21 +77,25 @@ void Key_Callback(GLFWwindow* window,  //? Which window did we get the event?
             // if (GLFW_REPEAT)
             //* Move Forward
             modelPosition.z += MOVE_SPEED;
+            std::cout << "W ";
             break;
         case GLFW_KEY_A:
             // if (GLFW_REPEAT)
             //* Move Left
             modelPosition.x -= MOVE_SPEED;
+            std::cout << "A ";
             break;
         case GLFW_KEY_S:
             // if (GLFW_REPEAT)
             //* Move Backward
             modelPosition.z -= MOVE_SPEED;
+            std::cout << "S ";
             break;
         case GLFW_KEY_D:
             // if (GLFW_REPEAT)
             //* Move Right
             modelPosition.x += MOVE_SPEED;
+            std::cout << "D ";
             break;
         case GLFW_KEY_LEFT_SHIFT:
             // if (GLFW_REPEAT)
@@ -104,6 +139,18 @@ void Key_Callback(GLFWwindow* window,  //? Which window did we get the event?
             //* Roll Counter Clockwise
             modelOrientation.z += ROTATE_SPEED;
             break;
+
+         case GLFW_KEY_1:
+            //PerspectiveCamera* PerspectiveView = new PerspectiveCamera("Perspective Camera", 90.0f);
+            //Camera* mainCamera = PerspectiveView;
+             std::cout << "Key 1 is pressed. Perspective Camera is on" << std::endl;
+             break;
+
+         case GLFW_KEY_2:
+             //OrthographicCamera* OrthoView = new OrthographicCamera("Orthographic Camera");
+             //Camera* mainCamera = OrthoView;
+             std::cout << "Key 2 is pressed. Orthographic Camera is on" << std::endl;
+             break;
     }
 }
 
@@ -112,7 +159,7 @@ int main(void) {
     GLFWwindow* window;
     if (!glfwInit()) return -1;
 
-    window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "Quiz 2 - Conrad Ubay", NULL, NULL);
+    window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "PC02 - UBAY,CONRAD/VINGNO,JAN", NULL, NULL);
     if (!window) {
         glfwTerminate();
         return -1;
@@ -120,6 +167,9 @@ int main(void) {
 
     glfwMakeContextCurrent(window);
     gladLoadGL();
+
+    glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
+
     glEnable(GL_DEPTH_TEST);
     glfwSetKeyCallback(window, Key_Callback);
     //* - - - - - END OF WINDOW CREATION - - - - -
@@ -142,7 +192,7 @@ int main(void) {
             case 3:
                 glTexImage2D(GL_TEXTURE_2D,
                              0,  //? <- Texture Index
-                             GL_RGB,
+                            GL_RGB,
                              textureWidth,
                              textureHeight,
                              0,
@@ -352,42 +402,7 @@ int main(void) {
         stbi_set_flip_vertically_on_load(true);
     }
     //* - - - - - END OF SKYBOX TEXTURING - - - - -
-
-    //* - - - - - CAMERA PART 1 - - - - -
-    PerspectiveCamera* perspectiveCamera = new PerspectiveCamera("Main", 90.0f);
-    //OrthographicCamera
-    Camera* mainCamera             = perspectiveCamera;
-    glm::vec3 cameraPosition       = glm::vec3(0.f, 0.f, 5.f);
-    glm::mat4 cameraPositionMatrix = glm::translate(glm::mat4(1.0f), cameraPosition * -1.0f);
-    glm::mat4 cameraProjection     = glm::perspective(glm::radians(90.f), WINDOW_WIDTH / WINDOW_HEIGHT, 0.1f, 100.f);
-    //* - - - - - END OF CAMERA PART 1 - - - - -
-
-    //* - - - - - WORLD FACTS - - - - -
-    glm::vec3 WorldUp              = glm::vec3(0.f, 1.0f, 0.f);
-    glm::vec3 Center               = glm::vec3(0.f, 0.f, 0.f);
-    glm::vec3 ForwardVector        = glm::vec3(Center - cameraPosition);
-    ForwardVector                  = glm::normalize(ForwardVector);
-    glm::vec3 RightVector          = glm::normalize(glm::cross(ForwardVector, WorldUp));
-    glm::vec3 UpVector             = glm::normalize(glm::cross(RightVector, ForwardVector));
-    //* - - - - - END OF WORLD FACTS - - - - -
-
-    //* - - - - - CAMERA PART 2 - - - - -
-    glm::mat4 cameraOrientation    = glm::mat4(1.f);
-
-    cameraOrientation[0][0]        = RightVector.x;
-    cameraOrientation[1][0]        = RightVector.y;
-    cameraOrientation[2][0]        = RightVector.z;
-
-    cameraOrientation[0][1]        = UpVector.x;
-    cameraOrientation[1][1]        = UpVector.y;
-    cameraOrientation[2][1]        = UpVector.z;
-
-    cameraOrientation[0][2]        = -ForwardVector.x;
-    cameraOrientation[1][2]        = -ForwardVector.y;
-    cameraOrientation[2][2]        = -ForwardVector.z;
-
-    glm::mat4 cameraView           = cameraOrientation * cameraPositionMatrix;
-    //* - - - - - END OF CAMERA PART 2 - - - - -
+  
 
     //* - - - - - LIGHTS - - - - -
     glm::vec3 lightPosition        = glm::vec3(-1.f, -1.f, 0.f);
@@ -400,9 +415,43 @@ int main(void) {
 
     //* - - - - - RUNTIME - - - - -
     while (!glfwWindowShouldClose(window)) {
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        modelOrientation.y += ROTATE_SPEED;
+
+        glfwGetCursorPos(window, &xpos, &ypos);
+        glfwSetCursorEnterCallback(window, cursor_enter_callback);
+
+        Camera* mainCamera = PerspectiveView;
+
+        glm::vec3 position = (glm::vec3(x_mod, y_mod, 50.0f));
+        PerspectiveView->setPosition(position);
+       
+        //* - - - - - WORLD FACTS - - - - -
+        glm::vec3 WorldUp = glm::vec3(0.f, 1.0f, 0.f);
+        glm::vec3 Center = glm::vec3(0.f, 0.f, 0.f);
+        glm::vec3 ForwardVector = glm::vec3(Center - PerspectiveView->getPosition());
+        ForwardVector = glm::normalize(ForwardVector);
+        glm::vec3 RightVector = glm::normalize(glm::cross(ForwardVector, WorldUp));
+        glm::vec3 UpVector = glm::normalize(glm::cross(RightVector, ForwardVector));
+        //* - - - - - END OF WORLD FACTS - - - - -
+ 
+        //PerspectiveView->initializeOrientation(RightVector,UpVector,ForwardVector);
+
+        PerspectiveView->getOrientation()[0][0] = RightVector.x;
+        PerspectiveView->getOrientation()[1][0] = RightVector.y;
+        PerspectiveView->getOrientation()[2][0] = RightVector.z;
+
+        PerspectiveView->getOrientation()[0][1] = UpVector.x;
+        PerspectiveView->getOrientation()[1][1] = UpVector.y;
+        PerspectiveView->getOrientation()[2][1] = UpVector.z;
+
+        PerspectiveView->getOrientation()[0][2] = -ForwardVector.x;
+        PerspectiveView->getOrientation()[1][2] = -ForwardVector.y;
+        PerspectiveView->getOrientation()[2][2] = -ForwardVector.z;
+
+        PerspectiveView->setView(PerspectiveView->getOrientation() * PerspectiveView->getPositionMatrix());
+        //glm::mat4 view = PerspectiveView->getOrientation() * PerspectiveView->getPositionMatrix();
+
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         //* - - - - - SKYBOX RENDERING - - - - -
         glDepthMask(GL_FALSE);
@@ -410,13 +459,13 @@ int main(void) {
         glUseProgram(skyboxProgram);
 
         glm::mat4 skyboxView           = glm::mat4(1.f);
-        skyboxView                     = glm::mat4(glm::mat3(cameraView));
+        skyboxView                     = glm::mat4(glm::mat3(PerspectiveView->getView()));
 
         unsigned int skyboxViewAddress = glGetUniformLocation(skyboxProgram, "view");
         glUniformMatrix4fv(skyboxViewAddress, 1, GL_FALSE, glm::value_ptr(skyboxView));
 
         unsigned skyboxProjectionAddress = glGetUniformLocation(skyboxProgram, "projection");
-        glUniformMatrix4fv(skyboxProjectionAddress, 1, GL_FALSE, glm::value_ptr(cameraProjection));
+        glUniformMatrix4fv(skyboxProjectionAddress, 1, GL_FALSE, glm::value_ptr(PerspectiveView->getProjection()));
 
         glBindVertexArray(skyboxVAO);
         glActiveTexture(GL_TEXTURE0);
@@ -437,13 +486,13 @@ int main(void) {
         modelTransform                       = glm::rotate(modelTransform, glm::radians(modelOrientation.z), rotateAroundTheZAxis);
 
         unsigned int cameraProjectionAddress = glGetUniformLocation(lightingProgram, "projection");
-        glUniformMatrix4fv(cameraProjectionAddress, 1, GL_FALSE, glm::value_ptr(cameraProjection));
+        glUniformMatrix4fv(cameraProjectionAddress, 1, GL_FALSE, glm::value_ptr(PerspectiveView->getProjection()));
 
         unsigned int modelTransformAddress = glGetUniformLocation(lightingProgram, "transform");
         glUniformMatrix4fv(modelTransformAddress, 1, GL_FALSE, glm::value_ptr(modelTransform));
 
         unsigned int cameraViewAddress = glGetUniformLocation(lightingProgram, "view");
-        glUniformMatrix4fv(cameraViewAddress, 1, GL_FALSE, glm::value_ptr(cameraView));
+        glUniformMatrix4fv(cameraViewAddress, 1, GL_FALSE, glm::value_ptr(PerspectiveView->getView()));
         //* - - - - - END OF MODEL TRANSFORM - - - - -
 
         //* - - - - - MODEL LIGHTING - - - - -
@@ -465,7 +514,7 @@ int main(void) {
         glUniform3fv(ambientColorAddress, 1, glm::value_ptr(ambientColor));
 
         GLuint cameraPositionAddress = glGetUniformLocation(lightingProgram, "cameraPos");
-        glUniform3fv(cameraPositionAddress, 1, glm::value_ptr(cameraPosition));
+        glUniform3fv(cameraPositionAddress, 1, glm::value_ptr(PerspectiveView->getPosition()));
 
         GLuint specularStrengthAddress = glGetUniformLocation(lightingProgram, "specStr");
         glUniform1f(specularStrengthAddress, specularStrength);
