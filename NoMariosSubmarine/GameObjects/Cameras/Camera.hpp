@@ -10,8 +10,10 @@ protected:
     std::string name;
     glm::vec3 position;
     glm::mat4 positionMatrix;
-    glm::vec3 orientation;
+    glm::mat4 orientation;
+    glm::mat4 view;
     glm::mat4 projection;
+
     //* ╔═══════════════════════════════╗
     //* ║ Constructors & Deconstructors ║
     //* ╚═══════════════════════════════╝
@@ -27,6 +29,8 @@ private:
     // td    values in Position. [HINT: it's one line]
     void updatePositionMatrix();
     virtual void updateProjection() = 0;
+public:
+    void initializeOrientation(glm::vec3 RightVector, glm::vec3 UpVector, glm::vec3 ForwardVector);
 
     //* ╔═══════════════════╗
     //* ║ Getters & Setters ║
@@ -34,13 +38,19 @@ private:
 public:
     std::string getName();
     void setName(std::string name);
+
     glm::vec3 getPosition();
     void setPosition(glm::vec3 position);
+
     glm::mat4 getPositionMatrix();
     void setPositionMatrix(glm::mat4 positionMatrix);
-    glm::vec3 getOrientation();
-    void setOrientation(glm::vec3 orientation);
+
+    glm::mat4 getOrientation();
+
     glm::mat4 getProjection();
     void setProjection(glm::mat4 projection);
+
+    glm::mat4 getView();
+    void setView(glm::mat4 view);
 };
-}  // namespace models
+} 
