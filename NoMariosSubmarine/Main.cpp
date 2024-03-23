@@ -24,6 +24,10 @@ const float MOVE_SPEED                      = 0.1f;
 const float ORBIT_SPEED                     = MOVE_SPEED * 0.005f;
 const float BRIGHTNESS_CHANGE               = 0.5f;
 const float ORBIT_RADIUS                    = 1.5f;
+
+double xpos, ypos;
+float x_mod = 0.0f, y_mod = 0.0f;
+Camera* currentCamera;
 //* - - - - - END OF LITERALS - - - - -
 
 //* - - - - - PROGRAMMING CHALLENGE 2 VARIABLES - - - - -
@@ -42,6 +46,48 @@ int lightOrbitDirection                     = 0;
 //? 2: Backward
 //? 3: Right
 //* - - - - - END OF PROGRAMMING CHALLENGE 2 VARIABLES - - - - -
+
+PerspectiveCamera* perspectiveCamera = new PerspectiveCamera("Main", 90.0f);
+OrthographicCamera* orthographicCamera = new OrthographicCamera("Ortho Cam");
+
+static void cursor_position_callback(GLFWwindow* window, double xpos, double ypos)
+{
+    //if (x_mod >= 20) {}
+
+   //if ((xpos / 300.0f) * -1)
+   
+    //x_mod = (xpos / 300.0f) * -1;
+
+    //if (ypos/150.0f < 1.0f) y_mod + 4.0f;
+    //else y_mod = (ypos / 150.0f) - 4.0f;
+
+    x_mod = (xpos/200.0f) * -1;
+    if (x_mod >= 0.09f) {
+        x_mod += 0.1f;
+        if (x_mod < 2.0) return;
+    }
+     
+    y_mod = (ypos/120.0f) * -1;
+
+    std::cout << "X MOD IS: " << x_mod << std::endl;
+    std::cout << "y MOD IS: " << y_mod << std::endl;
+}
+
+void cursor_enter_callback(GLFWwindow* window, int entered)
+{
+    if (entered)
+    {
+        std::cout << "mouse enters window" << std::endl;
+        glfwGetCursorPos(window, &xpos, &ypos);
+        glfwSetCursorPosCallback(window, cursor_position_callback);
+    }
+    else
+    {
+        std::cout << "mouse leaves window" << std::endl;
+    }
+}
+
+
 
 //? Reserved GLFW Function for Keyboard Inputs
 void Key_Callback(
@@ -305,6 +351,16 @@ void Key_Callback(
             //             {0.0f, 0.0f, 0.0f, 0.0f, 0.0f});
             //     }
             //     break;
+
+        case GLFW_KEY_1:
+            currentCamera = perspectiveCamera;
+            std::cout << "Perspective Camera has been enabled!" << std::endl;
+            break;
+
+        case GLFW_KEY_2:
+            currentCamera = orthographicCamera;
+            std::cout << "Orthographic Camera has been enabled!" << std::endl;
+            break;
     }
 }
 
@@ -476,15 +532,16 @@ int main(void) {
     //* - - - - - END OF SKYBOX TEXTURING - - - - -
 
     //* - - - - - CAMERA PART 1 - - - - -
-    // PerspectiveCamera* perspectiveCamera = new PerspectiveCamera("Main", 90.0f);
-    // OrthographicCamera
-    // Camera* mainCamera                   = perspectiveCamera;
-    glm::vec3 cameraPosition       = glm::vec3(0.f, 0.f, 5.f);
+     PerspectiveCamera* perspectiveCamera = new PerspectiveCamera("Main", 90.0f);
+     currentCamera = perspectiveCamera;
+  
+    glm::vec3 cameraPosition       = glm::vec3(0.0f, 0.0f, 5.f);
     glm::vec3 cameraViewCenter     = glm::vec3(0.f, 0.f, -1.f);
     glm::mat4 cameraPositionMatrix = glm::translate(glm::mat4(1.0f), cameraPosition * -1.0f);
     glm::mat4 cameraProjection =
-        glm::perspective(glm::radians(60.f), float(WINDOW_WIDTH / WINDOW_HEIGHT), 0.1f, 100.f);
+        glm::perspective(glm::radians(60.f), float(WINDOW_WIDTH / WINDOW_HEIGHT), 0.1f, 1000.f);
     //* - - - - - END OF CAMERA PART 1 - - - - -
+
 
     //* - - - - - WORLD FACTS - - - - -
     glm::vec3 WorldUp           = glm::vec3(0.f, 1.0f, 0.f);
@@ -496,22 +553,22 @@ int main(void) {
     //* - - - - - END OF WORLD FACTS - - - - -
 
     //* - - - - - CAMERA PART 2 - - - - -
-    glm::mat4 cameraOrientation = glm::mat4(1.f);
+    //glm::mat4 cameraOrientation = glm::mat4(1.f);
 
-    cameraOrientation[0][0]     = RightVector.x;
-    cameraOrientation[1][0]     = RightVector.y;
-    cameraOrientation[2][0]     = RightVector.z;
+    currentCamera->getOrientation()[0][0]     = RightVector.x;
+    currentCamera->getOrientation()[1][0]     = RightVector.y;
+    currentCamera->getOrientation()[2][0]     = RightVector.z;
 
-    cameraOrientation[0][1]     = UpVector.x;
-    cameraOrientation[1][1]     = UpVector.y;
-    cameraOrientation[2][1]     = UpVector.z;
+    currentCamera->getOrientation()[0][1]     = UpVector.x;
+    currentCamera->getOrientation()[1][1]     = UpVector.y;
+    currentCamera->getOrientation()[2][1]     = UpVector.z;
 
-    cameraOrientation[0][2]     = -ForwardVector.x;
-    cameraOrientation[1][2]     = -ForwardVector.y;
-    cameraOrientation[2][2]     = -ForwardVector.z;
+    currentCamera->getOrientation()[0][2]     = -ForwardVector.x;
+    currentCamera->getOrientation()[1][2]     = -ForwardVector.y;
+    currentCamera->getOrientation()[2][2]     = -ForwardVector.z;
 
     // glm::mat4 cameraView        = cameraOrientation * cameraPositionMatrix;
-    glm::mat4 cameraView        = glm::lookAt(cameraPosition, cameraViewCenter, WorldUp);
+
     //* - - - - - END OF CAMERA PART 2 - - - - -
 
     //* - - - - - LIGHTS - - - - -
@@ -617,6 +674,17 @@ int main(void) {
     while (!glfwWindowShouldClose(window)) {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+
+
+        glfwSetCursorEnterCallback(window, cursor_enter_callback);
+        
+        cameraPosition = glm::vec3(x_mod,y_mod,5.0f);
+        if (currentCamera == orthographicCamera) cameraPosition = currentCamera->getPosition();
+
+        currentCamera->setPosition(cameraPosition);
+
+        glm::mat4 cameraView = glm::lookAt(cameraPosition, cameraViewCenter, WorldUp);
+
         //* - - - - - UPDATE - - - - -
         switch (lightOrbitDirection) {
             case 0:  //? Forward
@@ -672,7 +740,7 @@ int main(void) {
         glUniformMatrix4fv(skyboxViewAddress, 1, GL_FALSE, glm::value_ptr(skyboxView));
 
         unsigned skyboxProjectionAddress = glGetUniformLocation(skyboxShaderProgram, "projection");
-        glUniformMatrix4fv(skyboxProjectionAddress, 1, GL_FALSE, glm::value_ptr(cameraProjection));
+        glUniformMatrix4fv(skyboxProjectionAddress, 1, GL_FALSE, glm::value_ptr(currentCamera->getProjection()));
 
         glBindVertexArray(skyboxVAO);
         glActiveTexture(GL_TEXTURE0);
@@ -689,14 +757,14 @@ int main(void) {
         //* - - - - - CAMERA UPDATE - - - - -
         unsigned int cameraProjectionAddress =
             glGetUniformLocation(lightingShaderProgram, "projection");
-        glUniformMatrix4fv(cameraProjectionAddress, 1, GL_FALSE, glm::value_ptr(cameraProjection));
+        glUniformMatrix4fv(cameraProjectionAddress, 1, GL_FALSE, glm::value_ptr(currentCamera->getProjection()));
 
         unsigned int cameraViewAddress = glGetUniformLocation(lightingShaderProgram, "view");
         glUniformMatrix4fv(cameraViewAddress, 1, GL_FALSE, glm::value_ptr(cameraView));
 
         GLuint cameraPositionAddress =
             glGetUniformLocation(lightingShaderProgram, "cameraPosition");
-        glUniform3fv(cameraPositionAddress, 1, glm::value_ptr(cameraPosition));
+        glUniform3fv(cameraPositionAddress, 1, glm::value_ptr(currentCamera->getPosition()));
         //* - - - - - END OF CAMERA UPDATE - - - - -
 
         //* - - - - - LIGHT MODEL UPDATE - - - - -
