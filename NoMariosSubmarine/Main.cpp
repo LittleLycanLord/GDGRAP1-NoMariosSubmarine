@@ -28,6 +28,13 @@ const float ORBIT_RADIUS                    = 1.5f;
 double xpos, ypos;
 float x_mod = 0.0f, y_mod = 0.0f;
 Camera* currentCamera;
+
+const float radius = 5.0f;
+
+float camX; 
+float camZ;
+float camY;
+bool bStart = true;
 //* - - - - - END OF LITERALS - - - - -
 
 //* - - - - - PROGRAMMING CHALLENGE 2 VARIABLES - - - - -
@@ -61,15 +68,19 @@ static void cursor_position_callback(GLFWwindow* window, double xpos, double ypo
     //if (ypos/150.0f < 1.0f) y_mod + 4.0f;
     //else y_mod = (ypos / 150.0f) - 4.0f;
 
-    x_mod = (xpos/200.0f) * -1;
-    if (x_mod >= 0.09f) {
-        x_mod += 0.1f;
-        if (x_mod < 2.0) return;
-    }
-     
-    y_mod = (ypos/120.0f) * -1;
+    x_mod = (xpos/95.0f) * -1;
+  //  if (x_mod >= 0.09f) {
+    //    x_mod += 0.1f;
+      //  if (x_mod < 2.0) return;
+   // }
+   // 
+        y_mod = (ypos/200.0f);
 
-    std::cout << "X MOD IS: " << x_mod << std::endl;
+      camX = sin(x_mod) * radius;
+      camZ = cos(x_mod) * radius;
+     camY = cos(y_mod) * radius;
+
+    std::cout << "X MOD IS: " << camX << std::endl;
     std::cout << "y MOD IS: " << y_mod << std::endl;
 }
 
@@ -79,6 +90,7 @@ void cursor_enter_callback(GLFWwindow* window, int entered)
     {
         std::cout << "mouse enters window" << std::endl;
         glfwGetCursorPos(window, &xpos, &ypos);
+        bStart = false;
         glfwSetCursorPosCallback(window, cursor_position_callback);
     }
     else
@@ -540,6 +552,7 @@ int main(void) {
     glm::mat4 cameraPositionMatrix = glm::translate(glm::mat4(1.0f), cameraPosition * -1.0f);
     glm::mat4 cameraProjection =
         glm::perspective(glm::radians(60.f), float(WINDOW_WIDTH / WINDOW_HEIGHT), 0.1f, 1000.f);
+    bStart = true;
     //* - - - - - END OF CAMERA PART 1 - - - - -
 
 
@@ -674,16 +687,17 @@ int main(void) {
     while (!glfwWindowShouldClose(window)) {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-
+        if (bStart && currentCamera == perspectiveCamera) cameraPosition = currentCamera->getPosition();
+        else cameraPosition = glm::vec3(camX, camY, camZ);
 
         glfwSetCursorEnterCallback(window, cursor_enter_callback);
         
-        cameraPosition = glm::vec3(x_mod,y_mod,5.0f);
         if (currentCamera == orthographicCamera) cameraPosition = currentCamera->getPosition();
 
         currentCamera->setPosition(cameraPosition);
 
-        glm::mat4 cameraView = glm::lookAt(cameraPosition, cameraViewCenter, WorldUp);
+        currentCamera->setView(glm::lookAt(cameraPosition,cameraViewCenter, WorldUp));
+        //glm::mat4 cameraView = glm::lookAt(cameraPosition, cameraViewCenter, WorldUp);
 
         //* - - - - - UPDATE - - - - -
         switch (lightOrbitDirection) {
@@ -734,7 +748,7 @@ int main(void) {
 
         //* - - - - - SKYBOX RENDERING - - - - -
         glm::mat4 skyboxView           = glm::mat4(1.f);
-        skyboxView                     = glm::mat4(glm::mat3(cameraView));
+        skyboxView                     = glm::mat4(glm::mat3(currentCamera->getView()));
 
         unsigned int skyboxViewAddress = glGetUniformLocation(skyboxShaderProgram, "view");
         glUniformMatrix4fv(skyboxViewAddress, 1, GL_FALSE, glm::value_ptr(skyboxView));
@@ -760,7 +774,7 @@ int main(void) {
         glUniformMatrix4fv(cameraProjectionAddress, 1, GL_FALSE, glm::value_ptr(currentCamera->getProjection()));
 
         unsigned int cameraViewAddress = glGetUniformLocation(lightingShaderProgram, "view");
-        glUniformMatrix4fv(cameraViewAddress, 1, GL_FALSE, glm::value_ptr(cameraView));
+        glUniformMatrix4fv(cameraViewAddress, 1, GL_FALSE, glm::value_ptr(currentCamera->getView()));
 
         GLuint cameraPositionAddress =
             glGetUniformLocation(lightingShaderProgram, "cameraPosition");
