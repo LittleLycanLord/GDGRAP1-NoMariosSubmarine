@@ -93,8 +93,6 @@ void cursor_enter_callback(GLFWwindow* window, int entered)
     }
 }
 
-
-
 //? Reserved GLFW Function for Keyboard Inputs
 void Key_Callback(
     GLFWwindow* window,  //? Which window did we get the event?

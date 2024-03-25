@@ -25,8 +25,6 @@ public:
 public:
 private:
     void update();
-    // TODO 1: Given that we keep track of the position using a glm::vec3, updatePositionMatrix should update PositionMatrix based on the
-    // td    values in Position. [HINT: it's one line]
     void updatePositionMatrix();
     virtual void updateProjection() = 0;
 public:
