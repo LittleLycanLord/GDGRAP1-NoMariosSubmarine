@@ -23,10 +23,7 @@ PerspectiveCamera::PerspectiveCamera(std::string name, float fieldOfView)
 
 //* ╔═════════╗
 //* ║ Methods ║
-//* ╚═════════╝
-void PerspectiveCamera::updateProjection() {
-    this->projection =  glm::perspective(glm::radians(this->fieldOfView), float(WINDOW_WIDTH / WINDOW_HEIGHT), 0.1f, 1000.f);    
-}
+//* ╚═════════╝ 
 
 //* ╔═══════════════════╗
 //* ║ Getters & Setters ║

@@ -20,7 +20,6 @@ public:
     //* ║ Methods ║
     //* ╚═════════╝
 public:
-    void updateProjection();
 
     //* ╔═══════════════════╗
     //* ║ Getters & Setters ║

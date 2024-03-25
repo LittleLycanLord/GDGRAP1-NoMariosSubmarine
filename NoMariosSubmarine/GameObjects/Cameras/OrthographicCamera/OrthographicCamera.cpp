@@ -2,8 +2,6 @@
 
 using namespace models;
 
-// TODO 3: Make us an orthographic camera with an orthographic projection, which accepts the 6 different paramater of glm::ortho() function, stores
-// td   them as its own attributes.
 OrthographicCamera::OrthographicCamera(std::string name) 
 	: Camera(name + " Orthographic Camera", this->getProjection()) {
 
@@ -19,7 +17,6 @@ OrthographicCamera::OrthographicCamera(std::string name)
 //* ╔═════════╗
 //* ║ Methods ║
 //* ╚═════════╝
-void OrthographicCamera::updateProjection() {}
 
 //* ╔═══════════════════╗
 //* ║ Getters & Setters ║

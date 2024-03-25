@@ -13,6 +13,7 @@ protected:
     glm::mat4 orientation;
     glm::mat4 view;
     glm::mat4 projection;
+    glm::vec3 viewCenter;
 
     //* ╔═══════════════════════════════╗
     //* ║ Constructors & Deconstructors ║
@@ -23,10 +24,7 @@ public:
     //* ║ Methods ║
     //* ╚═════════╝
 public:
-private:
-    void update();
-    void updatePositionMatrix();
-    virtual void updateProjection() = 0;
+
 public:
     void initializeOrientation(glm::vec3 RightVector, glm::vec3 UpVector, glm::vec3 ForwardVector);
 
@@ -50,5 +48,8 @@ public:
 
     glm::mat4 getView();
     void setView(glm::mat4 view);
+
+    glm::vec3 getViewCenter();
+    void setViewCenter(glm::vec3 viewCenter);
 };
 } 

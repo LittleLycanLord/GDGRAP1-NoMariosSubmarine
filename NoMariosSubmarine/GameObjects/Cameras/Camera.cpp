@@ -6,28 +6,19 @@ using namespace models;
 //* ║ Constructors & Deconstructors ║
 //* ╚═══════════════════════════════╝
 Camera::Camera(std::string name, glm::mat4 projection) : name(name + " Camera"),
-                orientation(glm::mat4(1.f)), position(glm::vec3(0.0f, 5.0f, 0.0f)), 
-                positionMatrix(glm::translate(glm::mat4(1.0f), position * -1.0f)){
+                orientation(glm::mat4(1.f)), position(glm::vec3(0.0f, 0.0f, 5.0f)), 
+                positionMatrix(glm::translate(glm::mat4(1.0f), position * -1.0f)), viewCenter(glm::vec3(0.f, 0.f, -1.f)), 
+                projection(glm::perspective(glm::radians(60.f), float(WINDOW_WIDTH / WINDOW_HEIGHT), 0.1f, 1000.f)){
 
-    //this->setPosition(glm::vec3(0.0f, 5.0f, 0.0f));
-    //this->setPositionMatrix(glm::translate(glm::mat4(1.0f), position * -1.0f));
     if (DEBUG_MODE) std::cout << "Parent Camera " + this->name + " initialized!" << std::endl;
 }   
 
 //* ╔═════════╗
 //* ║ Methods ║
 //* ╚═════════╝
-void Camera::update() {
-    this->updatePositionMatrix();
-    this->updateProjection();
-}
-void Camera::updatePositionMatrix() {
-    this->positionMatrix = this->getPositionMatrix();
-}
-
 void Camera::initializeOrientation(glm::vec3 RightVector, glm::vec3 UpVector, glm::vec3 ForwardVector){
 
-    /*
+    
     orientation[0][0] = RightVector.x;
     orientation[1][0] = RightVector.y;
     orientation[2][0] = RightVector.z;
@@ -41,7 +32,7 @@ void Camera::initializeOrientation(glm::vec3 RightVector, glm::vec3 UpVector, gl
     orientation[2][2] = -ForwardVector.z;
 
     this->view = orientation * this->getPositionMatrix();
-    */
+    
 
 }
 //* ╔═══════════════════╗
@@ -63,5 +54,8 @@ void Camera::setProjection(glm::mat4 projection) { this->projection = projection
 
 glm::mat4 Camera::getView() { return this->view; }
 void Camera::setView(glm::mat4 view) { this->view = view; }
+
+glm::vec3 Camera::getViewCenter() { return this->viewCenter; }
+void Camera::setViewCenter(glm::vec3 viewCenter) { this->viewCenter = viewCenter; }
 
 // namespace models
