@@ -487,16 +487,8 @@ int main(void) {
     //* - - - - - END OF SKYBOX TEXTURING - - - - -
 
     //* - - - - - CAMERA PART 2 - - - - -
-
     //perspectiveCamera will be the starting camera unless key 2 is pressed
     currentCamera = perspectiveCamera;
-
-   // glm::vec3 cameraPosition       = glm::vec3(0.0f, 0.0f, 5.f);
-    //glm::vec3 cameraViewCenter     = glm::vec3(0.f, 0.f, -1.f);
-    //glm::mat4 cameraPositionMatrix = glm::translate(glm::mat4(1.0f), cameraPosition * -1.0f);
-   // glm::mat4 cameraProjection =
-     //   glm::perspective(glm::radians(60.f), float(WINDOW_WIDTH / WINDOW_HEIGHT), 0.1f, 1000.f);
-     
     //* - - - - - END OF CAMERA PART 2 - - - - -
 
 
@@ -510,21 +502,7 @@ int main(void) {
     //* - - - - - END OF WORLD FACTS - - - - -
 
     //* - - - - - CAMERA PART 3 - - - - -
-
     currentCamera->initializeOrientation( RightVector, UpVector, ForwardVector);
-
-    //currentCamera->getOrientation()[0][0]     = RightVector.x;
-    //currentCamera->getOrientation()[1][0]     = RightVector.y;
-    //currentCamera->getOrientation()[2][0]     = RightVector.z;
-
-    //currentCamera->getOrientation()[0][1]     = UpVector.x;
-    //currentCamera->getOrientation()[1][1]     = UpVector.y;
-    //currentCamera->getOrientation()[2][1]     = UpVector.z;
-
-    //currentCamera->getOrientation()[0][2]     = -ForwardVector.x;
-    //currentCamera->getOrientation()[1][2]     = -ForwardVector.y;
-    //currentCamera->getOrientation()[2][2]     = -ForwardVector.z;
-
     //* - - - - - END OF CAMERA PART 3 - - - - -
 
     //* - - - - - LIGHTS - - - - -
