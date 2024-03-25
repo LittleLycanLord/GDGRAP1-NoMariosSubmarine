@@ -15,6 +15,10 @@
 #include "stdafx.h"
 // clang-format on
 
+/*References used:
+Camera Rotation: Camera(n.d.).LearnOpenGL.https://learnopengl.com/Getting-started/Camera
+*/
+
 using namespace std;
 using namespace models;
 
@@ -24,17 +28,6 @@ const float MOVE_SPEED                      = 0.1f;
 const float ORBIT_SPEED                     = MOVE_SPEED * 0.005f;
 const float BRIGHTNESS_CHANGE               = 0.5f;
 const float ORBIT_RADIUS                    = 1.5f;
-
-double xpos, ypos;
-float x_mod = 0.0f, y_mod = 0.0f;
-Camera* currentCamera;
-
-const float radius = 5.0f;
-
-float camX; 
-float camZ;
-float camY;
-bool bStart = true;
 //* - - - - - END OF LITERALS - - - - -
 
 //* - - - - - PROGRAMMING CHALLENGE 2 VARIABLES - - - - -
@@ -52,38 +45,39 @@ int lightOrbitDirection                     = 0;
 //? 1: Left
 //? 2: Backward
 //? 3: Right
+ 
+const float radius = 5.0f;
+double xpos, ypos;
+float x_mod = 0.0f, y_mod = 0.0f;
+float camX;
+float camZ;
+float camY;
+bool bStart = true;
+Camera* currentCamera;
 //* - - - - - END OF PROGRAMMING CHALLENGE 2 VARIABLES - - - - -
 
+
+//* - - - - - CAMERA PART 1 - - - - -
 PerspectiveCamera* perspectiveCamera = new PerspectiveCamera("Main", 90.0f);
 OrthographicCamera* orthographicCamera = new OrthographicCamera("Ortho Cam");
 
+
+/*will give the direction on where the camera will rotate base on the mouse position*/
 static void cursor_position_callback(GLFWwindow* window, double xpos, double ypos)
 {
-    //if (x_mod >= 20) {}
-
-   //if ((xpos / 300.0f) * -1)
-   
-    //x_mod = (xpos / 300.0f) * -1;
-
-    //if (ypos/150.0f < 1.0f) y_mod + 4.0f;
-    //else y_mod = (ypos / 150.0f) - 4.0f;
-
     x_mod = (xpos/95.0f) * -1;
-  //  if (x_mod >= 0.09f) {
-    //    x_mod += 0.1f;
-      //  if (x_mod < 2.0) return;
-   // }
-   // 
-        y_mod = (ypos/200.0f);
+    y_mod = (ypos/200.0f);
 
-      camX = sin(x_mod) * radius;
-      camZ = cos(x_mod) * radius;
-     camY = cos(y_mod) * radius;
+    camX = sin(x_mod) * radius;
+    camZ = cos(x_mod) * radius;
+    camY = cos(y_mod) * radius;
 
-    std::cout << "X MOD IS: " << camX << std::endl;
-    std::cout << "y MOD IS: " << y_mod << std::endl;
+    /*Print statements for debugging*/
+    //std::cout << "X MOD IS: " << camX << std::endl;
+    //std::cout << "y MOD IS: " << camY << std::endl;
 }
 
+/*GLFW built-in method that checks if the mouse is within the program's window, else otherwise*/
 void cursor_enter_callback(GLFWwindow* window, int entered)
 {
     if (entered)
@@ -98,6 +92,7 @@ void cursor_enter_callback(GLFWwindow* window, int entered)
         std::cout << "mouse leaves window" << std::endl;
     }
 }
+//* - - - - - END OF CAMERA PART 1 - - - - -
 
 
 
@@ -543,46 +538,46 @@ int main(void) {
     }
     //* - - - - - END OF SKYBOX TEXTURING - - - - -
 
-    //* - - - - - CAMERA PART 1 - - - - -
-     PerspectiveCamera* perspectiveCamera = new PerspectiveCamera("Main", 90.0f);
-     currentCamera = perspectiveCamera;
-  
-    glm::vec3 cameraPosition       = glm::vec3(0.0f, 0.0f, 5.f);
-    glm::vec3 cameraViewCenter     = glm::vec3(0.f, 0.f, -1.f);
-    glm::mat4 cameraPositionMatrix = glm::translate(glm::mat4(1.0f), cameraPosition * -1.0f);
-    glm::mat4 cameraProjection =
-        glm::perspective(glm::radians(60.f), float(WINDOW_WIDTH / WINDOW_HEIGHT), 0.1f, 1000.f);
-    bStart = true;
-    //* - - - - - END OF CAMERA PART 1 - - - - -
+    //* - - - - - CAMERA PART 2 - - - - -
+
+    //perspectiveCamera will be the starting camera unless key 2 is pressed
+    currentCamera = perspectiveCamera;
+
+   // glm::vec3 cameraPosition       = glm::vec3(0.0f, 0.0f, 5.f);
+    //glm::vec3 cameraViewCenter     = glm::vec3(0.f, 0.f, -1.f);
+    //glm::mat4 cameraPositionMatrix = glm::translate(glm::mat4(1.0f), cameraPosition * -1.0f);
+   // glm::mat4 cameraProjection =
+     //   glm::perspective(glm::radians(60.f), float(WINDOW_WIDTH / WINDOW_HEIGHT), 0.1f, 1000.f);
+     
+    //* - - - - - END OF CAMERA PART 2 - - - - -
 
 
     //* - - - - - WORLD FACTS - - - - -
     glm::vec3 WorldUp           = glm::vec3(0.f, 1.0f, 0.f);
     glm::vec3 Center            = glm::vec3(0.f);
-    glm::vec3 ForwardVector     = glm::vec3(cameraViewCenter - cameraPosition);
+    glm::vec3 ForwardVector     = glm::vec3(currentCamera->getViewCenter() - currentCamera->getPosition());
     ForwardVector               = glm::normalize(ForwardVector);
     glm::vec3 RightVector       = glm::normalize(glm::cross(ForwardVector, WorldUp));
     glm::vec3 UpVector          = glm::normalize(glm::cross(RightVector, ForwardVector));
     //* - - - - - END OF WORLD FACTS - - - - -
 
-    //* - - - - - CAMERA PART 2 - - - - -
-    //glm::mat4 cameraOrientation = glm::mat4(1.f);
+    //* - - - - - CAMERA PART 3 - - - - -
 
-    currentCamera->getOrientation()[0][0]     = RightVector.x;
-    currentCamera->getOrientation()[1][0]     = RightVector.y;
-    currentCamera->getOrientation()[2][0]     = RightVector.z;
+    currentCamera->initializeOrientation( RightVector, UpVector, ForwardVector);
 
-    currentCamera->getOrientation()[0][1]     = UpVector.x;
-    currentCamera->getOrientation()[1][1]     = UpVector.y;
-    currentCamera->getOrientation()[2][1]     = UpVector.z;
+    //currentCamera->getOrientation()[0][0]     = RightVector.x;
+    //currentCamera->getOrientation()[1][0]     = RightVector.y;
+    //currentCamera->getOrientation()[2][0]     = RightVector.z;
 
-    currentCamera->getOrientation()[0][2]     = -ForwardVector.x;
-    currentCamera->getOrientation()[1][2]     = -ForwardVector.y;
-    currentCamera->getOrientation()[2][2]     = -ForwardVector.z;
+    //currentCamera->getOrientation()[0][1]     = UpVector.x;
+    //currentCamera->getOrientation()[1][1]     = UpVector.y;
+    //currentCamera->getOrientation()[2][1]     = UpVector.z;
 
-    // glm::mat4 cameraView        = cameraOrientation * cameraPositionMatrix;
+    //currentCamera->getOrientation()[0][2]     = -ForwardVector.x;
+    //currentCamera->getOrientation()[1][2]     = -ForwardVector.y;
+    //currentCamera->getOrientation()[2][2]     = -ForwardVector.z;
 
-    //* - - - - - END OF CAMERA PART 2 - - - - -
+    //* - - - - - END OF CAMERA PART 3 - - - - -
 
     //* - - - - - LIGHTS - - - - -
     glm::vec3 lightPosition     = glm::vec3(-1.f, -1.f, 0.f);
@@ -687,17 +682,14 @@ int main(void) {
     while (!glfwWindowShouldClose(window)) {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        if (bStart && currentCamera == perspectiveCamera) cameraPosition = currentCamera->getPosition();
-        else cameraPosition = glm::vec3(camX, camY, camZ);
-
-        glfwSetCursorEnterCallback(window, cursor_enter_callback);
+        if (bStart) currentCamera->getPosition();
+        else currentCamera->setPosition(glm::vec3(camX, camY, camZ));
         
-        if (currentCamera == orthographicCamera) cameraPosition = currentCamera->getPosition();
 
-        currentCamera->setPosition(cameraPosition);
+        if (currentCamera == orthographicCamera) currentCamera->setPosition(glm::vec3(camX, 10.0f, camZ));
+        glfwSetCursorEnterCallback(window, cursor_enter_callback);
 
-        currentCamera->setView(glm::lookAt(cameraPosition,cameraViewCenter, WorldUp));
-        //glm::mat4 cameraView = glm::lookAt(cameraPosition, cameraViewCenter, WorldUp);
+        currentCamera->setView(glm::lookAt(currentCamera->getPosition(), currentCamera->getViewCenter(), WorldUp));
 
         //* - - - - - UPDATE - - - - -
         switch (lightOrbitDirection) {
