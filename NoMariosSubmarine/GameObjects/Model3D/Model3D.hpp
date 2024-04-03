@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../../tiny_obj_loader.h"
+#include "../MyNormal/MyNormal.hpp"
 #include "../MyTexture/MyTexture.hpp"
 #include "stdafx.h"
 
@@ -13,13 +14,17 @@ protected:
     std::string name;
     bool enabled;
     MyTexture texture;
+    MyNormal normalMap;
     std::string texturePath;
+    std::string normalPath;
     std::string modelPath;
     glm::vec3 position;
     glm::mat4 positionMatrix;
     glm::vec3 scale;
     glm::vec3 orientation;
     std::vector<GLfloat> fullVertexData;
+    std::vector<glm::vec3> tangents;
+    std::vector<glm::vec3> bitangents;
     GLuint VAO;
     GLuint VBO;
 
@@ -29,8 +34,9 @@ protected:
 public:
     Model3D(std::string name,
             std::string modelPath,
-            int textureCount,
+            int modelCount,
             std::string texturePath,
+            std::string normalPath,
             glm::vec3 position,
             glm::mat4 positionMatrix,
             glm::vec3 scale,
@@ -53,6 +59,7 @@ public:
     bool getEnabled();
     void setEnabled(bool enabled);
     MyTexture getTexture();
+    MyNormal getNormalMap();
     glm::vec3 getPosition();
     void setPosition(glm::vec3 position);
     glm::mat4 getPositionMatrix();

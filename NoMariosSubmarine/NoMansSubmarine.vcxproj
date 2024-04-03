@@ -148,6 +148,7 @@
     <ClCompile Include="GameObjects\Lights\SpotLight\SpotLight.cpp" />
     <ClCompile Include="GameObjects\Model3D\Model3D.cpp" />
     <ClCompile Include="GameObjects\Model3D\tinyObjLoader.cpp" />
+    <ClCompile Include="GameObjects\MyNormal\MyNormal.cpp" />
     <ClCompile Include="GameObjects\MyTexture\MyTexture.cpp" />
     <ClCompile Include="GameObjects\MyTexture\stbi.cpp" />
     <ClCompile Include="Main.cpp" />
@@ -162,6 +163,7 @@
     <ClInclude Include="GameObjects\Lights\PointLight\PointLight.hpp" />
     <ClInclude Include="GameObjects\Lights\SpotLight\SpotLight.hpp" />
     <ClInclude Include="GameObjects\Model3D\Model3D.hpp" />
+    <ClInclude Include="GameObjects\MyNormal\MyNormal.hpp" />
     <ClInclude Include="GameObjects\MyTexture\MyTexture.hpp" />
     <ClInclude Include="stb_image.h" />
     <ClInclude Include="tiny_obj_loader.h" />

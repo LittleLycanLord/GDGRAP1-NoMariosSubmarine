@@ -6,6 +6,7 @@ out vec4 FragmentColor;
 in vec3 normalCoordinate;
 in vec2 textureCoordinate;
 in vec3 fragmentPosition;
+in mat3 TBN;
 
 uniform sampler2D modelTexture;
 uniform sampler2D modelNormalTexture;
@@ -142,7 +143,10 @@ void main() {
     }
     //* - - - - - END OF BLENDING - - - - -
     
-    vec3 normal = normalize(normalCoordinate);
+    // vec3 normal = normalize(normalCoordinate);
+    vec3 normal = texture(modelNormalTexture, textureCoordinate).rgb;
+    normal = normalize(normal * 2.0f - 1.0f);
+    normal =  normalize(TBN * normal);
     vec3 viewDirection = normalize(cameraPosition - fragmentPosition);
 
     //* - - - - - LIGHTING - - - - -

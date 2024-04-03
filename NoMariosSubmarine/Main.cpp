@@ -23,7 +23,7 @@ using namespace std;
 using namespace models;
 
 //* - - - - - LITERALS - - - - -
-const float ROTATE_SPEED                    = 10.f;  //? In Degrees
+const float ROTATE_SPEED                    = 1.0f;  //? In Degrees
 const float MOVE_SPEED                      = 0.1f;
 const float ORBIT_SPEED                     = MOVE_SPEED * 0.005f;
 const float BRIGHTNESS_CHANGE               = 0.5f;
@@ -45,8 +45,8 @@ int lightOrbitDirection                     = 0;
 //? 1: Left
 //? 2: Backward
 //? 3: Right
- 
-const float radius = 5.0f;
+
+const float radius                          = 5.0f;
 double xpos, ypos;
 float x_mod = 0.0f, y_mod = 0.0f;
 float camX;
@@ -56,41 +56,37 @@ bool bStart = true;
 Camera* currentCamera;
 //* - - - - - END OF PROGRAMMING CHALLENGE 2 VARIABLES - - - - -
 
-
 //* - - - - - CAMERA PART 1 - - - - -
-PerspectiveCamera* perspectiveCamera = new PerspectiveCamera("Main", 90.0f);
+PerspectiveCamera* perspectiveCamera   = new PerspectiveCamera("Main", 90.0f);
 OrthographicCamera* orthographicCamera = new OrthographicCamera("Ortho Cam");
 
-
 /*will give the direction on where the camera will rotate base on the mouse position*/
-static void cursor_position_callback(GLFWwindow* window, double xpos, double ypos)
-{
-    x_mod = (xpos/95.0f) * -1;
-    y_mod = (ypos/200.0f);
+static void cursor_position_callback(GLFWwindow* window, double xpos, double ypos) {
+    x_mod = (xpos / 95.0f) * -1.0f;
+    y_mod = (ypos / 200.0f);
 
-    camX = sin(x_mod) * radius;
-    camZ = cos(x_mod) * radius;
-    camY = cos(y_mod) * radius;
+    camX  = sin(x_mod) * radius;
+    camZ  = cos(x_mod) * radius;
+    camY  = cos(y_mod) * radius;
 
     /*Print statements for debugging*/
-    //std::cout << "X MOD IS: " << camX << std::endl;
-    //std::cout << "y MOD IS: " << camY << std::endl;
+    // std::cout << "X MOD IS: " << camX << std::endl;
+    // std::cout << "y MOD IS: " << camY << std::endl;
 }
 
 /*GLFW built-in method that checks if the mouse is within the program's window, else otherwise*/
-void cursor_enter_callback(GLFWwindow* window, int entered)
-{
-    if (entered)
-    {
-        std::cout << "mouse enters window" << std::endl;
-        glfwGetCursorPos(window, &xpos, &ypos);
-        bStart = false;
-        glfwSetCursorPosCallback(window, cursor_position_callback);
-    }
-    else
-    {
-        std::cout << "mouse leaves window" << std::endl;
-    }
+void cursor_enter_callback(GLFWwindow* window, int entered) {
+    // if (entered)
+    // {
+    //     std::cout << "mouse enters window" << std::endl;
+    //     glfwGetCursorPos(window, &xpos, &ypos);
+    //     bStart = false;
+    //     glfwSetCursorPosCallback(window, cursor_position_callback);
+    // }
+    // else
+    // {
+    //     std::cout << "mouse leaves window" << std::endl;
+    // }
 }
 //* - - - - - END OF CAMERA PART 1 - - - - -
 
@@ -487,36 +483,36 @@ int main(void) {
     //* - - - - - END OF SKYBOX TEXTURING - - - - -
 
     //* - - - - - CAMERA PART 2 - - - - -
-    //perspectiveCamera will be the starting camera unless key 2 is pressed
-    currentCamera = perspectiveCamera;
+    // perspectiveCamera will be the starting camera unless key 2 is pressed
+    currentCamera     = perspectiveCamera;
     //* - - - - - END OF CAMERA PART 2 - - - - -
 
-
     //* - - - - - WORLD FACTS - - - - -
-    glm::vec3 WorldUp           = glm::vec3(0.f, 1.0f, 0.f);
-    glm::vec3 Center            = glm::vec3(0.f);
-    glm::vec3 ForwardVector     = glm::vec3(currentCamera->getViewCenter() - currentCamera->getPosition());
-    ForwardVector               = glm::normalize(ForwardVector);
-    glm::vec3 RightVector       = glm::normalize(glm::cross(ForwardVector, WorldUp));
-    glm::vec3 UpVector          = glm::normalize(glm::cross(RightVector, ForwardVector));
+    glm::vec3 WorldUp = glm::vec3(0.f, 1.0f, 0.f);
+    glm::vec3 Center  = glm::vec3(0.f);
+    glm::vec3 ForwardVector =
+        glm::vec3(currentCamera->getViewCenter() - currentCamera->getPosition());
+    ForwardVector         = glm::normalize(ForwardVector);
+    glm::vec3 RightVector = glm::normalize(glm::cross(ForwardVector, WorldUp));
+    glm::vec3 UpVector    = glm::normalize(glm::cross(RightVector, ForwardVector));
     //* - - - - - END OF WORLD FACTS - - - - -
 
     //* - - - - - CAMERA PART 3 - - - - -
-    currentCamera->initializeOrientation( RightVector, UpVector, ForwardVector);
+    currentCamera->initializeOrientation(RightVector, UpVector, ForwardVector);
     //* - - - - - END OF CAMERA PART 3 - - - - -
 
     //* - - - - - LIGHTS - - - - -
-    glm::vec3 lightPosition     = glm::vec3(-1.f, -1.f, 0.f);
-    glm::vec3 lightColor        = glm::vec3(1.f, 1.f, 1.f);
-    float ambientStrength       = 0.1f;
-    glm::vec3 ambientColor      = lightColor;
-    float specularStrength      = 0.5f;
-    float specularPhong         = 16;
+    glm::vec3 lightPosition = glm::vec3(-1.f, -1.f, 0.f);
+    glm::vec3 lightColor    = glm::vec3(1.f, 1.f, 1.f);
+    float ambientStrength   = 0.1f;
+    glm::vec3 ambientColor  = lightColor;
+    float specularStrength  = 0.5f;
+    float specularPhong     = 16;
 
-    directionalLights           = {
+    directionalLights       = {
        new DirectionalLight("White Directional Light",
-                            true,
-                            glm::vec3(4.f, -5.f, 0.f),  //? Direction
+                            false,
+                            glm::vec3(0.f, 1.f, 0.f),  //? Direction
                             glm::vec3(1.f, 1.f, 1.f),   //? Color
                             0.1f,                       //? Ambient Strength
                             glm::vec3(1.f, 1.f, 1.f),   //? Ambient Color
@@ -529,20 +525,20 @@ int main(void) {
     pointLights = {
        new PointLight("White Point Light",
                       true,
-                      glm::vec3(0.f, 0.f, 0.f),  //? Position
+                      glm::vec3(0.f, 0.8f, 0.f),  //? Position
                       glm::vec3(1.f, 1.f, 1.f),  //? Color
                       0.1f,                      //? Ambient Strength
                       glm::vec3(1.f, 1.f, 1.f),  //? Ambient Color
                       0.5f,                      //?Specular Strength
                       16,                        //?Specular Phong
-                      2.0f),                     //? Brightness
+                      1.0f),                     //? Brightness
     };
     for (PointLight* pointLight : pointLights) lights.push_back(pointLight);
 
     spotLights = {
        new SpotLight("White Spotlight",
                      false,
-                     glm::vec3(0.f, 5.f, 0.f),   //? Position
+                     glm::vec3(0.f, 1.f, 0.f),   //? Position
                      glm::vec3(0.f, -1.f, 0.f),  //? Direction
                      12.5f,                      //? Cone Size
                      glm::vec3(1.f, 1.f, 1.f),   //? Color
@@ -550,7 +546,7 @@ int main(void) {
                      glm::vec3(1.f, 1.f, 1.f),   //? Ambient Color
                      0.5f,                       //?Specular Strength
                      16,                         //?Specular Phong
-                     10.0f),                     //? Brightness
+                     1.0f),                     //? Brightness
     };
     for (SpotLight* spotLight : spotLights) lights.push_back(spotLight);
     for (Light* light : lights) {
@@ -561,47 +557,25 @@ int main(void) {
 
     //* - - - - - MODEL LOADING - - - - -
     model3ds = {
-       new Model3D("Submarine",                     //? Model Name
-                   "Assets/MeepballSub.obj",        //? Model Path
-                   0,                               //? Texture Count
-                   "Assets/Submarine.png",          //? Texture Path
-                   glm::vec3(0.f, 0.f, 0.f),        //? Position
-                   glm::mat4(1.0f),                 //? Position Matrix
-                   glm::vec3(1.0f),                 //? Scale
-                   glm::vec3(0.0f, 180.0f, 0.0f)),  //? Orientation
-       //    new Model3D("Submarine",                      //? Model Name
-       //             "Assets/MeepballSub.obj",         //? Model Path
-       //             0,                                //? Texture Count
-       //             "Assets/Submarine.png",           //? Texture Path
-       //             glm::vec3(-1.f, 0.f, 0.f),         //? Position
-       //             glm::mat4(1.0f),                  //? Position Matrix
-       //             glm::vec3(1.0f),                  //? Scale
-       //             glm::vec3(0.0f, 180.0f, 0.0f))
-    };  //? Orientation
+       new Model3D("Brickwall",                           //? Model Name
+                   "Assets/Models/plane.obj",             //? Model Path
+                   0,                                     //? Model Count
+                   "Assets/Models/brickwall.jpg",         //? Texture Path
+                   "Assets/Models/brickwall_normal.jpg",  //? Normal Path
+                   glm::vec3(0.f, 0.f, 0.f),              //? Position
+                   glm::mat4(1.0f),                       //? Position Matrix
+                   glm::vec3(1.0f),                       //? Scale
+                   glm::vec3(0.0f, 0.0f, 90.0f)),         //? Orientation
+       //    new Model3D("Submarine",                     //? Model Name
+       //                "Assets/MeepballSub.obj",        //? Model Path
+       //                1,                               //? Model Count
+       //                "Assets/Submarine.png",          //? Texture Path
+       //                glm::vec3(0.f, 0.f, 0.f),        //? Position
+       //                glm::mat4(1.0f),                 //? Position Matrix
+       //                glm::vec3(1.0f),                 //? Scale
+       //                glm::vec3(0.0f, 180.0f, 0.0f)),  //? Orientation
+    };
     activeModel = model3ds.front();
-
-    for (PointLight* pointLight : pointLights) {
-        model3ds.push_back(new Model3D("Light Ball",                //? Model Name
-                                       "Assets/LowPolySphere.obj",  //? Model Path
-                                       0,                           //? Texture Count
-                                       "Assets/LowPolySphere.png",  //? Texture Path
-                                       pointLight->getPosition(),   //? Position
-                                       glm::mat4(1.0f),             //? Position Matrix
-                                       glm::vec3(0.25f),            //? Scale
-                                       glm::vec3(0.0f)));           //? Orientation);
-        if (DEBUG_MODE) std::cout << "Point Light Ball created!" << std::endl;
-    }
-    for (SpotLight* spotLight : spotLights) {
-        model3ds.push_back(new Model3D("Light Ball",                //? Model Name
-                                       "Assets/LowPolySphere.obj",  //? Model Path
-                                       0,                           //? Texture Count
-                                       "Assets/LowPolySphere.png",  //? Texture Path
-                                       spotLight->getPosition(),    //? Position
-                                       glm::mat4(1.0f),             //? Position Matrix
-                                       glm::vec3(0.5f),             //? Scale
-                                       glm::vec3(0.0f)));           //? Orientation);
-        if (DEBUG_MODE) std::cout << "Spot Light Ball created!" << std::endl;
-    }
 
     for (Model3D* model : model3ds) model->loadModel();
     //* - - - - - END OF MODEL LOADING - - - - -
@@ -610,16 +584,22 @@ int main(void) {
     while (!glfwWindowShouldClose(window)) {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        if (bStart) currentCamera->getPosition();
-        else currentCamera->setPosition(glm::vec3(camX, camY, camZ));
-        
+        if (bStart)
+            currentCamera->getPosition();
+        else
+            currentCamera->setPosition(glm::vec3(camX, camY, camZ));
 
-        if (currentCamera == orthographicCamera) currentCamera->setPosition(glm::vec3(camX, 10.0f, camZ));
+        if (currentCamera == orthographicCamera)
+            currentCamera->setPosition(glm::vec3(camX, 10.0f, camZ));
         glfwSetCursorEnterCallback(window, cursor_enter_callback);
 
-        currentCamera->setView(glm::lookAt(currentCamera->getPosition(), currentCamera->getViewCenter(), WorldUp));
+        currentCamera->setView(
+            glm::lookAt(currentCamera->getPosition(), currentCamera->getViewCenter(), WorldUp));
 
         //* - - - - - UPDATE - - - - -
+        activeModel->setOrientation(glm::vec3(activeModel->getOrientation().x + ROTATE_SPEED,
+                                              activeModel->getOrientation().y,
+                                              activeModel->getOrientation().z));
         //* - - - - - END OF UPDATE - - - - -
 
         //* - - - - - SKYBOX SHADER SWITCH - - - - -
@@ -636,7 +616,8 @@ int main(void) {
         glUniformMatrix4fv(skyboxViewAddress, 1, GL_FALSE, glm::value_ptr(skyboxView));
 
         unsigned skyboxProjectionAddress = glGetUniformLocation(skyboxShaderProgram, "projection");
-        glUniformMatrix4fv(skyboxProjectionAddress, 1, GL_FALSE, glm::value_ptr(currentCamera->getProjection()));
+        glUniformMatrix4fv(
+            skyboxProjectionAddress, 1, GL_FALSE, glm::value_ptr(currentCamera->getProjection()));
 
         glBindVertexArray(skyboxVAO);
         glActiveTexture(GL_TEXTURE0);
@@ -653,10 +634,12 @@ int main(void) {
         //* - - - - - CAMERA UPDATE - - - - -
         unsigned int cameraProjectionAddress =
             glGetUniformLocation(lightingShaderProgram, "projection");
-        glUniformMatrix4fv(cameraProjectionAddress, 1, GL_FALSE, glm::value_ptr(currentCamera->getProjection()));
+        glUniformMatrix4fv(
+            cameraProjectionAddress, 1, GL_FALSE, glm::value_ptr(currentCamera->getProjection()));
 
         unsigned int cameraViewAddress = glGetUniformLocation(lightingShaderProgram, "view");
-        glUniformMatrix4fv(cameraViewAddress, 1, GL_FALSE, glm::value_ptr(currentCamera->getView()));
+        glUniformMatrix4fv(
+            cameraViewAddress, 1, GL_FALSE, glm::value_ptr(currentCamera->getView()));
 
         GLuint cameraPositionAddress =
             glGetUniformLocation(lightingShaderProgram, "cameraPosition");
@@ -689,9 +672,77 @@ int main(void) {
             //* - - - - - MODEL LIGHTING - - - - -
             glBindVertexArray(*model->getVAO());
 
+            switch (model->getTexture().getTextureCount()) {
+                case 0:
+                    glActiveTexture(GL_TEXTURE0);
+                    break;
+                case 2:
+                    glActiveTexture(GL_TEXTURE2);
+                    break;
+                case 4:
+                    glActiveTexture(GL_TEXTURE4);
+                    break;
+                case 6:
+                    glActiveTexture(GL_TEXTURE6);
+                    break;
+                case 8:
+                    glActiveTexture(GL_TEXTURE8);
+                    break;
+                case 10:
+                    glActiveTexture(GL_TEXTURE10);
+                    break;
+                case 12:
+                    glActiveTexture(GL_TEXTURE12);
+                    break;
+                case 14:
+                    glActiveTexture(GL_TEXTURE14);
+                    break;
+                case 16:
+                    glActiveTexture(GL_TEXTURE16);
+                    break;
+                case 18:
+                    glActiveTexture(GL_TEXTURE18);
+                    break;
+            }
             GLuint modelTextureAddress =
                 glGetUniformLocation(lightingShaderProgram, "modelTexture");
             glBindTexture(GL_TEXTURE_2D, model->getTexture().getTexture());
+
+            switch (model->getNormalMap().getNormalCount()) {
+                case 1:
+                    glActiveTexture(GL_TEXTURE1);
+                    break;
+                case 3:
+                    glActiveTexture(GL_TEXTURE3);
+                    break;
+                case 5:
+                    glActiveTexture(GL_TEXTURE5);
+                    break;
+                case 7:
+                    glActiveTexture(GL_TEXTURE7);
+                    break;
+                case 9:
+                    glActiveTexture(GL_TEXTURE9);
+                    break;
+                case 11:
+                    glActiveTexture(GL_TEXTURE11);
+                    break;
+                case 13:
+                    glActiveTexture(GL_TEXTURE13);
+                    break;
+                case 15:
+                    glActiveTexture(GL_TEXTURE15);
+                    break;
+                case 17:
+                    glActiveTexture(GL_TEXTURE17);
+                    break;
+                case 19:
+                    glActiveTexture(GL_TEXTURE19);
+                    break;
+            }
+            GLuint modelNormalAddress =
+                glGetUniformLocation(lightingShaderProgram, "modelNormalTexture");
+            glBindTexture(GL_TEXTURE_2D, model->getNormalMap().getNormal());
 
             GLuint directionalLightCountAddress =
                 glGetUniformLocation(lightingShaderProgram, "directionalLightCount");
@@ -852,7 +903,7 @@ int main(void) {
             //* - - - - - MODEL RENDERING - - - - -
             glUniform1i(modelTextureAddress, model->getTexture().getTextureCount());
             if (model->getEnabled())
-                glDrawArrays(GL_TRIANGLES, 0, GLint(model->getFullVertexData().size() / 8));
+                glDrawArrays(GL_TRIANGLES, 0, GLint(model->getFullVertexData().size() / STRIDE_LENGTH));
             //* - - - - - END OF MODEL RENDERING - - - - -
         }
 
