@@ -23,7 +23,7 @@ using namespace std;
 using namespace models;
 
 //* - - - - - LITERALS - - - - -
-const float ROTATE_SPEED                    = 1.0f;  //? In Degrees
+const float ROTATE_SPEED                    = 0.5f;  //? In Degrees
 const float MOVE_SPEED                      = 0.1f;
 const float ORBIT_SPEED                     = MOVE_SPEED * 0.005f;
 const float BRIGHTNESS_CHANGE               = 0.5f;
@@ -57,7 +57,7 @@ Camera* currentCamera;
 //* - - - - - END OF PROGRAMMING CHALLENGE 2 VARIABLES - - - - -
 
 //* - - - - - CAMERA PART 1 - - - - -
-PerspectiveCamera* perspectiveCamera   = new PerspectiveCamera("Main", 90.0f);
+PerspectiveCamera* perspectiveCamera   = new PerspectiveCamera("Main", 60.0f);
 OrthographicCamera* orthographicCamera = new OrthographicCamera("Ortho Cam");
 
 /*will give the direction on where the camera will rotate base on the mouse position*/
@@ -320,7 +320,7 @@ int main(void) {
     GLFWwindow* window;
     if (!glfwInit()) return -1;
 
-    window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "PCO2 - Ubay & Vingno", NULL, NULL);
+    window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "Quiz 3 - UBAY", NULL, NULL);
     if (!window) {
         glfwTerminate();
         return -1;
@@ -513,25 +513,34 @@ int main(void) {
        new DirectionalLight("White Directional Light",
                             false,
                             glm::vec3(0.f, 1.f, 0.f),  //? Direction
-                            glm::vec3(1.f, 1.f, 1.f),   //? Color
-                            0.1f,                       //? Ambient Strength
-                            glm::vec3(1.f, 1.f, 1.f),   //? Ambient Color
-                            0.5f,                       //?Specular Strength
-                            16,                         //?Specular Phong
-                            2.0f),                      //? Brightness
+                            glm::vec3(1.f, 1.f, 1.f),  //? Color
+                            0.1f,                      //? Ambient Strength
+                            glm::vec3(1.f, 1.f, 1.f),  //? Ambient Color
+                            0.5f,                      //?Specular Strength
+                            16,                        //?Specular Phong
+                            2.0f),                     //? Brightness
     };
     for (DirectionalLight* directionalLight : directionalLights) lights.push_back(directionalLight);
 
     pointLights = {
        new PointLight("White Point Light",
                       true,
-                      glm::vec3(0.f, 0.8f, 0.f),  //? Position
-                      glm::vec3(1.f, 1.f, 1.f),  //? Color
-                      0.1f,                      //? Ambient Strength
-                      glm::vec3(1.f, 1.f, 1.f),  //? Ambient Color
-                      0.5f,                      //?Specular Strength
-                      16,                        //?Specular Phong
-                      1.0f),                     //? Brightness
+                      glm::vec3(-1.3f, 0.8f, 0.2f),  //? Position
+                      glm::vec3(1.f, 1.f, 1.f),      //? Color
+                      0.1f,                          //? Ambient Strength
+                      glm::vec3(1.f, 1.f, 1.f),      //? Ambient Color
+                      0.5f,                          //?Specular Strength
+                      16,                            //?Specular Phong
+                      1.2f),                         //? Brightness
+       new PointLight("White Point Light",
+                      true,
+                      glm::vec3(1.3f, 0.8f, 0.2f),  //? Position
+                      glm::vec3(1.f, 1.f, 1.f),     //? Color
+                      0.1f,                         //? Ambient Strength
+                      glm::vec3(1.f, 1.f, 1.f),     //? Ambient Color
+                      0.5f,                         //?Specular Strength
+                      16,                           //?Specular Phong
+                      1.2f),                        //? Brightness
     };
     for (PointLight* pointLight : pointLights) lights.push_back(pointLight);
 
@@ -546,7 +555,7 @@ int main(void) {
                      glm::vec3(1.f, 1.f, 1.f),   //? Ambient Color
                      0.5f,                       //?Specular Strength
                      16,                         //?Specular Phong
-                     1.0f),                     //? Brightness
+                     1.0f),                      //? Brightness
     };
     for (SpotLight* spotLight : spotLights) lights.push_back(spotLight);
     for (Light* light : lights) {
@@ -557,15 +566,24 @@ int main(void) {
 
     //* - - - - - MODEL LOADING - - - - -
     model3ds = {
-       new Model3D("Brickwall",                           //? Model Name
-                   "Assets/Models/plane.obj",             //? Model Path
-                   0,                                     //? Model Count
-                   "Assets/Models/brickwall.jpg",         //? Texture Path
+       new Model3D("Brickwall",                    //? Model Name
+                   "Assets/Models/plane.obj",      //? Model Path
+                   0,                              //? Model Count
+                   "Assets/Models/brickwall.jpg",  //? Texture Path
+                   "",                             //? Normal Path
+                   glm::vec3(-1.3f, 0.f, 0.f),     //? Position
+                   glm::mat4(1.0f),                //? Position Matrix
+                   glm::vec3(1.0f),                //? Scale
+                   glm::vec3(0.0f, 0.0f, 90.0f)),  //? Orientation
+       new Model3D("Brickwall",                    //? Model Name
+                   "Assets/Models/plane.obj",      //? Model Path
+                   0,                              //? Model Count
+                   "Assets/Models/brickwall.jpg",  //? Texture Path
                    "Assets/Models/brickwall_normal.jpg",  //? Normal Path
-                   glm::vec3(0.f, 0.f, 0.f),              //? Position
-                   glm::mat4(1.0f),                       //? Position Matrix
-                   glm::vec3(1.0f),                       //? Scale
-                   glm::vec3(0.0f, 0.0f, 90.0f)),         //? Orientation
+                   glm::vec3(1.3f, 0.f, 0.f),      //? Position
+                   glm::mat4(1.0f),                //? Position Matrix
+                   glm::vec3(1.0f),                //? Scale
+                   glm::vec3(0.0f, 0.0f, 90.0f)),  //? Orientation
        //    new Model3D("Submarine",                     //? Model Name
        //                "Assets/MeepballSub.obj",        //? Model Path
        //                1,                               //? Model Count
@@ -600,6 +618,9 @@ int main(void) {
         activeModel->setOrientation(glm::vec3(activeModel->getOrientation().x + ROTATE_SPEED,
                                               activeModel->getOrientation().y,
                                               activeModel->getOrientation().z));
+        model3ds[1]->setOrientation(glm::vec3(model3ds[1]->getOrientation().x + ROTATE_SPEED,
+                                              model3ds[1]->getOrientation().y,
+                                              model3ds[1]->getOrientation().z));
         //* - - - - - END OF UPDATE - - - - -
 
         //* - - - - - SKYBOX SHADER SWITCH - - - - -
@@ -645,27 +666,6 @@ int main(void) {
             glGetUniformLocation(lightingShaderProgram, "cameraPosition");
         glUniform3fv(cameraPositionAddress, 1, glm::value_ptr(currentCamera->getPosition()));
         //* - - - - - END OF CAMERA UPDATE - - - - -
-
-        //* - - - - - LIGHT MODEL UPDATE - - - - -
-        int i = 0;
-        int j = 0;
-        for (Model3D* model : model3ds) {
-            if (model->getName() == "Light Ball") {
-                if (i < pointLights.size()) {
-                    model->setEnabled(pointLights[i]->getEnabled());
-                    model->setPosition(pointLights[i]->getPosition());
-                    i++;
-                } else {
-                    if (j < spotLights.size()) {
-                        model->setEnabled(spotLights[j]->getEnabled());
-                        model->setPosition(spotLights[j]->getPosition());
-                        j++;
-                    }
-                }
-            }
-        }
-        //* - - - - - END OF LIGHT MODEL UPDATE - - - - -
-
         //* - - - - - MODEL UPDATE - - - - -
 
         for (Model3D* model : model3ds) {
@@ -903,7 +903,8 @@ int main(void) {
             //* - - - - - MODEL RENDERING - - - - -
             glUniform1i(modelTextureAddress, model->getTexture().getTextureCount());
             if (model->getEnabled())
-                glDrawArrays(GL_TRIANGLES, 0, GLint(model->getFullVertexData().size() / STRIDE_LENGTH));
+                glDrawArrays(
+                    GL_TRIANGLES, 0, GLint(model->getFullVertexData().size() / STRIDE_LENGTH));
             //* - - - - - END OF MODEL RENDERING - - - - -
         }
 

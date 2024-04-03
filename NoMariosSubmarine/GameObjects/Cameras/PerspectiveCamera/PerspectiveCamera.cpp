@@ -14,7 +14,7 @@ using namespace models;
 PerspectiveCamera::PerspectiveCamera(std::string name, float fieldOfView)
     : Camera(name + " Perspective Camera", glm::perspective(1.0f, 1.0f, 1.0f, 1.0f)),
       fieldOfView(fieldOfView) {
-    setPosition(glm::vec3(0.0f, 0.0f, 1.8f));
+    setPosition(glm::vec3(0.0f, 0.0f, 2.2f));
     setProjection(glm::perspective(
         glm::radians(this->fieldOfView), float(WINDOW_WIDTH / WINDOW_HEIGHT), 0.1f, 1000.f));
 
