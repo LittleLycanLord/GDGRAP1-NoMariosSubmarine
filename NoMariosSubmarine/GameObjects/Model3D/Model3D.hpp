@@ -14,6 +14,9 @@ protected:
     std::string name;
     bool enabled;
     MyTexture texture;
+
+    MyTexture yae;
+
     MyNormal normalMap;
     std::string texturePath;
     std::string normalPath;
@@ -59,6 +62,7 @@ public:
     bool getEnabled();
     void setEnabled(bool enabled);
     MyTexture getTexture();
+    MyTexture getYae();
     MyNormal getNormalMap();
     glm::vec3 getPosition();
     void setPosition(glm::vec3 position);

@@ -19,6 +19,7 @@ Model3D::Model3D(std::string name,
       enabled(true),
       texture(texturePath, (modelCount * 2)),
       normalMap(normalPath, (modelCount * 2) + 1),
+      yae("Assets/Models/yae.png", 2),
       texturePath(texturePath),
       normalPath(normalPath),
       modelPath(modelPath),
@@ -37,6 +38,9 @@ Model3D::Model3D(std::string name,
 //* ╚═════════╝
 void Model3D::loadModel() {
     if (this->texturePath != "") this->texture.loadTexture();
+
+    this->yae.loadTexture();
+
     if (this->normalPath != "") this->normalMap.loadNormal();
     std::vector<tinyobj::shape_t> shapes;
     std::vector<tinyobj::material_t> material;
@@ -127,7 +131,8 @@ void Model3D::loadModel() {
                  this->fullVertexData.data(),
                  GL_DYNAMIC_DRAW);
     //* Positions
-    glVertexAttribPointer(POSITION_INDEX, 3, GL_FLOAT, GL_FALSE, STRIDE_LENGTH * sizeof(float), (void*)0);
+    glVertexAttribPointer(
+        POSITION_INDEX, 3, GL_FLOAT, GL_FALSE, STRIDE_LENGTH * sizeof(float), (void*)0);
     glEnableVertexAttribArray(POSITION_INDEX);
 
     //* Normals
@@ -138,7 +143,8 @@ void Model3D::loadModel() {
 
     //* UVs
     GLintptr uvPtr = 6 * sizeof(float);
-    glVertexAttribPointer(UV_INDEX, 2, GL_FLOAT, GL_FALSE, STRIDE_LENGTH * sizeof(float), (void*)uvPtr);
+    glVertexAttribPointer(
+        UV_INDEX, 2, GL_FLOAT, GL_FALSE, STRIDE_LENGTH * sizeof(float), (void*)uvPtr);
     glEnableVertexAttribArray(UV_INDEX);
 
     //* Tangents
@@ -149,8 +155,12 @@ void Model3D::loadModel() {
 
     //* Bitangents
     GLintptr bitangentPtr = 11 * sizeof(float);
-    glVertexAttribPointer(
-        BITANGENT_INDEX, 3, GL_FLOAT, GL_FALSE, STRIDE_LENGTH * sizeof(GLfloat), (void*)bitangentPtr);
+    glVertexAttribPointer(BITANGENT_INDEX,
+                          3,
+                          GL_FLOAT,
+                          GL_FALSE,
+                          STRIDE_LENGTH * sizeof(GLfloat),
+                          (void*)bitangentPtr);
     glEnableVertexAttribArray(BITANGENT_INDEX);
 
     //* Close for Editing
@@ -179,6 +189,7 @@ void Model3D::setName(std::string name) { this->name = name; }
 bool Model3D::getEnabled() { return this->enabled; }
 void Model3D::setEnabled(bool enabled) { this->enabled = enabled; }
 MyTexture Model3D::getTexture() { return this->texture; }
+MyTexture Model3D::getYae() { return this->yae; }
 MyNormal Model3D::getNormalMap() { return this->normalMap; }
 glm::vec3 Model3D::getPosition() { return this->position; }
 void Model3D::setPosition(glm::vec3 position) { this->position = position; }

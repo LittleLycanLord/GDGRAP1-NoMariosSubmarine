@@ -55,7 +55,7 @@ int main(void) {
     GLFWwindow* window;
     if (!glfwInit()) return -1;
 
-    window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "Quiz 3 - UBAY", NULL, NULL);
+    window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "Quiz03-Ubay_Conrad", NULL, NULL);
     if (!window) {
         glfwTerminate();
         return -1;
@@ -70,13 +70,13 @@ int main(void) {
     //* - - - - - END OF WINDOW CREATION - - - - -
 
     //* - - - - - SHADER CREATION - - - - -
-    fstream lightingVertexFile("Shaders/main.vert");
+    fstream lightingVertexFile("Shaders/yae.vert");
     stringstream lightingVertexBuffer;
     lightingVertexBuffer << lightingVertexFile.rdbuf();
     string lightingVertexString         = lightingVertexBuffer.str();
     const char* lightingVertexCharArray = lightingVertexString.c_str();
 
-    fstream lightingFragmentFile("Shaders/main.frag");
+    fstream lightingFragmentFile("Shaders/yae.frag");
     stringstream lightingFragmentBuffer;
     lightingFragmentBuffer << lightingFragmentFile.rdbuf();
     string lightingFragmentString         = lightingFragmentBuffer.str();
@@ -234,43 +234,43 @@ int main(void) {
 
     //* - - - - - LIGHTS - - - - -
     directionalLights     = {
-    //    new DirectionalLight("White Directional Light",
-    //                         false,
-    //                         glm::vec3(0.0f, 1.f, 0.0f),  //? Direction
-    //                         glm::vec3(1.f, 1.f, 1.f),    //? Color
-    //                         0.1f,                        //? Ambient Strength
-    //                         glm::vec3(1.f, 1.f, 1.f),    //? Ambient Color
-    //                         0.5f,                        //?Specular Strength
-    //                         16,                          //?Specular Phong
-    //                         2.0f),                       //? Brightness
+       //    new DirectionalLight("White Directional Light",
+       //                         false,
+       //                         glm::vec3(0.0f, 1.f, 0.0f),  //? Direction
+       //                         glm::vec3(1.f, 1.f, 1.f),    //? Color
+       //                         0.1f,                        //? Ambient Strength
+       //                         glm::vec3(1.f, 1.f, 1.f),    //? Ambient Color
+       //                         0.5f,                        //?Specular Strength
+       //                         16,                          //?Specular Phong
+       //                         2.0f),                       //? Brightness
     };
     for (DirectionalLight* directionalLight : directionalLights) lights.push_back(directionalLight);
 
     pointLights = {
        new PointLight("White Point Light",
                       true,
-                      glm::vec3(0.0f, 0.8f, 0.2f),  //? Position
-                      glm::vec3(1.f, 1.f, 1.f),     //? Color
-                      0.1f,                         //? Ambient Strength
-                      glm::vec3(1.f, 1.f, 1.f),     //? Ambient Color
-                      0.5f,                         //?Specular Strength
-                      16,                           //?Specular Phong
-                      1.2f),                        //? Brightness
+                      glm::vec3(-0.2f, 0.8f, 0.2f),  //? Position
+                      glm::vec3(1.f, 1.f, 1.f),      //? Color
+                      0.1f,                          //? Ambient Strength
+                      glm::vec3(1.f, 1.f, 1.f),      //? Ambient Color
+                      0.5f,                          //?Specular Strength
+                      16,                            //?Specular Phong
+                      1.2f),                         //? Brightness
     };
     for (PointLight* pointLight : pointLights) lights.push_back(pointLight);
 
     spotLights = {
-    //    new SpotLight("White Spotlight",
-    //                  false,
-    //                  glm::vec3(0.0f, 1.f, 0.0f),   //? Position
-    //                  glm::vec3(0.0f, -1.f, 0.0f),  //? Direction
-    //                  12.5f,                        //? Cone Size
-    //                  glm::vec3(1.f, 1.f, 1.f),     //? Color
-    //                  0.1f,                         //? Ambient Strength
-    //                  glm::vec3(1.f, 1.f, 1.f),     //? Ambient Color
-    //                  0.5f,                         //?Specular Strength
-    //                  16,                           //?Specular Phong
-    //                  1.0f),                        //? Brightness
+       //    new SpotLight("White Spotlight",
+       //                  false,
+       //                  glm::vec3(0.0f, 1.f, 0.0f),   //? Position
+       //                  glm::vec3(0.0f, -1.f, 0.0f),  //? Direction
+       //                  12.5f,                        //? Cone Size
+       //                  glm::vec3(1.f, 1.f, 1.f),     //? Color
+       //                  0.1f,                         //? Ambient Strength
+       //                  glm::vec3(1.f, 1.f, 1.f),     //? Ambient Color
+       //                  0.5f,                         //?Specular Strength
+       //                  16,                           //?Specular Phong
+       //                  1.0f),                        //? Brightness
     };
     for (SpotLight* spotLight : spotLights) lights.push_back(spotLight);
     for (Light* light : lights) {
@@ -290,6 +290,15 @@ int main(void) {
                    glm::mat4(1.0f),                       //? Position Matrix
                    glm::vec3(1.0f),                       //? Scale
                    glm::vec3(0.0f, 0.0f, 90.0f)),         //? Orientation
+    //    new Model3D("YaeOnly",                             //? Model Name
+    //                "Assets/Models/plane.obj",             //? Model Path
+    //                0,                                     //? Model Count
+    //                "Assets/Models/yae.png",               //? Texture Path
+    //                "",                                    //? Normal Path
+    //                glm::vec3(0.0f, 0.0f, 0.0f),           //? Position
+    //                glm::mat4(1.0f),                       //? Position Matrix
+    //                glm::vec3(1.0f),                       //? Scale
+    //                glm::vec3(0.0f, 0.0f, 90.0f)),         //? Orientation
     };
     activeModel = model3ds.front();
 
@@ -429,6 +438,12 @@ int main(void) {
             GLuint modelNormalAddress =
                 glGetUniformLocation(lightingShaderProgram, "modelNormalTexture");
             glBindTexture(GL_TEXTURE_2D, model->getNormalMap().getNormal());
+
+            //* - - - - - YAE - - - - -
+            glActiveTexture(GL_TEXTURE2);
+            GLuint modelYaeAddress = glGetUniformLocation(lightingShaderProgram, "modelYae");
+            glBindTexture(GL_TEXTURE_2D, model->getYae().getTexture());
+            //* - - - - - END OF YAE - - - - -
 
             GLuint directionalLightCountAddress =
                 glGetUniformLocation(lightingShaderProgram, "directionalLightCount");
@@ -588,6 +603,7 @@ int main(void) {
 
             //* - - - - - MODEL RENDERING - - - - -
             glUniform1i(modelTextureAddress, model->getTexture().getTextureCount());
+            glUniform1i(modelYaeAddress, model->getYae().getTextureCount());
             if (model->getEnabled())
                 glDrawArrays(
                     GL_TRIANGLES, 0, GLint(model->getFullVertexData().size() / STRIDE_LENGTH));
