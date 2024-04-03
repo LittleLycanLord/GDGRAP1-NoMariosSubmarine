@@ -17,7 +17,7 @@ const int BITANGENT_INDEX            = 4;
 //* - - - - - END OF DATA FORMATTING - - - - -
 
 //* - - - - - LITERALS - - - - -
-const float ROTATE_SPEED             = 0.5f;  //? In Degrees
+const float ROTATE_SPEED             = 5.0f;  //? In Degrees
 const float MOVE_SPEED               = 0.1f;
 const float ORBIT_SPEED              = MOVE_SPEED * 0.005f;
 const float BRIGHTNESS_CHANGE        = 0.5f;

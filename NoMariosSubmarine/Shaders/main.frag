@@ -102,7 +102,7 @@ vec4 pointLighting(int i, vec3 normal, vec3 viewDirection) {
 }
 
 vec4 spotLighting(int i, vec3 normal, vec3 viewDirection) {
-	vec3 lightDirection = normalize(spotLights[i].position - fragmentPosition);
+	vec3 lightDirection = normalize(spotLights[i].direction);
     float theta = dot(lightDirection, normalize(-lightDirection));
     float spotLightFeathering = 17.5f;
     float epsilon = spotLights[i].coneSize - spotLightFeathering;

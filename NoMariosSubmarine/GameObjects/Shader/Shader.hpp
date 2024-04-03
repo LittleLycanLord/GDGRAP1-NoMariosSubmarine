@@ -1,47 +1,43 @@
 #pragma once
-#include "../Light.hpp"
+
+#include "Enum/ShaderType.hpp"
+#include "glad/glad.h"
 #include "stdafx.h"
 
+using namespace std;
+
 namespace models {
-class SpotLight : public Light {
+class Shader {
     //* ╔════════════╗
     //* ║ Attributes ║
     //* ╚════════════╝
-public:
-    glm::vec3 position;
-    glm::vec3 direction;
-    float coneSize;
+protected:
+    string path;
+    ShaderType type;
+
+    fstream file;
+    stringstream buffer;
+    string shaderString;
+    const char* charArray;
+    GLuint shader;
 
     //* ╔═══════════════════════════════╗
     //* ║ Constructors & Deconstructors ║
     //* ╚═══════════════════════════════╝
 public:
-    SpotLight(std::string name,
-              bool enabled,
-              glm::vec3 position,
-              glm::vec3 direction,
-              float coneSize,
-              glm::vec3 color,
-              float ambientStrength,
-              glm::vec3 ambientColor,
-              float specularStrength,
-              float specularPhong,
-              float brightness);
+    Shader(std::string path, ShaderType type);
 
     //* ╔═════════╗
     //* ║ Methods ║
     //* ╚═════════╝
 public:
-    void update(bool enabled,
-                std::vector<glm::vec3> vectorUpdates,
-                std::vector<float> floatUpdates);
+    void loadShader();
 
     //* ╔═══════════════════╗
     //* ║ Getters & Setters ║
     //* ╚═══════════════════╝
+    GLuint getShader();
+
 public:
-    glm::vec3 getPosition();
-    void setPosition(glm::vec3 position);
-    void setDirection(glm::vec3 direction);
 };
 }  // namespace models

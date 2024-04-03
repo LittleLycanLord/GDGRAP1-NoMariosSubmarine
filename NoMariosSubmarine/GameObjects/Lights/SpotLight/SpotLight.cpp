@@ -39,7 +39,7 @@ void SpotLight::update(bool enabled,
     this->ambientColor = vectorUpdates[1];
     this->specularStrength += floatUpdates[1];
     this->specularPhong += floatUpdates[2];
-    this->brightness += floatUpdates[3];
+    this->brightness = floatUpdates[3];
 
     this->position += vectorUpdates[2];
     this->direction += vectorUpdates[3];
@@ -52,4 +52,6 @@ void SpotLight::update(bool enabled,
 //* ║ Getters & Setters ║
 //* ╚═══════════════════╝
 glm::vec3 SpotLight::getPosition() { return this->position; }
+void SpotLight::setPosition(glm::vec3 position) { this->position = position; }
+void SpotLight::setDirection(glm::vec3 direction) { this->direction = direction; }
 // namespace models

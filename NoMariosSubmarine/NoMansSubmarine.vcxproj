@@ -151,6 +151,8 @@
     <ClCompile Include="GameObjects\MyNormal\MyNormal.cpp" />
     <ClCompile Include="GameObjects\MyTexture\MyTexture.cpp" />
     <ClCompile Include="GameObjects\MyTexture\stbi.cpp" />
+    <ClCompile Include="GameObjects\Player\Player.cpp" />
+    <ClCompile Include="GameObjects\Shader\Shader.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="glad.c" />
   </ItemGroup>
@@ -165,6 +167,8 @@
     <ClInclude Include="GameObjects\Model3D\Model3D.hpp" />
     <ClInclude Include="GameObjects\MyNormal\MyNormal.hpp" />
     <ClInclude Include="GameObjects\MyTexture\MyTexture.hpp" />
+    <ClInclude Include="GameObjects\Player\Player.hpp" />
+    <ClInclude Include="GameObjects\Shader\Shader.hpp" />
     <ClInclude Include="stb_image.h" />
     <ClInclude Include="tiny_obj_loader.h" />
   </ItemGroup>

@@ -11,7 +11,10 @@
 #include "GameObjects/Lights/SpotLight/SpotLight.hpp"
 #include "GameObjects/Lights/PointLight/PointLight.hpp"
 #include "GameObjects/MyTexture/MyTexture.hpp"
+#include "GameObjects/MyNormal/MyNormal.hpp"
 #include "GameObjects/Model3D/Model3D.hpp"
+#include "GameObjects/Player/Player.hpp"
+#include "GameObjects/Shader/Shader.hpp"
 #include "stdafx.h"
 // clang-format on
 
@@ -24,20 +27,16 @@ using namespace models;
 
 //* - - - - - PROGRAMMING CHALLENGE 2 VARIABLES - - - - -
 bool controllingModel                       = true;
-Light* activeLight                          = NULL;
 vector<DirectionalLight*> directionalLights = {};
 vector<PointLight*> pointLights             = {};
 vector<SpotLight*> spotLights               = {};
 vector<Light*> lights                       = {};
 Model3D* activeModel                        = NULL;
 vector<Model3D*> model3ds                   = {};
-
-Camera* currentCamera;
+Player* player                              = NULL;
+vector<Camera*> cameras                     = {};
+Camera* currentCamera                       = NULL;
 //* - - - - - END OF PROGRAMMING CHALLENGE 2 VARIABLES - - - - -
-
-//* - - - - - CAMERA PART 1 - - - - -
-
-//* - - - - - END OF CAMERA PART 1 - - - - -
 
 //? Reserved GLFW Function for Keyboard Inputs
 void Key_Callback(
@@ -45,9 +44,22 @@ void Key_Callback(
     int key,             //? What key was pressed?
     int scancode,        //? What exact physical key was pressed?
     int action,  //? What is being done to the key? [GLFW_PRESS, GLFW_REPEAT or GLFW_RELEASE]
-    int mods) {  //? Which modifer keys are held? [alt, control, shift, Super, num lock, and
-                 // caps
-                 // lock]
+    int mods) {  //? Which modifer keys are held? [alt, control, shift, Super, num lock, and caps
+                 //?lock]
+    switch (key) {
+        //* Pan Bird's Eye View Camera
+        case GLFW_KEY_UP:
+            break;
+        case GLFW_KEY_DOWN:
+            break;
+        case GLFW_KEY_LEFT:
+            break;
+        case GLFW_KEY_RIGHT:
+            break;
+        default:
+            player->playerKeyboardInput(key, action);
+            break;
+    }
 }
 
 int main(void) {
@@ -55,7 +67,7 @@ int main(void) {
     GLFWwindow* window;
     if (!glfwInit()) return -1;
 
-    window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "Quiz 3 - UBAY", NULL, NULL);
+    window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "No Marios Submarine", NULL, NULL);
     if (!window) {
         glfwTerminate();
         return -1;
@@ -69,56 +81,29 @@ int main(void) {
     glfwSetKeyCallback(window, Key_Callback);
     //* - - - - - END OF WINDOW CREATION - - - - -
 
+    //* - - - - - PLAYER INITIALIZATION - - - - -
+    player = new Player();
+    //* - - - - - END OF PLAYER INITIALIZATION - - - - -
+
     //* - - - - - SHADER CREATION - - - - -
-    fstream lightingVertexFile("Shaders/main.vert");
-    stringstream lightingVertexBuffer;
-    lightingVertexBuffer << lightingVertexFile.rdbuf();
-    string lightingVertexString         = lightingVertexBuffer.str();
-    const char* lightingVertexCharArray = lightingVertexString.c_str();
-
-    fstream lightingFragmentFile("Shaders/main.frag");
-    stringstream lightingFragmentBuffer;
-    lightingFragmentBuffer << lightingFragmentFile.rdbuf();
-    string lightingFragmentString         = lightingFragmentBuffer.str();
-    const char* lightingFragmentCharArray = lightingFragmentString.c_str();
-
-    fstream skyboxVertexFile("Shaders/skybox.vert");
-    stringstream skyboxVertexBuffer;
-    skyboxVertexBuffer << skyboxVertexFile.rdbuf();
-    string skyboxVertexString         = skyboxVertexBuffer.str();
-    const char* skyboxVertexCharArray = skyboxVertexString.c_str();
-
-    fstream skyboxFragmentFile("Shaders/skybox.frag");
-    stringstream skyboxFragmentBuffer;
-    skyboxFragmentBuffer << skyboxFragmentFile.rdbuf();
-    string skyboxFragmentString         = skyboxFragmentBuffer.str();
-    const char* skyboxFragmentCharArray = skyboxFragmentString.c_str();
-
-    GLuint lightingVertexShader         = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(lightingVertexShader, 1, &lightingVertexCharArray, NULL);
-    glCompileShader(lightingVertexShader);
-
-    GLuint lightingFragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(lightingFragmentShader, 1, &lightingFragmentCharArray, NULL);
-    glCompileShader(lightingFragmentShader);
-
-    GLuint skyboxVertexShader = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(skyboxVertexShader, 1, &skyboxVertexCharArray, NULL);
-    glCompileShader(skyboxVertexShader);
-
-    GLuint skyboxFragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(skyboxFragmentShader, 1, &skyboxFragmentCharArray, NULL);
-    glCompileShader(skyboxFragmentShader);
+    Shader lightingFragmentShader("Shaders/main.frag", ShaderType::FRAGMENT);
+    lightingFragmentShader.loadShader();
+    Shader lightingVertexShader("Shaders/main.vert", ShaderType::VERTEX);
+    lightingVertexShader.loadShader();
+    Shader skyboxFragmentShader("Shaders/skybox.frag", ShaderType::FRAGMENT);
+    skyboxFragmentShader.loadShader();
+    Shader skyboxVertexShader("Shaders/skybox.vert", ShaderType::VERTEX);
+    skyboxVertexShader.loadShader();
 
     GLuint lightingShaderProgram = glCreateProgram();
-    glAttachShader(lightingShaderProgram, lightingVertexShader);
-    glAttachShader(lightingShaderProgram, lightingFragmentShader);
+    glAttachShader(lightingShaderProgram, lightingVertexShader.getShader());
+    glAttachShader(lightingShaderProgram, lightingFragmentShader.getShader());
 
     glLinkProgram(lightingShaderProgram);
 
     GLuint skyboxShaderProgram = glCreateProgram();
-    glAttachShader(skyboxShaderProgram, skyboxVertexShader);
-    glAttachShader(skyboxShaderProgram, skyboxFragmentShader);
+    glAttachShader(skyboxShaderProgram, skyboxVertexShader.getShader());
+    glAttachShader(skyboxShaderProgram, skyboxFragmentShader.getShader());
 
     glLinkProgram(skyboxShaderProgram);
     //* - - - - - END OF SHADER CREATION - - - - -
@@ -135,14 +120,14 @@ int main(void) {
     //* Define our skybox's vertices
     float skyboxVertices[]{
        // clang-format off
-       -1.f, -1.f,  1.f, //? 0 - Near Bottom Left Corner
-        1.f, -1.f,  1.f, //? 1 - Near Bottom Right Corner
-        1.f, -1.f, -1.f, //? 2 - Far Bottom Right Corner
-       -1.f, -1.f, -1.f, //? 3 - Far Bottom Left Corner
-       -1.f,  1.f,  1.f, //? 4 - Near Top Left Corner
-        1.f,  1.f,  1.f, //? 5 - Near Top Right Corner
-        1.f,  1.f, -1.f, //? 6 - Far Top Right Corner
-       -1.f,  1.f, -1.f  //? 7 - Far Top Left Corner
+       -1.0f, -1.0f,  1.0f, //? 0 - Near Bottom Left Corner
+        1.0f, -1.0f,  1.0f, //? 1 - Near Bottom Right Corner
+        1.0f, -1.0f, -1.0f, //? 2 - Far Bottom Right Corner
+       -1.0f, -1.0f, -1.0f, //? 3 - Far Bottom Left Corner
+       -1.0f,  1.0f,  1.0f, //? 4 - Near Top Left Corner
+        1.0f,  1.0f,  1.0f, //? 5 - Near Top Right Corner
+        1.0f,  1.0f, -1.0f, //? 6 - Far Top Right Corner
+       -1.0f,  1.0f, -1.0f  //? 7 - Far Top Left Corner
        // clang-format on
     };
 
@@ -177,12 +162,12 @@ int main(void) {
     //* - - - - - END OF SKYBOX CREATION - - - - -
 
     //* - - - - - SKYBOX TEXTURING - - - - -
-    string skyboxTexturePaths[]{"Assets/Skybox/rainbow_rt.png",
-                                "Assets/Skybox/rainbow_lf.png",
-                                "Assets/Skybox/rainbow_up.png",
-                                "Assets/Skybox/rainbow_dn.png",
-                                "Assets/Skybox/rainbow_ft.png",
-                                "Assets/Skybox/rainbow_bk.png"};
+    string skyboxTexturePaths[]{"Assets/Skybox/underwater_rt.png",
+                                "Assets/Skybox/underwater_lf.png",
+                                "Assets/Skybox/underwater_up.png",
+                                "Assets/Skybox/underwater_dn.png",
+                                "Assets/Skybox/underwater_ft.png",
+                                "Assets/Skybox/underwater_bk.png"};
 
     unsigned int skyboxTexture;
     glGenTextures(1, &skyboxTexture);
@@ -202,11 +187,11 @@ int main(void) {
         if (data) {
             glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
                          0,
-                         GL_RGB,
+                         GL_RGBA,
                          w,
                          h,
                          0,
-                         GL_RGB,
+                         GL_RGBA,
                          GL_UNSIGNED_BYTE,
                          data);
 
@@ -218,13 +203,12 @@ int main(void) {
     //* - - - - - END OF SKYBOX TEXTURING - - - - -
 
     //* - - - - - CAMERA PART 1 - - - - -
-    PerspectiveCamera* perspectiveCamera = new PerspectiveCamera("Main", 60.0f);
-    currentCamera                        = perspectiveCamera;
+    currentCamera     = player->getThirdPersonView();
     //* - - - - - END OF CAMERA PART 1 - - - - -
 
     //* - - - - - WORLD FACTS - - - - -
-    glm::vec3 WorldUp                    = glm::vec3(0.0f, 1.0f, 0.0f);
-    glm::vec3 Center                     = glm::vec3(0.0f);
+    glm::vec3 WorldUp = glm::vec3(0.0f, 1.0f, 0.0f);
+    glm::vec3 Center  = glm::vec3(0.0f);
     glm::vec3 ForwardVector =
         glm::vec3(currentCamera->getViewCenter() - currentCamera->getPosition());
     ForwardVector         = glm::normalize(ForwardVector);
@@ -234,63 +218,62 @@ int main(void) {
 
     //* - - - - - LIGHTS - - - - -
     directionalLights     = {
-    //    new DirectionalLight("White Directional Light",
-    //                         false,
-    //                         glm::vec3(0.0f, 1.f, 0.0f),  //? Direction
-    //                         glm::vec3(1.f, 1.f, 1.f),    //? Color
-    //                         0.1f,                        //? Ambient Strength
-    //                         glm::vec3(1.f, 1.f, 1.f),    //? Ambient Color
-    //                         0.5f,                        //?Specular Strength
-    //                         16,                          //?Specular Phong
-    //                         2.0f),                       //? Brightness
+       new DirectionalLight("Light Blue Directional Light",
+                            false,
+                            glm::vec3(0.0f, -1.0f, 0.0f),    //? Direction
+                            glm::vec3(0.63f, 0.86f, 0.92f),  //? Color
+                            0.1f,                            //? Ambient Strength
+                            glm::vec3(0.63f, 0.86f, 0.92f),  //? Ambient Color
+                            0.5f,                            //? Specular Strength
+                            16,                              //? Specular Phong
+                            2.0f),                           //? Brightness
     };
     for (DirectionalLight* directionalLight : directionalLights) lights.push_back(directionalLight);
 
     pointLights = {
-       new PointLight("White Point Light",
-                      true,
-                      glm::vec3(0.0f, 0.8f, 0.2f),  //? Position
-                      glm::vec3(1.f, 1.f, 1.f),     //? Color
-                      0.1f,                         //? Ambient Strength
-                      glm::vec3(1.f, 1.f, 1.f),     //? Ambient Color
-                      0.5f,                         //?Specular Strength
-                      16,                           //?Specular Phong
-                      1.2f),                        //? Brightness
+       //    new PointLight("White Point Light",
+       //                   true,
+       //                   glm::vec3(0.0f, 0.8f, 0.2f),  //? Position
+       //                   glm::vec3(1.0f, 1.0f, 1.0f),     //? Color
+       //                   0.1f,                         //? Ambient Strength
+       //                   glm::vec3(1.0f, 1.0f, 1.0f),     //? Ambient Color
+       //                   0.5f,                         //? Specular Strength
+       //                   16,                           //? Specular Phong
+       //                   1.2f),                        //? Brightness
     };
     for (PointLight* pointLight : pointLights) lights.push_back(pointLight);
 
     spotLights = {
-    //    new SpotLight("White Spotlight",
-    //                  false,
-    //                  glm::vec3(0.0f, 1.f, 0.0f),   //? Position
-    //                  glm::vec3(0.0f, -1.f, 0.0f),  //? Direction
-    //                  12.5f,                        //? Cone Size
-    //                  glm::vec3(1.f, 1.f, 1.f),     //? Color
-    //                  0.1f,                         //? Ambient Strength
-    //                  glm::vec3(1.f, 1.f, 1.f),     //? Ambient Color
-    //                  0.5f,                         //?Specular Strength
-    //                  16,                           //?Specular Phong
-    //                  1.0f),                        //? Brightness
+       //    new SpotLight("White Spotlight",
+       //                  false,
+       //                  glm::vec3(0.0f, 1.0f, 0.0f),   //? Position
+       //                  glm::vec3(0.0f, -1.0f, 0.0f),  //? Direction
+       //                  12.5f,                        //? Cone Size
+       //                  glm::vec3(1.0f, 1.0f, 1.0f),     //? Color
+       //                  0.1f,                         //? Ambient Strength
+       //                  glm::vec3(1.0f, 1.0f, 1.0f),     //? Ambient Color
+       //                  0.5f,                         //? Specular Strength
+       //                  16,                           //? Specular Phong
+       //                  1.0f),                        //? Brightness
     };
+    spotLights.push_back(player->getSpotLight());
     for (SpotLight* spotLight : spotLights) lights.push_back(spotLight);
-    for (Light* light : lights) {
-        if (light->getEnabled()) activeLight = light;
-    }
 
     //* - - - - - END OF LIGHTS - - - - -
 
     //* - - - - - MODEL LOADING - - - - -
     model3ds = {
-       new Model3D("Brickwall",                           //? Model Name
-                   "Assets/Models/plane.obj",             //? Model Path
-                   0,                                     //? Model Count
-                   "Assets/Models/brickwall.jpg",         //? Texture Path
-                   "Assets/Models/brickwall_normal.jpg",  //? Normal Path
-                   glm::vec3(0.0f, 0.0f, 0.0f),           //? Position
-                   glm::mat4(1.0f),                       //? Position Matrix
-                   glm::vec3(1.0f),                       //? Scale
-                   glm::vec3(0.0f, 0.0f, 90.0f)),         //? Orientation
+       new Model3D("Enemy Submarine",             //? Model Name
+                   "Assets/MeepballSub.obj",      //? Model Path
+                   0,                             //? Model Count
+                   "Assets/Enemies/Enemy_1.png",  //? Texture Path
+                   "",                            //? Normal Path
+                   glm::vec3(0.0f, 0.0f, -1.0f),   //? Position
+                   glm::mat4(1.0f),               //? Position Matrix
+                   glm::vec3(1.0f),               //? Scale
+                   glm::vec3(0.0f, 180.0f, 0.0f)),  //? Orientation
     };
+    model3ds.push_back(player->getModel());
     activeModel = model3ds.front();
 
     for (Model3D* model : model3ds) model->loadModel();
@@ -304,9 +287,11 @@ int main(void) {
             glm::lookAt(currentCamera->getPosition(), currentCamera->getViewCenter(), WorldUp));
 
         //* - - - - - UPDATE - - - - -
-        activeModel->setOrientation(glm::vec3(activeModel->getOrientation().x + ROTATE_SPEED,
-                                              activeModel->getOrientation().y,
-                                              activeModel->getOrientation().z));
+        player->movePlayer();
+        player->turnPlayer();
+        player->resetInputs();
+        player->displayDepth();
+        player->haveSpotlightFollowModel();
         //* - - - - - END OF UPDATE - - - - -
 
         //* - - - - - SKYBOX SHADER SWITCH - - - - -
@@ -316,7 +301,7 @@ int main(void) {
         //* - - - - - END OF SKYBOX SHADER SWITCH - - - - -
 
         //* - - - - - SKYBOX RENDERING - - - - -
-        glm::mat4 skyboxView           = glm::mat4(1.f);
+        glm::mat4 skyboxView           = glm::mat4(1.0f);
         skyboxView                     = glm::mat4(glm::mat3(currentCamera->getView()));
 
         unsigned int skyboxViewAddress = glGetUniformLocation(skyboxShaderProgram, "view");
@@ -605,10 +590,10 @@ int main(void) {
         glDeleteVertexArrays(1, model->getVAO());
         glDeleteBuffers(1, model->getVBO());
     }
-    glDeleteShader(lightingVertexShader);
-    glDeleteShader(lightingFragmentShader);
-    glDeleteShader(skyboxVertexShader);
-    glDeleteShader(skyboxFragmentShader);
+    glDeleteShader(lightingVertexShader.getShader());
+    glDeleteShader(lightingFragmentShader.getShader());
+    glDeleteShader(skyboxVertexShader.getShader());
+    glDeleteShader(skyboxFragmentShader.getShader());
     //* - - - - - END OF CLEAN UP - - - - -
     glfwTerminate();
     return 0;
