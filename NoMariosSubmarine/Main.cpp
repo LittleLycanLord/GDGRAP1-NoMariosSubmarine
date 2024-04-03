@@ -22,14 +22,6 @@ Camera Rotation: Camera(n.d.).LearnOpenGL.https://learnopengl.com/Getting-starte
 using namespace std;
 using namespace models;
 
-//* - - - - - LITERALS - - - - -
-const float ROTATE_SPEED                    = 0.5f;  //? In Degrees
-const float MOVE_SPEED                      = 0.1f;
-const float ORBIT_SPEED                     = MOVE_SPEED * 0.005f;
-const float BRIGHTNESS_CHANGE               = 0.5f;
-const float ORBIT_RADIUS                    = 1.5f;
-//* - - - - - END OF LITERALS - - - - -
-
 //* - - - - - PROGRAMMING CHALLENGE 2 VARIABLES - - - - -
 bool controllingModel                       = true;
 Light* activeLight                          = NULL;
@@ -40,54 +32,11 @@ vector<Light*> lights                       = {};
 Model3D* activeModel                        = NULL;
 vector<Model3D*> model3ds                   = {};
 
-int lightOrbitDirection                     = 0;
-//? 0: Forward
-//? 1: Left
-//? 2: Backward
-//? 3: Right
-
-const float radius                          = 5.0f;
-double xpos, ypos;
-float x_mod = 0.0f, y_mod = 0.0f;
-float camX;
-float camZ;
-float camY;
-bool bStart = true;
 Camera* currentCamera;
 //* - - - - - END OF PROGRAMMING CHALLENGE 2 VARIABLES - - - - -
 
 //* - - - - - CAMERA PART 1 - - - - -
-PerspectiveCamera* perspectiveCamera   = new PerspectiveCamera("Main", 60.0f);
-OrthographicCamera* orthographicCamera = new OrthographicCamera("Ortho Cam");
 
-/*will give the direction on where the camera will rotate base on the mouse position*/
-static void cursor_position_callback(GLFWwindow* window, double xpos, double ypos) {
-    x_mod = (xpos / 95.0f) * -1.0f;
-    y_mod = (ypos / 200.0f);
-
-    camX  = sin(x_mod) * radius;
-    camZ  = cos(x_mod) * radius;
-    camY  = cos(y_mod) * radius;
-
-    /*Print statements for debugging*/
-    // std::cout << "X MOD IS: " << camX << std::endl;
-    // std::cout << "y MOD IS: " << camY << std::endl;
-}
-
-/*GLFW built-in method that checks if the mouse is within the program's window, else otherwise*/
-void cursor_enter_callback(GLFWwindow* window, int entered) {
-    // if (entered)
-    // {
-    //     std::cout << "mouse enters window" << std::endl;
-    //     glfwGetCursorPos(window, &xpos, &ypos);
-    //     bStart = false;
-    //     glfwSetCursorPosCallback(window, cursor_position_callback);
-    // }
-    // else
-    // {
-    //     std::cout << "mouse leaves window" << std::endl;
-    // }
-}
 //* - - - - - END OF CAMERA PART 1 - - - - -
 
 //? Reserved GLFW Function for Keyboard Inputs
@@ -99,220 +48,6 @@ void Key_Callback(
     int mods) {  //? Which modifer keys are held? [alt, control, shift, Super, num lock, and
                  // caps
                  // lock]
-
-    switch (key) {
-        //* Switch between Light and Model
-        case GLFW_KEY_SPACE:
-            if (action == GLFW_PRESS) {
-                if (controllingModel) {
-                    activeLight      = pointLights[0];
-                    controllingModel = false;
-                    activeLight->update(true,
-                                        {glm::vec3(1.0f, 0.75f, 0.0f),
-                                         glm::vec3(1.0f, 0.75f, 0.0f),
-                                         glm::vec3(0.0f, 0.0f, 0.0f),
-                                         glm::vec3(0.0f)},
-                                        {0.0f, 0.0f, 0.0f, 0.0f, 0.0f});
-                } else {
-                    activeLight      = pointLights[0];
-                    controllingModel = true;
-                    activeLight->update(true,
-                                        {glm::vec3(1.0f),
-                                         glm::vec3(1.0f),
-                                         glm::vec3(0.0f, 0.0f, 0.0f),
-                                         glm::vec3(0.0f)},
-                                        {0.0f, 0.0f, 0.0f, 0.0f, 0.0f});
-                }
-            }
-            break;
-        //* Translation
-        case GLFW_KEY_W:
-            //* Move Forward
-            if (controllingModel) {
-                // activeModel->setPosition(glm::vec3(activeModel->getPosition().x,
-                //                                    activeModel->getPosition().y,
-                //                                    activeModel->getPosition().z - MOVE_SPEED));
-                activeModel->setOrientation(
-                    glm::vec3(activeModel->getOrientation().x,
-                              activeModel->getOrientation().y,
-                              activeModel->getOrientation().z + ROTATE_SPEED));
-
-            } else {
-                if (pointLights[0]->getPosition().z > -ORBIT_RADIUS) {
-                    activeLight->update(true,
-                                        {activeLight->getColor(),
-                                         activeLight->getAmbientColor(),
-                                         glm::vec3(0.0f, 0.0f, -MOVE_SPEED),
-                                         glm::vec3(0.0f)},
-                                        {0.0f, 0.0f, 0.0f, 0.0f, 0.0f});
-                }
-            }
-            break;
-        case GLFW_KEY_A:
-            //* Move Left
-            if (controllingModel) {
-                // activeModel->setPosition(glm::vec3(activeModel->getPosition().x - MOVE_SPEED,
-                //                                    activeModel->getPosition().y,
-                //                                    activeModel->getPosition().z));
-                activeModel->setOrientation(
-                    glm::vec3(activeModel->getOrientation().x + ROTATE_SPEED,
-                              activeModel->getOrientation().y,
-                              activeModel->getOrientation().z));
-            } else {
-                if (pointLights[0]->getPosition().x > -ORBIT_RADIUS) {
-                    activeLight->update(true,
-                                        {activeLight->getColor(),
-                                         activeLight->getAmbientColor(),
-                                         glm::vec3(-MOVE_SPEED, 0.0f, 0.0f),
-                                         glm::vec3(0.0f)},
-                                        {0.0f, 0.0f, 0.0f, 0.0f, 0.0f});
-                }
-            }
-            break;
-        case GLFW_KEY_S:
-            //* Move Backward
-            if (controllingModel) {
-                // activeModel->setPosition(glm::vec3(activeModel->getPosition().x,
-                //                                    activeModel->getPosition().y,
-                //                                    activeModel->getPosition().z + MOVE_SPEED));
-                activeModel->setOrientation(
-                    glm::vec3(activeModel->getOrientation().x,
-                              activeModel->getOrientation().y,
-                              activeModel->getOrientation().z - ROTATE_SPEED));
-            } else {
-                if (pointLights[0]->getPosition().z < ORBIT_RADIUS) {
-                    activeLight->update(true,
-                                        {activeLight->getColor(),
-                                         activeLight->getAmbientColor(),
-                                         glm::vec3(0.0f, 0.0f, MOVE_SPEED),
-                                         glm::vec3(0.0f)},
-                                        {0.0f, 0.0f, 0.0f, 0.0f, 0.0f});
-                }
-            }
-            break;
-        case GLFW_KEY_D:
-            //* Move Right
-            if (controllingModel) {
-                // activeModel->setPosition(glm::vec3(activeModel->getPosition().x + MOVE_SPEED,
-                //                                    activeModel->getPosition().y,
-                //                                    activeModel->getPosition().z));
-                activeModel->setOrientation(
-                    glm::vec3(activeModel->getOrientation().x - ROTATE_SPEED,
-                              activeModel->getOrientation().y,
-                              activeModel->getOrientation().z));
-            } else {
-                if (pointLights[0]->getPosition().x < ORBIT_RADIUS) {
-                    activeLight->update(true,
-                                        {activeLight->getColor(),
-                                         activeLight->getAmbientColor(),
-                                         glm::vec3(MOVE_SPEED, 0.0f, 0.0f),
-                                         glm::vec3(0.0f)},
-                                        {0.0f, 0.0f, 0.0f, 0.0f, 0.0f});
-                }
-            }
-            break;
-        case GLFW_KEY_E:
-            //* Move Up
-            if (controllingModel) {
-                activeModel->setOrientation(
-                    glm::vec3(activeModel->getOrientation().x,
-                              activeModel->getOrientation().y - ROTATE_SPEED,
-                              activeModel->getOrientation().z));
-            } else {
-                if (pointLights[0]->getPosition().y < ORBIT_RADIUS) {
-                    activeLight->update(true,
-                                        {activeLight->getColor(),
-                                         activeLight->getAmbientColor(),
-                                         glm::vec3(0.0f, MOVE_SPEED, 0.0f),
-                                         glm::vec3(0.0f)},
-                                        {0.0f, 0.0f, 0.0f, 0.0f, 0.0f});
-                }
-            }
-            break;
-        case GLFW_KEY_Q:
-            //* Move Down
-            if (controllingModel) {
-                activeModel->setOrientation(
-                    glm::vec3(activeModel->getOrientation().x,
-                              activeModel->getOrientation().y + ROTATE_SPEED,
-                              activeModel->getOrientation().z));
-            } else {
-                if (pointLights[0]->getPosition().y > -ORBIT_RADIUS) {
-                    activeLight->update(true,
-                                        {activeLight->getColor(),
-                                         activeLight->getAmbientColor(),
-                                         glm::vec3(0.0f, -MOVE_SPEED, 0.0f),
-                                         glm::vec3(0.0f)},
-                                        {0.0f, 0.0f, 0.0f, 0.0f, 0.0f});
-                }
-            }
-            break;
-        case GLFW_KEY_UP:
-            if (controllingModel) {
-                glm::vec3(activeModel->getOrientation().x - ROTATE_SPEED,
-                          activeModel->getOrientation().y,
-                          activeModel->getOrientation().z);
-            } else {
-                activeLight->update(true,
-                                    {activeLight->getColor(),
-                                     activeLight->getAmbientColor(),
-                                     glm::vec3(0.0f),
-                                     glm::vec3(0.0f)},
-                                    {0.0f, 0.0f, 0.0f, BRIGHTNESS_CHANGE, 0.0f});
-            }
-            break;
-        case GLFW_KEY_DOWN:
-            if (controllingModel) {
-                glm::vec3(activeModel->getOrientation().x + ROTATE_SPEED,
-                          activeModel->getOrientation().y,
-                          activeModel->getOrientation().z);
-            } else {
-                activeLight->update(true,
-                                    {activeLight->getColor(),
-                                     activeLight->getAmbientColor(),
-                                     glm::vec3(0.0f),
-                                     glm::vec3(0.0f)},
-                                    {0.0f, 0.0f, 0.0f, -BRIGHTNESS_CHANGE, 0.0f});
-            }
-            break;
-        case GLFW_KEY_LEFT:
-            if (controllingModel) {
-                glm::vec3(activeModel->getOrientation().x,
-                          activeModel->getOrientation().y - ROTATE_SPEED,
-                          activeModel->getOrientation().z);
-            } else {
-                directionalLights[0]->update(true,
-                                             {directionalLights[0]->getColor(),
-                                              directionalLights[0]->getAmbientColor(),
-                                              glm::vec3(0.0f),
-                                              glm::vec3(0.0f)},
-                                             {0.0f, 0.0f, 0.0f, -BRIGHTNESS_CHANGE, 0.0f});
-            }
-            break;
-        case GLFW_KEY_RIGHT:
-            if (controllingModel) {
-                glm::vec3(activeModel->getOrientation().x,
-                          activeModel->getOrientation().y + ROTATE_SPEED,
-                          activeModel->getOrientation().z);
-            } else {
-                directionalLights[0]->update(true,
-                                             {directionalLights[0]->getColor(),
-                                              directionalLights[0]->getAmbientColor(),
-                                              glm::vec3(0.0f),
-                                              glm::vec3(0.0f)},
-                                             {0.0f, 0.0f, 0.0f, BRIGHTNESS_CHANGE, 0.0f});
-            }
-            break;
-        case GLFW_KEY_1:
-            currentCamera = perspectiveCamera;
-            break;
-            std::cout << "Perspective Camera has been enabled!" << std::endl;
-
-        case GLFW_KEY_2:
-            currentCamera = orthographicCamera;
-            std::cout << "Orthographic Camera has been enabled!" << std::endl;
-            break;
-    }
 }
 
 int main(void) {
@@ -482,14 +217,14 @@ int main(void) {
     }
     //* - - - - - END OF SKYBOX TEXTURING - - - - -
 
-    //* - - - - - CAMERA PART 2 - - - - -
-    // perspectiveCamera will be the starting camera unless key 2 is pressed
-    currentCamera     = perspectiveCamera;
-    //* - - - - - END OF CAMERA PART 2 - - - - -
+    //* - - - - - CAMERA PART 1 - - - - -
+    PerspectiveCamera* perspectiveCamera = new PerspectiveCamera("Main", 60.0f);
+    currentCamera                        = perspectiveCamera;
+    //* - - - - - END OF CAMERA PART 1 - - - - -
 
     //* - - - - - WORLD FACTS - - - - -
-    glm::vec3 WorldUp = glm::vec3(0.f, 1.0f, 0.f);
-    glm::vec3 Center  = glm::vec3(0.f);
+    glm::vec3 WorldUp                    = glm::vec3(0.0f, 1.0f, 0.0f);
+    glm::vec3 Center                     = glm::vec3(0.0f);
     glm::vec3 ForwardVector =
         glm::vec3(currentCamera->getViewCenter() - currentCamera->getPosition());
     ForwardVector         = glm::normalize(ForwardVector);
@@ -497,44 +232,24 @@ int main(void) {
     glm::vec3 UpVector    = glm::normalize(glm::cross(RightVector, ForwardVector));
     //* - - - - - END OF WORLD FACTS - - - - -
 
-    //* - - - - - CAMERA PART 3 - - - - -
-    currentCamera->initializeOrientation(RightVector, UpVector, ForwardVector);
-    //* - - - - - END OF CAMERA PART 3 - - - - -
-
     //* - - - - - LIGHTS - - - - -
-    glm::vec3 lightPosition = glm::vec3(-1.f, -1.f, 0.f);
-    glm::vec3 lightColor    = glm::vec3(1.f, 1.f, 1.f);
-    float ambientStrength   = 0.1f;
-    glm::vec3 ambientColor  = lightColor;
-    float specularStrength  = 0.5f;
-    float specularPhong     = 16;
-
-    directionalLights       = {
-       new DirectionalLight("White Directional Light",
-                            false,
-                            glm::vec3(0.f, 1.f, 0.f),  //? Direction
-                            glm::vec3(1.f, 1.f, 1.f),  //? Color
-                            0.1f,                      //? Ambient Strength
-                            glm::vec3(1.f, 1.f, 1.f),  //? Ambient Color
-                            0.5f,                      //?Specular Strength
-                            16,                        //?Specular Phong
-                            2.0f),                     //? Brightness
+    directionalLights     = {
+    //    new DirectionalLight("White Directional Light",
+    //                         false,
+    //                         glm::vec3(0.0f, 1.f, 0.0f),  //? Direction
+    //                         glm::vec3(1.f, 1.f, 1.f),    //? Color
+    //                         0.1f,                        //? Ambient Strength
+    //                         glm::vec3(1.f, 1.f, 1.f),    //? Ambient Color
+    //                         0.5f,                        //?Specular Strength
+    //                         16,                          //?Specular Phong
+    //                         2.0f),                       //? Brightness
     };
     for (DirectionalLight* directionalLight : directionalLights) lights.push_back(directionalLight);
 
     pointLights = {
        new PointLight("White Point Light",
                       true,
-                      glm::vec3(-1.3f, 0.8f, 0.2f),  //? Position
-                      glm::vec3(1.f, 1.f, 1.f),      //? Color
-                      0.1f,                          //? Ambient Strength
-                      glm::vec3(1.f, 1.f, 1.f),      //? Ambient Color
-                      0.5f,                          //?Specular Strength
-                      16,                            //?Specular Phong
-                      1.2f),                         //? Brightness
-       new PointLight("White Point Light",
-                      true,
-                      glm::vec3(1.3f, 0.8f, 0.2f),  //? Position
+                      glm::vec3(0.0f, 0.8f, 0.2f),  //? Position
                       glm::vec3(1.f, 1.f, 1.f),     //? Color
                       0.1f,                         //? Ambient Strength
                       glm::vec3(1.f, 1.f, 1.f),     //? Ambient Color
@@ -545,17 +260,17 @@ int main(void) {
     for (PointLight* pointLight : pointLights) lights.push_back(pointLight);
 
     spotLights = {
-       new SpotLight("White Spotlight",
-                     false,
-                     glm::vec3(0.f, 1.f, 0.f),   //? Position
-                     glm::vec3(0.f, -1.f, 0.f),  //? Direction
-                     12.5f,                      //? Cone Size
-                     glm::vec3(1.f, 1.f, 1.f),   //? Color
-                     0.1f,                       //? Ambient Strength
-                     glm::vec3(1.f, 1.f, 1.f),   //? Ambient Color
-                     0.5f,                       //?Specular Strength
-                     16,                         //?Specular Phong
-                     1.0f),                      //? Brightness
+    //    new SpotLight("White Spotlight",
+    //                  false,
+    //                  glm::vec3(0.0f, 1.f, 0.0f),   //? Position
+    //                  glm::vec3(0.0f, -1.f, 0.0f),  //? Direction
+    //                  12.5f,                        //? Cone Size
+    //                  glm::vec3(1.f, 1.f, 1.f),     //? Color
+    //                  0.1f,                         //? Ambient Strength
+    //                  glm::vec3(1.f, 1.f, 1.f),     //? Ambient Color
+    //                  0.5f,                         //?Specular Strength
+    //                  16,                           //?Specular Phong
+    //                  1.0f),                        //? Brightness
     };
     for (SpotLight* spotLight : spotLights) lights.push_back(spotLight);
     for (Light* light : lights) {
@@ -566,32 +281,15 @@ int main(void) {
 
     //* - - - - - MODEL LOADING - - - - -
     model3ds = {
-       new Model3D("Brickwall",                    //? Model Name
-                   "Assets/Models/plane.obj",      //? Model Path
-                   0,                              //? Model Count
-                   "Assets/Models/brickwall.jpg",  //? Texture Path
-                   "",                             //? Normal Path
-                   glm::vec3(-1.3f, 0.f, 0.f),     //? Position
-                   glm::mat4(1.0f),                //? Position Matrix
-                   glm::vec3(1.0f),                //? Scale
-                   glm::vec3(0.0f, 0.0f, 90.0f)),  //? Orientation
-       new Model3D("Brickwall",                    //? Model Name
-                   "Assets/Models/plane.obj",      //? Model Path
-                   0,                              //? Model Count
-                   "Assets/Models/brickwall.jpg",  //? Texture Path
+       new Model3D("Brickwall",                           //? Model Name
+                   "Assets/Models/plane.obj",             //? Model Path
+                   0,                                     //? Model Count
+                   "Assets/Models/brickwall.jpg",         //? Texture Path
                    "Assets/Models/brickwall_normal.jpg",  //? Normal Path
-                   glm::vec3(1.3f, 0.f, 0.f),      //? Position
-                   glm::mat4(1.0f),                //? Position Matrix
-                   glm::vec3(1.0f),                //? Scale
-                   glm::vec3(0.0f, 0.0f, 90.0f)),  //? Orientation
-       //    new Model3D("Submarine",                     //? Model Name
-       //                "Assets/MeepballSub.obj",        //? Model Path
-       //                1,                               //? Model Count
-       //                "Assets/Submarine.png",          //? Texture Path
-       //                glm::vec3(0.f, 0.f, 0.f),        //? Position
-       //                glm::mat4(1.0f),                 //? Position Matrix
-       //                glm::vec3(1.0f),                 //? Scale
-       //                glm::vec3(0.0f, 180.0f, 0.0f)),  //? Orientation
+                   glm::vec3(0.0f, 0.0f, 0.0f),           //? Position
+                   glm::mat4(1.0f),                       //? Position Matrix
+                   glm::vec3(1.0f),                       //? Scale
+                   glm::vec3(0.0f, 0.0f, 90.0f)),         //? Orientation
     };
     activeModel = model3ds.front();
 
@@ -602,15 +300,6 @@ int main(void) {
     while (!glfwWindowShouldClose(window)) {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        if (bStart)
-            currentCamera->getPosition();
-        else
-            currentCamera->setPosition(glm::vec3(camX, camY, camZ));
-
-        if (currentCamera == orthographicCamera)
-            currentCamera->setPosition(glm::vec3(camX, 10.0f, camZ));
-        glfwSetCursorEnterCallback(window, cursor_enter_callback);
-
         currentCamera->setView(
             glm::lookAt(currentCamera->getPosition(), currentCamera->getViewCenter(), WorldUp));
 
@@ -618,9 +307,6 @@ int main(void) {
         activeModel->setOrientation(glm::vec3(activeModel->getOrientation().x + ROTATE_SPEED,
                                               activeModel->getOrientation().y,
                                               activeModel->getOrientation().z));
-        model3ds[1]->setOrientation(glm::vec3(model3ds[1]->getOrientation().x + ROTATE_SPEED,
-                                              model3ds[1]->getOrientation().y,
-                                              model3ds[1]->getOrientation().z));
         //* - - - - - END OF UPDATE - - - - -
 
         //* - - - - - SKYBOX SHADER SWITCH - - - - -
@@ -666,8 +352,8 @@ int main(void) {
             glGetUniformLocation(lightingShaderProgram, "cameraPosition");
         glUniform3fv(cameraPositionAddress, 1, glm::value_ptr(currentCamera->getPosition()));
         //* - - - - - END OF CAMERA UPDATE - - - - -
-        //* - - - - - MODEL UPDATE - - - - -
 
+        //* - - - - - MODEL UPDATE - - - - -
         for (Model3D* model : model3ds) {
             //* - - - - - MODEL LIGHTING - - - - -
             glBindVertexArray(*model->getVAO());

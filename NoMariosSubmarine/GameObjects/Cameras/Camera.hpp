@@ -10,7 +10,6 @@ protected:
     std::string name;
     glm::vec3 position;
     glm::mat4 positionMatrix;
-    glm::mat4 orientation;
     glm::mat4 view;
     glm::mat4 projection;
     glm::vec3 viewCenter;
@@ -24,10 +23,6 @@ public:
     //* ║ Methods ║
     //* ╚═════════╝
 public:
-
-public:
-    void initializeOrientation(glm::vec3 RightVector, glm::vec3 UpVector, glm::vec3 ForwardVector);
-
     //* ╔═══════════════════╗
     //* ║ Getters & Setters ║
     //* ╚═══════════════════╝
@@ -41,8 +36,6 @@ public:
     glm::mat4 getPositionMatrix();
     void setPositionMatrix(glm::mat4 positionMatrix);
 
-    glm::mat4 getOrientation();
-
     glm::mat4 getProjection();
     void setProjection(glm::mat4 projection);
 
@@ -52,4 +45,4 @@ public:
     glm::vec3 getViewCenter();
     void setViewCenter(glm::vec3 viewCenter);
 };
-} 
+}  // namespace models
