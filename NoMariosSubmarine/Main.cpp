@@ -219,14 +219,14 @@ int main(void) {
     //* - - - - - LIGHTS - - - - -
     directionalLights     = {
        new DirectionalLight("Light Blue Directional Light",
-                            false,
-                            glm::vec3(0.0f, -1.0f, 0.0f),    //? Direction
-                            glm::vec3(0.63f, 0.86f, 0.92f),  //? Color
+                            true,
+                            glm::vec3(0.0f, 1.0f, 0.0f),    //? Direction
+                            glm::vec3(0.23f, 0.26f, 0.92f),  //? Color
                             0.1f,                            //? Ambient Strength
                             glm::vec3(0.63f, 0.86f, 0.92f),  //? Ambient Color
                             0.5f,                            //? Specular Strength
                             16,                              //? Specular Phong
-                            2.0f),                           //? Brightness
+                            3.0f),                           //? Brightness
     };
     for (DirectionalLight* directionalLight : directionalLights) lights.push_back(directionalLight);
 
