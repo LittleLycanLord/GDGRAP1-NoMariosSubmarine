@@ -34,7 +34,6 @@ protected:
 public:
     Model3D(std::string name,
             std::string modelPath,
-            int modelCount,
             std::string texturePath,
             std::string normalPath,
             glm::vec3 position,

@@ -12,7 +12,6 @@ class MyNormal {
 protected:
     GLuint normal;
     std::string normalPath;
-    int normalCount;
     int width;
     int height;
     int colorChannels;
@@ -21,7 +20,7 @@ protected:
     //* ║ Constructors & Deconstructors ║
     //* ╚═══════════════════════════════╝
 public:
-    MyNormal(std::string normalPath, int normalCount);
+    MyNormal(std::string normalPath);
 
     //* ╔═════════╗
     //* ║ Methods ║
@@ -44,6 +43,5 @@ public:
     void setHeight(int height);
     int getColorChannels();
     void setColorChannels(int colorChannels);
-    int getNormalCount();
 };
 }  // namespace models

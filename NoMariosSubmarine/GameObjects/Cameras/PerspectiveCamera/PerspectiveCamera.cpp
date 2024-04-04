@@ -5,14 +5,11 @@ using namespace models;
 //* ╔═══════════════════════════════╗
 //* ║ Constructors & Deconstructors ║
 //* ╚═══════════════════════════════╝
-
-// TODO 2: Fix the parameters for perspective, knowing we have:
-// td          - a fieldOfView Parameter
-// td          - Window Height and Window Width Constants in Settings.hpp [already included in
-// stdafx.h] td          - Our Near and Far clipping planes are 0.01f and 1000.0f respectively
-
+//| TODO: Adjust the constructor based on the changes to the base Camera contructor, with the
+//| additional parameters added for perspective projection:
+//| - Far-clipping plane (the 1000.f, since we'll have cameras that are short/farsighted)
 PerspectiveCamera::PerspectiveCamera(std::string name, float fieldOfView)
-    : Camera(name + " Perspective Camera", glm::perspective(1.0f, 1.0f, 1.0f, 1.0f)),
+    : Camera(name + " Perspective", glm::perspective(1.0f, 1.0f, 1.0f, 1.0f)),
       fieldOfView(fieldOfView) {
     setPosition(glm::vec3(0.0f, 3.0f, 2.2f));
     setProjection(glm::perspective(

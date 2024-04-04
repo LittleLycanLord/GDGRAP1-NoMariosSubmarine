@@ -8,7 +8,6 @@ using namespace std;
 //* ╚═══════════════════════════════╝
 Model3D::Model3D(std::string name,
                  std::string modelPath,
-                 int modelCount,
                  std::string texturePath,
                  std::string normalPath,
                  glm::vec3 position,
@@ -17,8 +16,8 @@ Model3D::Model3D(std::string name,
                  glm::vec3 orientation)
     : name(name),
       enabled(true),
-      texture(texturePath, (modelCount * 2)),
-      normalMap(normalPath, (modelCount * 2) + 1),
+      texture(texturePath),
+      normalMap(normalPath),
       texturePath(texturePath),
       normalPath(normalPath),
       modelPath(modelPath),
@@ -127,7 +126,8 @@ void Model3D::loadModel() {
                  this->fullVertexData.data(),
                  GL_DYNAMIC_DRAW);
     //* Positions
-    glVertexAttribPointer(POSITION_INDEX, 3, GL_FLOAT, GL_FALSE, STRIDE_LENGTH * sizeof(float), (void*)0);
+    glVertexAttribPointer(
+        POSITION_INDEX, 3, GL_FLOAT, GL_FALSE, STRIDE_LENGTH * sizeof(float), (void*)0);
     glEnableVertexAttribArray(POSITION_INDEX);
 
     //* Normals
@@ -138,7 +138,8 @@ void Model3D::loadModel() {
 
     //* UVs
     GLintptr uvPtr = 6 * sizeof(float);
-    glVertexAttribPointer(UV_INDEX, 2, GL_FLOAT, GL_FALSE, STRIDE_LENGTH * sizeof(float), (void*)uvPtr);
+    glVertexAttribPointer(
+        UV_INDEX, 2, GL_FLOAT, GL_FALSE, STRIDE_LENGTH * sizeof(float), (void*)uvPtr);
     glEnableVertexAttribArray(UV_INDEX);
 
     //* Tangents
@@ -149,8 +150,12 @@ void Model3D::loadModel() {
 
     //* Bitangents
     GLintptr bitangentPtr = 11 * sizeof(float);
-    glVertexAttribPointer(
-        BITANGENT_INDEX, 3, GL_FLOAT, GL_FALSE, STRIDE_LENGTH * sizeof(GLfloat), (void*)bitangentPtr);
+    glVertexAttribPointer(BITANGENT_INDEX,
+                          3,
+                          GL_FLOAT,
+                          GL_FALSE,
+                          STRIDE_LENGTH * sizeof(GLfloat),
+                          (void*)bitangentPtr);
     glEnableVertexAttribArray(BITANGENT_INDEX);
 
     //* Close for Editing

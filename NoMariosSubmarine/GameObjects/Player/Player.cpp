@@ -9,7 +9,6 @@ using namespace std;
 Player::Player()
     : model(new Model3D("Player Submarine",           //? Model Name
                         "Assets/MeepballSub.obj",     //? Model Path
-                        0,                            //? Model Count
                         "Assets/Submarine.png",       //? Texture Path
                         "",                           //? Normal Path
                         glm::vec3(0.0f, 0.0f, 0.0f),  //? Position
@@ -65,11 +64,9 @@ void Player::playerKeyboardInput(int key, int action) {
     if (key == GLFW_KEY_F && action == GLFW_PRESS) {
         this->cycleLightIntensity();
     }
-    //* Swap between 1st and 3rd Person View
+
+    //| TODO: Swap between 1st and 3rd Person View
     if (key == GLFW_KEY_1 && action == GLFW_PRESS) {
-    }
-    //* Toggle Bird's Eye View
-    if (key == GLFW_KEY_2 && action == GLFW_PRESS) {
     }
     //* Shoot Torpedo
     if (key == GLFW_KEY_SPACE && action == GLFW_PRESS) {

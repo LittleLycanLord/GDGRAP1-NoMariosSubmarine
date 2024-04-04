@@ -12,7 +12,6 @@ class MyTexture {
 protected:
     GLuint texture;
     std::string texturePath;
-    int textureCount;
     int width;
     int height;
     int colorChannels;
@@ -21,7 +20,7 @@ protected:
     //* ║ Constructors & Deconstructors ║
     //* ╚═══════════════════════════════╝
 public:
-    MyTexture(std::string texturePath, int textureCount);
+    MyTexture(std::string texturePath);
 
     //* ╔═════════╗
     //* ║ Methods ║

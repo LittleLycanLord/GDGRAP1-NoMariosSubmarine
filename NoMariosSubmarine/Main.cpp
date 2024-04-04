@@ -25,18 +25,19 @@ Camera Rotation: Camera(n.d.).LearnOpenGL.https://learnopengl.com/Getting-starte
 using namespace std;
 using namespace models;
 
-//* - - - - - PROGRAMMING CHALLENGE 2 VARIABLES - - - - -
-bool controllingModel                       = true;
+//* - - - - - POINTERS AND CONTAINERS - - - - -
 vector<DirectionalLight*> directionalLights = {};
 vector<PointLight*> pointLights             = {};
 vector<SpotLight*> spotLights               = {};
 vector<Light*> lights                       = {};
 Model3D* activeModel                        = NULL;
+
 vector<Model3D*> model3ds                   = {};
 Player* player                              = NULL;
+
 vector<Camera*> cameras                     = {};
 Camera* currentCamera                       = NULL;
-//* - - - - - END OF PROGRAMMING CHALLENGE 2 VARIABLES - - - - -
+//* - - - - - END OF POINTERS AND CONTAINERS - - - - -
 
 //? Reserved GLFW Function for Keyboard Inputs
 void Key_Callback(
@@ -47,7 +48,14 @@ void Key_Callback(
     int mods) {  //? Which modifer keys are held? [alt, control, shift, Super, num lock, and caps
                  //?lock]
     switch (key) {
-        //* Pan Bird's Eye View Camera
+        //| TODO: Toggle Bird's Eye View: Choose whether the player can still press 1 to exit
+        //| bird's eye view, or require them to toggle back using 2 before being able to switch to
+        //| 1st & 3rd  person view
+        case GLFW_KEY_2:
+            if (action == GLFW_PRESS) {
+            }
+            break;
+        //| TODO: Pan Bird's Eye View Camera: Player does NOT own this camera.)
         case GLFW_KEY_UP:
             break;
         case GLFW_KEY_DOWN:
@@ -202,9 +210,15 @@ int main(void) {
     }
     //* - - - - - END OF SKYBOX TEXTURING - - - - -
 
-    //* - - - - - CAMERA PART 1 - - - - -
-    currentCamera     = player->getThirdPersonView();
-    //* - - - - - END OF CAMERA PART 1 - - - - -
+    //* - - - - - CAMERAS - - - - -
+    //| TODO: Add the Bird's Eye View Camera to the vector below using:
+    //| new OrthographicCamera()
+    //| Tip: Checkout MODEL LOADING & LIGHTS
+    cameras           = {player->getThirdPersonView(), player->getFirstPersonView()};
+
+    //? You may use this value however you need.
+    currentCamera     = cameras.front();
+    //* - - - - - END OF CAMERAS - - - - -
 
     //* - - - - - WORLD FACTS - - - - -
     glm::vec3 WorldUp = glm::vec3(0.0f, 1.0f, 0.0f);
@@ -220,7 +234,7 @@ int main(void) {
     directionalLights     = {
        new DirectionalLight("Light Blue Directional Light",
                             true,
-                            glm::vec3(0.0f, 1.0f, 0.0f),    //? Direction
+                            glm::vec3(0.0f, 1.0f, 0.0f),     //? Direction
                             glm::vec3(0.23f, 0.26f, 0.92f),  //? Color
                             0.1f,                            //? Ambient Strength
                             glm::vec3(0.63f, 0.86f, 0.92f),  //? Ambient Color
@@ -262,18 +276,26 @@ int main(void) {
     //* - - - - - END OF LIGHTS - - - - -
 
     //* - - - - - MODEL LOADING - - - - -
+    //| TODO: Add the remaining Subs please. Feel free to add other models too if you want.
     model3ds = {
-       new Model3D("Enemy Submarine",             //? Model Name
-                   "Assets/MeepballSub.obj",      //? Model Path
-                   0,                             //? Model Count
-                   "Assets/Enemies/Enemy_1.png",  //? Texture Path
-                   "",                            //? Normal Path
-                   glm::vec3(0.0f, 0.0f, -1.0f),   //? Position
-                   glm::mat4(1.0f),               //? Position Matrix
-                   glm::vec3(1.0f),               //? Scale
+       player->getModel(),
+       new Model3D("Enemy Submarine 1",             //? Model Name
+                   "Assets/MeepballSub.obj",        //? Model Path
+                   "Assets/Enemies/Enemy_1.png",    //? Texture Path
+                   "",                              //? Normal Path
+                   glm::vec3(-1.0f, 0.0f, -2.0f),   //? Position
+                   glm::mat4(1.0f),                 //? Position Matrix
+                   glm::vec3(1.0f),                 //? Scale
+                   glm::vec3(0.0f, 180.0f, 0.0f)),  //? Orientation
+       new Model3D("Enemy Submarine 2",             //? Model Name
+                   "Assets/MeepballSub.obj",        //? Model Path
+                   "Assets/Enemies/Enemy_2.png",    //? Texture Path
+                   "",                              //? Normal Path
+                   glm::vec3(1.0f, 0.0f, -2.0f),    //? Position
+                   glm::mat4(1.0f),                 //? Position Matrix
+                   glm::vec3(1.0f),                 //? Scale
                    glm::vec3(0.0f, 180.0f, 0.0f)),  //? Orientation
     };
-    model3ds.push_back(player->getModel());
     activeModel = model3ds.front();
 
     for (Model3D* model : model3ds) model->loadModel();
@@ -287,6 +309,7 @@ int main(void) {
             glm::lookAt(currentCamera->getPosition(), currentCamera->getViewCenter(), WorldUp));
 
         //* - - - - - UPDATE - - - - -
+        //| TODO: Add here the stuff you need to happen every frame, like moving some of the enemy subs
         player->movePlayer();
         player->turnPlayer();
         player->resetInputs();
@@ -343,74 +366,12 @@ int main(void) {
             //* - - - - - MODEL LIGHTING - - - - -
             glBindVertexArray(*model->getVAO());
 
-            switch (model->getTexture().getTextureCount()) {
-                case 0:
-                    glActiveTexture(GL_TEXTURE0);
-                    break;
-                case 2:
-                    glActiveTexture(GL_TEXTURE2);
-                    break;
-                case 4:
-                    glActiveTexture(GL_TEXTURE4);
-                    break;
-                case 6:
-                    glActiveTexture(GL_TEXTURE6);
-                    break;
-                case 8:
-                    glActiveTexture(GL_TEXTURE8);
-                    break;
-                case 10:
-                    glActiveTexture(GL_TEXTURE10);
-                    break;
-                case 12:
-                    glActiveTexture(GL_TEXTURE12);
-                    break;
-                case 14:
-                    glActiveTexture(GL_TEXTURE14);
-                    break;
-                case 16:
-                    glActiveTexture(GL_TEXTURE16);
-                    break;
-                case 18:
-                    glActiveTexture(GL_TEXTURE18);
-                    break;
-            }
+            glActiveTexture(GL_TEXTURE0);
             GLuint modelTextureAddress =
                 glGetUniformLocation(lightingShaderProgram, "modelTexture");
             glBindTexture(GL_TEXTURE_2D, model->getTexture().getTexture());
 
-            switch (model->getNormalMap().getNormalCount()) {
-                case 1:
-                    glActiveTexture(GL_TEXTURE1);
-                    break;
-                case 3:
-                    glActiveTexture(GL_TEXTURE3);
-                    break;
-                case 5:
-                    glActiveTexture(GL_TEXTURE5);
-                    break;
-                case 7:
-                    glActiveTexture(GL_TEXTURE7);
-                    break;
-                case 9:
-                    glActiveTexture(GL_TEXTURE9);
-                    break;
-                case 11:
-                    glActiveTexture(GL_TEXTURE11);
-                    break;
-                case 13:
-                    glActiveTexture(GL_TEXTURE13);
-                    break;
-                case 15:
-                    glActiveTexture(GL_TEXTURE15);
-                    break;
-                case 17:
-                    glActiveTexture(GL_TEXTURE17);
-                    break;
-                case 19:
-                    glActiveTexture(GL_TEXTURE19);
-                    break;
-            }
+            glActiveTexture(GL_TEXTURE1);
             GLuint modelNormalAddress =
                 glGetUniformLocation(lightingShaderProgram, "modelNormalTexture");
             glBindTexture(GL_TEXTURE_2D, model->getNormalMap().getNormal());
