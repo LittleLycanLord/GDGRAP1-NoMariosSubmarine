@@ -5,6 +5,7 @@
 #include "GameObjects/Cameras/Camera.hpp"
 #include "GameObjects/Cameras/OrthographicCamera/OrthographicCamera.hpp"
 #include "GameObjects/Cameras/PerspectiveCamera/PerspectiveCamera.hpp"
+#include "GameObjects/Cameras/FirstPersonCamera/FirstPersonCamera.hpp"
 
 #include "GameObjects/Lights/Light.hpp"
 #include "GameObjects/Lights/DirectionalLight/DirectionalLight.hpp"
@@ -35,8 +36,24 @@ Model3D* activeModel                        = NULL;
 vector<Model3D*> model3ds                   = {};
 Player* player                              = NULL;
 
+PerspectiveCamera* perspectiveCamera = new PerspectiveCamera("Main", 90.0f);
+FirstPersonCamera* firstPOVCamera = new FirstPersonCamera("first POV", 50.0f);
+OrthographicCamera* orthographicCamera = new OrthographicCamera("Ortho Cam");
+
 vector<Camera*> cameras                     = {};
-Camera* currentCamera                       = NULL;
+Camera* currentCamera                       = perspectiveCamera;
+
+const float radius = 5.0f;
+double xpos = 0.0f, ypos = 0.0f;
+float x_mod = 0.0f, y_mod = 0.0f, z_mod = 0.0f;
+bool bStart = true;
+int nCameraCounter = 1;
+
+bool firstMouse = true, bPerspective = true;
+float yaw = -90.0f;
+float pitch;
+float lastX, lastY;
+float x_direction = 0.0f, z_direction = 0.0f;
 //* - - - - - END OF POINTERS AND CONTAINERS - - - - -
 
 //? Reserved GLFW Function for Keyboard Inputs
@@ -51,22 +68,42 @@ void Key_Callback(
         //| TODO: Toggle Bird's Eye View: Choose whether the player can still press 1 to exit
         //| bird's eye view, or require them to toggle back using 2 before being able to switch to
         //| 1st & 3rd  person view
-        case GLFW_KEY_2:
-            if (action == GLFW_PRESS) {
+        case GLFW_KEY_1:
+            if (nCameraCounter % 2 != 0) {
+                currentCamera = firstPOVCamera;
+                bPerspective = false;
             }
+            else {
+                currentCamera = perspectiveCamera;
+                bPerspective = true;
+            }
+            std::cout << currentCamera->getName() << " has been enabled!" << std::endl;
+
+            if (action == GLFW_RELEASE)nCameraCounter++;
             break;
+        case GLFW_KEY_2:
+            currentCamera = orthographicCamera;
+            bPerspective = false;
+            std::cout << "Orthographic Camera has been enabled!" << std::endl;
+            break;
+            
         //| TODO: Pan Bird's Eye View Camera: Player does NOT own this camera.)
-        case GLFW_KEY_UP:
+            break;
+            z_mod += 1.0f;
             break;
         case GLFW_KEY_DOWN:
+            z_mod -= 1.0f;
             break;
         case GLFW_KEY_LEFT:
+            x_mod -= 1.0f;
             break;
         case GLFW_KEY_RIGHT:
+            x_mod += 1.0f;
             break;
         default:
             player->playerKeyboardInput(key, action);
             break;
+
     }
 }
 

@@ -140,6 +140,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="GameObjects\Cameras\Camera.cpp" />
+    <ClCompile Include="GameObjects\Cameras\FirstPersonCamera\FirstPersonCamera.cpp" />
     <ClCompile Include="GameObjects\Cameras\OrthographicCamera\OrthographicCamera.cpp" />
     <ClCompile Include="GameObjects\Cameras\PerspectiveCamera\PerspectiveCamera.cpp" />
     <ClCompile Include="GameObjects\Lights\DirectionalLight\DirectionalLight.cpp" />
@@ -158,6 +159,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameObjects\Cameras\Camera.hpp" />
+    <ClInclude Include="GameObjects\Cameras\FirstPersonCamera\FirstPersonCamera.hpp" />
     <ClInclude Include="GameObjects\Cameras\OrthographicCamera\OrthographicCamera.hpp" />
     <ClInclude Include="GameObjects\Cameras\PerspectiveCamera\PerspectiveCamera.hpp" />
     <ClInclude Include="GameObjects\Lights\DirectionalLight\DirectionalLight.hpp" />
