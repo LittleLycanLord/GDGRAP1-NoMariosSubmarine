@@ -251,7 +251,7 @@ int main(void) {
     //| TODO: Add the Bird's Eye View Camera to the vector below using:
     //| new OrthographicCamera()
     //| Tip: Checkout MODEL LOADING & LIGHTS
-    cameras           = {player->getThirdPersonView(), player->getFirstPersonView()};
+    cameras           = {player->getThirdPersonView(), player->getFirstPersonView(), new OrthographicCamera("Ortho Cam")};
 
     //? You may use this value however you need.
     currentCamera     = cameras.front();
@@ -332,6 +332,40 @@ int main(void) {
                    glm::mat4(1.0f),                 //? Position Matrix
                    glm::vec3(1.0f),                 //? Scale
                    glm::vec3(0.0f, 180.0f, 0.0f)),  //? Orientation
+        new Model3D("Enemy Submarine 3",             //? Model Name
+                   "Assets/MeepballSub.obj",        //? Model Path
+                   "Assets/Enemies/Enemy_3.png",    //? Texture Path
+                   "",                              //? Normal Path
+                   glm::vec3(4.0f, 0.0f, -2.0f),    //? Position
+                   glm::mat4(1.0f),                 //? Position Matrix
+                   glm::vec3(1.0f),                 //? Scale
+                   glm::vec3(0.0f, 180.0f, 0.0f)),  //? Orientation
+        new Model3D("Enemy Submarine 4",             //? Model Name
+                   "Assets/MeepballSub.obj",        //? Model Path
+                   "Assets/Enemies/Enemy_4.png",    //? Texture Path
+                   "",                              //? Normal Path
+                   glm::vec3(-4.0f, 0.0f, -2.0f),    //? Position
+                   glm::mat4(1.0f),                 //? Position Matrix
+                   glm::vec3(1.0f),                 //? Scale
+                   glm::vec3(0.0f, 180.0f, 0.0f)),  //? Orientation
+        new Model3D("Enemy Submarine 5",             //? Model Name
+                   "Assets/MeepballSub.obj",        //? Model Path
+                   "Assets/Enemies/Enemy_5.png",    //? Texture Path
+                   "",                              //? Normal Path
+                   glm::vec3(6.0f, 0.0f, -2.0f),    //? Position
+                   glm::mat4(1.0f),                 //? Position Matrix
+                   glm::vec3(1.0f),                 //? Scale
+                   glm::vec3(0.0f, 180.0f, 0.0f)),  //? Orientation
+        new Model3D("Enemy Submarine 6",             //? Model Name
+                   "Assets/MeepballSub.obj",        //? Model Path
+                   "Assets/Enemies/Enemy_6.png",    //? Texture Path
+                   "",                              //? Normal Path
+                   glm::vec3(-6.0f, 0.0f, -2.0f),    //? Position
+                   glm::mat4(1.0f),                 //? Position Matrix
+                   glm::vec3(1.0f),                 //? Scale
+                   glm::vec3(0.0f, 180.0f, 0.0f)),  //? Orientation
+
+
     };
     activeModel = model3ds.front();
 
@@ -348,6 +382,12 @@ int main(void) {
         //* - - - - - UPDATE - - - - -
         //| TODO: Add here the stuff you need to happen every frame, like moving some of the enemy subs
         player->movePlayer();
+
+        //cameras position updates when the sub moves && the panning of the birds eye view
+        //currentCamera->setPosition();
+
+        //the rotation of the 3rd pov camera
+        //copy paste from old code
         player->turnPlayer();
         player->resetInputs();
         player->displayDepth();

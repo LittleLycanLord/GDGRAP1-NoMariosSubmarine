@@ -9,7 +9,7 @@ using namespace models;
 //| additional parameters added for perspective projection:
 //| - Far-clipping plane (the 1000.f, since we'll have cameras that are short/farsighted)
 PerspectiveCamera::PerspectiveCamera(std::string name, float fieldOfView)
-    : Camera(name + " Perspective", glm::perspective(1.0f, 1.0f, 1.0f, 1.0f)),
+    : Camera(name + " Perspective", glm::perspective(1.0f, 1.0f, 1.0f, 1.0f), position, viewCenter),
       fieldOfView(fieldOfView) {
     setPosition(glm::vec3(0.0f, 2.0f, 5.0f));
     setProjection(glm::perspective(

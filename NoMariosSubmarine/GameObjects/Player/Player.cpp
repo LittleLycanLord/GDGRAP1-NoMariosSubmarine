@@ -28,7 +28,7 @@ Player::Player()
                               16,                              //? Specular Phong
                               2.0f)                            //? Brightness
                 ),
-      firstPersonView(new PerspectiveCamera("First Person View", 60.0f)),
+      firstPersonView(new FirstPersonCamera("First Person View", 60.0f)),
       thirdPersonView(new PerspectiveCamera("Third Person View", 60.0f)),
       turnInput(0.0f),
       yInput(0.0f),
@@ -192,5 +192,5 @@ void Player::haveSpotlightFollowModel() {
 //* ╚═══════════════════╝
 Model3D* Player::getModel() { return this->model; }
 SpotLight* Player::getSpotLight() { return this->spotLight; }
-PerspectiveCamera* Player::getFirstPersonView() { return this->firstPersonView; }
+FirstPersonCamera* Player::getFirstPersonView() { return this->firstPersonView; }
 PerspectiveCamera* Player::getThirdPersonView() { return this->thirdPersonView; }

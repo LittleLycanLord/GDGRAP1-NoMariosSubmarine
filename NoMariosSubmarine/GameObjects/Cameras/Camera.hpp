@@ -19,6 +19,7 @@ protected:
     //* ╚═══════════════════════════════╝
 public:
     Camera(std::string name, glm::mat4 projection);
+    Camera(std::string name, glm::mat4 projection, glm::vec3 position, glm::vec3 viewCenter);
     //* ╔═════════╗
     //* ║ Methods ║
     //* ╚═════════╝

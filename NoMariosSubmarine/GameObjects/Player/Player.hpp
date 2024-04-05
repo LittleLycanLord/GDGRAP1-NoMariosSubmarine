@@ -1,6 +1,7 @@
 #pragma once
 #include "../Cameras/OrthographicCamera/OrthographicCamera.hpp"
 #include "../Cameras/PerspectiveCamera/PerspectiveCamera.hpp"
+#include "../Cameras/FirstPersonCamera/FirstPersonCamera.hpp"
 #include "../Lights/DirectionalLight/DirectionalLight.hpp"
 #include "../Lights/PointLight/PointLight.hpp"
 #include "../Lights/SpotLight/SpotLight.hpp"
@@ -23,7 +24,7 @@ class Player {
 protected:
     Model3D* model;
     SpotLight* spotLight;
-    PerspectiveCamera* firstPersonView;
+    FirstPersonCamera* firstPersonView;
     PerspectiveCamera* thirdPersonView;
     float turnInput;
     float yInput;
@@ -58,7 +59,7 @@ public:
 public:
     Model3D* getModel();
     SpotLight* getSpotLight();
-    PerspectiveCamera* getFirstPersonView();
+    FirstPersonCamera* getFirstPersonView();
     PerspectiveCamera* getThirdPersonView();
 };
 }  // namespace models
