@@ -37,7 +37,7 @@ Player::Player()
                                             glm::vec3(0.0f, 5.0f, 5.0f),
                                             glm::vec3(0.0f, 0.0f, -1.0f),
                                             60.0f,
-                                            100.0f)),
+                                            10.0f)),
       turnInput(0.0f),
       yInput(0.0f),
       zInput(0.0f),
@@ -196,6 +196,12 @@ void Player::displayDepth() {
         std::cout << "SUBMARINE DEPTH: [" << std::setprecision(2)
                   << this->model->getPosition().y * -1 << " M] BELOW SEA LEVEL" << std::endl;
 }
+void Player::displayCoordinates() {
+    if (DEBUG_MODE) std::cout << "Y Input: " << std::setprecision(2) << this->yInput << std::endl;
+    if (SHOW_COORDINATES)
+        std::cout << "SUBMARINE AT: [X: " << std::setprecision(2) << this->model->getPosition().x
+                  << ", Z: " << this->model->getPosition().z << "]" << std::endl;
+}
 void Player::haveSpotlightFollowModel() {
     this->spotLight->setPosition(glm::vec3(this->model->getPosition().x,
                                            this->model->getPosition().y + 1,
@@ -206,14 +212,11 @@ void Player::haveSpotlightFollowModel() {
 }
 void Player::haveCamerasFollowModel() {
     this->firstPersonView->setPosition(this->model->getPosition());
-    this->firstPersonView->setViewCenter(
-        glm::vec3(cos(glm::radians(this->model->getOrientation().y)) *
-                      cos(glm::radians(this->model->getOrientation().x)),
-                  sin(glm::radians(this->model->getOrientation().x)),
-                  sin(glm::radians(this->model->getOrientation().y)) *
-                      cos(glm::radians(this->model->getOrientation().x))));
+    this->firstPersonView->setViewCenter(glm::vec3(this->model->getPosition().x,
+                                                   this->model->getPosition().y,
+                                                   this->model->getPosition().z - 5));
     this->thirdPersonView->setPosition(glm::vec3(this->model->getPosition().x,
-                                                 this->model->getPosition().y + 5,
+                                                 this->model->getPosition().y + 3,
                                                  this->model->getPosition().z + 5));
     this->thirdPersonView->setViewCenter(glm::vec3(this->model->getPosition()));
 }

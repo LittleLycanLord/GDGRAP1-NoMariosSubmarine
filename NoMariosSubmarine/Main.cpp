@@ -103,7 +103,7 @@ int main(void) {
     GLFWwindow* window;
     if (!glfwInit()) return -1;
 
-    window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "No Marios Submarine", NULL, NULL);
+    window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "No Man's Submarine", NULL, NULL);
     if (!window) {
         glfwTerminate();
         return -1;
@@ -241,14 +241,14 @@ int main(void) {
     //* - - - - - CAMERAS - - - - -
     cameras           = {player->getActiveCamera(),
                          new OrthographicCamera("Bird's Eye View",
-                                      glm::vec3(0.0f, 1.0f, 0.0f),
                                       glm::vec3(0.0f, 0.0f, 0.0f),
+                                      glm::vec3(0.0f, 0.0f, 0.0f),
+                                      -10.0f,
                                       10.0f,
+                                      -10.0f,
                                       10.0f,
-                                      10.0f,
-                                      10.0f,
-                                      -2.0f,
-                                      1000.0f)};
+                                      0.01f,
+                                      100.0f)};
 
     //? You may use this value however you need.
     currentCamera     = cameras.front();
@@ -313,54 +313,62 @@ int main(void) {
     //| TODO: Add the remaining Subs please. Feel free to add other models too if you want.
     model3ds = {
        player->getModel(),
-       new Model3D("Enemy Submarine 1",             //? Model Name
-                   "Assets/MeepballSub.obj",        //? Model Path
-                   "Assets/Enemies/Enemy_1.png",    //? Texture Path
-                   "",                              //? Normal Path
-                   glm::vec3(-1.0f, 0.0f, 18.0f),    //? Position
-                   glm::mat4(1.0f),                 //? Position Matrix
-                   glm::vec3(1.0f),                 //? Scale
+       new Model3D("Enemy Submarine 1",               //? Model Name
+                   "Assets/MeepballSub.obj",          //? Model Path
+                   "Assets/Enemies/Enemy_1.png",      //? Texture Path
+                   "",                                //? Normal Path
+                   glm::vec3(-1.0f, 0.0f, 18.0f),     //? Position
+                   glm::mat4(1.0f),                   //? Position Matrix
+                   glm::vec3(1.0f),                   //? Scale
                    glm::vec3(180.0f, 180.0f, 0.0f)),  //? Orientation
-       new Model3D("Enemy Submarine 2",             //? Model Name
-                   "Assets/MeepballSub.obj",        //? Model Path
-                   "Assets/Enemies/Enemy_2.png",    //? Texture Path
-                   "",                              //? Normal Path
+       new Model3D("Enemy Submarine 2",               //? Model Name
+                   "Assets/MeepballSub.obj",          //? Model Path
+                   "Assets/Enemies/Enemy_2.png",      //? Texture Path
+                   "",                                //? Normal Path
                    glm::vec3(10.0f, -5.0f, -3.0f),    //? Position
-                   glm::mat4(1.0f),                 //? Position Matrix
-                   glm::vec3(1.0f),                 //? Scale
-                   glm::vec3(0.0f, 180.0f, 0.0f)),  //? Orientation
-       new Model3D("Enemy Submarine 3",             //? Model Name
-                   "Assets/MeepballSub.obj",        //? Model Path
-                   "Assets/Enemies/Enemy_3.png",    //? Texture Path
-                   "",                              //? Normal Path
-                   glm::vec3(-3.0f, 0.0f, -14.0f),   //? Position
-                   glm::mat4(1.0f),                 //? Position Matrix
-                   glm::vec3(1.0f),                 //? Scale
-                   glm::vec3(0.0f, 0.0f, 0.0f)),  //? Orientation
-       new Model3D("Enemy Submarine 4",             //? Model Name
-                   "Assets/MeepballSub.obj",        //? Model Path
-                   "Assets/Enemies/Enemy_4.png",    //? Texture Path
-                   "",                              //? Normal Path
+                   glm::mat4(1.0f),                   //? Position Matrix
+                   glm::vec3(1.0f),                   //? Scale
+                   glm::vec3(0.0f, 180.0f, 0.0f)),    //? Orientation
+       new Model3D("Enemy Submarine 3",               //? Model Name
+                   "Assets/MeepballSub.obj",          //? Model Path
+                   "Assets/Enemies/Enemy_3.png",      //? Texture Path
+                   "",                                //? Normal Path
+                   glm::vec3(-3.0f, 0.0f, -14.0f),    //? Position
+                   glm::mat4(1.0f),                   //? Position Matrix
+                   glm::vec3(1.0f),                   //? Scale
+                   glm::vec3(0.0f, 0.0f, 0.0f)),      //? Orientation
+       new Model3D("Enemy Submarine 4",               //? Model Name
+                   "Assets/MeepballSub.obj",          //? Model Path
+                   "Assets/Enemies/Enemy_4.png",      //? Texture Path
+                   "",                                //? Normal Path
                    glm::vec3(4.0f, -10.0f, -4.0f),    //? Position
-                   glm::mat4(1.0f),                 //? Position Matrix
-                   glm::vec3(1.0f),                 //? Scale
-                   glm::vec3(90.0f, 90.0f, 0.0f)),  //? Orientation
-       new Model3D("Enemy Submarine 5",             //? Model Name
-                   "Assets/MeepballSub.obj",        //? Model Path
-                   "Assets/Enemies/Enemy_5.png",    //? Texture Path
-                   "",                              //? Normal Path
+                   glm::mat4(1.0f),                   //? Position Matrix
+                   glm::vec3(1.0f),                   //? Scale
+                   glm::vec3(90.0f, 90.0f, 0.0f)),    //? Orientation
+       new Model3D("Enemy Submarine 5",               //? Model Name
+                   "Assets/MeepballSub.obj",          //? Model Path
+                   "Assets/Enemies/Enemy_5.png",      //? Texture Path
+                   "",                                //? Normal Path
                    glm::vec3(-5.0f, -20.0f, -4.0f),   //? Position
-                   glm::mat4(1.0f),                 //? Position Matrix
-                   glm::vec3(1.0f),                 //? Scale
-                   glm::vec3(0.0f, 270.0f, 0.0f)),  //? Orientation
-       new Model3D("Enemy Submarine 6",             //? Model Name
-                   "Assets/MeepballSub.obj",        //? Model Path
-                   "Assets/Enemies/Enemy_6.png",    //? Texture Path
-                   "",                              //? Normal Path
-                   glm::vec3(3.0f, 0.0f, 15.0f),     //? Position
-                   glm::mat4(1.0f),                 //? Position Matrix
-                   glm::vec3(1.0f),                 //? Scale
-                   glm::vec3(0.0f, 0.0f, 90.0f)),  //? Orientation
+                   glm::mat4(1.0f),                   //? Position Matrix
+                   glm::vec3(1.0f),                   //? Scale
+                   glm::vec3(0.0f, 270.0f, 0.0f)),    //? Orientation
+       new Model3D("Enemy Submarine 6",               //? Model Name
+                   "Assets/MeepballSub.obj",          //? Model Path
+                   "Assets/Enemies/Enemy_6.png",      //? Texture Path
+                   "",                                //? Normal Path
+                   glm::vec3(3.0f, 0.0f, 15.0f),      //? Position
+                   glm::mat4(1.0f),                   //? Position Matrix
+                   glm::vec3(1.0f),                   //? Scale
+                   glm::vec3(0.0f, 0.0f, 90.0f)),     //? Orientation
+       new Model3D("GreenTint",                       //? Model Name
+                   "Assets/plane.obj",                //? Model Path
+                   "Assets/greenTint.png",            //? Texture Path
+                   "",                                //? Normal Path
+                   glm::vec3(0.0f, 0.0f, -0.15f),      //? Position
+                   glm::mat4(1.0f),                   //? Position Matrix
+                   glm::vec3(0.1f),                   //? Scale
+                   glm::vec3(0.0f, 0.0f, 0.0f)),      //? Orientation
     };
     activeModel = model3ds.front();
 
@@ -381,8 +389,13 @@ int main(void) {
         player->turnPlayer();
         player->resetInputs();
         player->displayDepth();
+        player->displayCoordinates();
         player->haveSpotlightFollowModel();
         player->haveCamerasFollowModel();
+        model3ds[7]->setPosition(glm::vec3(player->getModel()->getPosition().x,
+                                           player->getModel()->getPosition().y,
+                                           player->getModel()->getPosition().z - 0.15));
+        // model3ds[7]->setOrientation(player->getModel()->getOrientation());
         if (DEBUG_MODE) std::cout << "Current Camera: " + currentCamera->getName() << std::endl;
         //* - - - - - END OF UPDATE - - - - -
 

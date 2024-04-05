@@ -53,6 +53,7 @@ public:
     void cycleLightIntensity();
     void resetInputs();
     void displayDepth();
+    void displayCoordinates();
     void haveSpotlightFollowModel();
     void haveCamerasFollowModel();
 
