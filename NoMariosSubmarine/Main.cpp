@@ -79,10 +79,10 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
     yaw   += xoffset;
     pitch += yoffset;
 
-    if(pitch > 89.0f)
-        pitch = 89.0f;
-    if(pitch < -89.0f)
-        pitch = -89.0f;
+    if(pitch > 90.0f)
+        pitch = 90.0f;
+    if(pitch < -90.0f)
+        pitch = -90.0f;
 
 
     direction.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
@@ -436,7 +436,9 @@ int main(void) {
 
         glfwSetCursorEnterCallback(window, cursor_enter_callback);
 
-        if (currentCamera == perspectiveCamera){perspectiveCamera->setPosition(direction + activeModel->getPosition());}
+        if (currentCamera == perspectiveCamera){perspectiveCamera->setPosition(glm::vec3 (direction.x + activeModel->getPosition().x,
+                                                                                           2.0f + direction.y + activeModel->getPosition().y,
+                                                                                           5.0f + direction.z + activeModel->getPosition().z ));}
         else if (currentCamera == firstPOVCamera){firstPOVCamera->setPosition(glm::vec3(activeModel->getPosition().x,
                                                                               1.0f + activeModel->getPosition().y,
                                                                               0.5f + activeModel->getPosition().z));}
