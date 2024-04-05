@@ -48,8 +48,9 @@ double xpos = 0.0f, ypos = 0.0f;
 float x_mod = 0.0f, y_mod = 0.0f, z_mod = 0.0f;
 bool bStart = true;
 int nCameraCounter = 1;
+bool bOrtho = true;
 
-bool firstMouse = true, bPerspective = false;
+bool firstMouse = true;
 float yaw = -90.0f;
 float pitch;
 float lastX, lastY;
@@ -121,18 +122,24 @@ void Key_Callback(
         //| bird's eye view, or require them to toggle back using 2 before being able to switch to
         //| 1st & 3rd  person view
         case GLFW_KEY_1:
-            if (nCameraCounter % 2 != 0) {
-                currentCamera = firstPOVCamera;
-            }
-            else {
-                currentCamera = perspectiveCamera;
-            }
+            if (nCameraCounter % 2 != 0) currentCamera = firstPOVCamera;
+            else currentCamera = perspectiveCamera;
             std::cout << currentCamera->getName() << " has been enabled!" << std::endl;
-
             if (action == GLFW_RELEASE)nCameraCounter++;
+            bOrtho = true;
             break;
         case GLFW_KEY_2:
-            currentCamera = orthographicCamera;
+            if (action == GLFW_PRESS && bOrtho) {
+                currentCamera = orthographicCamera;
+                bOrtho = false;
+            }
+            else if (action == GLFW_PRESS && !bOrtho){
+                nCameraCounter--;
+                 if (nCameraCounter % 2 != 0) currentCamera = firstPOVCamera;
+                 else currentCamera = perspectiveCamera;
+                nCameraCounter++;
+                bOrtho = true;
+            }
             std::cout << "Orthographic Camera has been enabled!" << std::endl;
             break;
             
@@ -386,7 +393,7 @@ int main(void) {
                    "Assets/MeepballSub.obj",        //? Model Path
                    "Assets/Enemies/Enemy_3.png",    //? Texture Path
                    "",                              //? Normal Path
-                   glm::vec3(2.0f, 0.0f, -2.0f),    //? Position
+                   glm::vec3(3.0f, 0.0f, -2.0f),    //? Position
                    glm::mat4(1.0f),                 //? Position Matrix
                    glm::vec3(1.0f),                 //? Scale
                    glm::vec3(0.0f, 180.0f, 0.0f)),  //? Orientation
@@ -394,7 +401,7 @@ int main(void) {
                    "Assets/MeepballSub.obj",        //? Model Path
                    "Assets/Enemies/Enemy_4.png",    //? Texture Path
                    "",                              //? Normal Path
-                   glm::vec3(-2.0f, 0.0f, -2.0f),    //? Position
+                   glm::vec3(-3.0f, 0.0f, -2.0f),    //? Position
                    glm::mat4(1.0f),                 //? Position Matrix
                    glm::vec3(1.0f),                 //? Scale
                    glm::vec3(0.0f, 180.0f, 0.0f)),  //? Orientation
@@ -402,7 +409,7 @@ int main(void) {
                    "Assets/MeepballSub.obj",        //? Model Path
                    "Assets/Enemies/Enemy_5.png",    //? Texture Path
                    "",                              //? Normal Path
-                   glm::vec3(3.0f, 0.0f, -2.0f),    //? Position
+                   glm::vec3(5.0f, 0.0f, -2.0f),    //? Position
                    glm::mat4(1.0f),                 //? Position Matrix
                    glm::vec3(1.0f),                 //? Scale
                    glm::vec3(0.0f, 180.0f, 0.0f)),  //? Orientation
@@ -410,7 +417,7 @@ int main(void) {
                    "Assets/MeepballSub.obj",        //? Model Path
                    "Assets/Enemies/Enemy_6.png",    //? Texture Path
                    "",                              //? Normal Path
-                   glm::vec3(-3.0f, 0.0f, -2.0f),    //? Position
+                   glm::vec3(-5.0f, 0.0f, -2.0f),    //? Position
                    glm::mat4(1.0f),                 //? Position Matrix
                    glm::vec3(1.0f),                 //? Scale
                    glm::vec3(0.0f, 180.0f, 0.0f)),  //? Orientation
@@ -433,15 +440,14 @@ int main(void) {
         //| TODO: Add here the stuff you need to happen every frame, like moving some of the enemy subs
         player->movePlayer();
 
-
         glfwSetCursorEnterCallback(window, cursor_enter_callback);
 
         if (currentCamera == perspectiveCamera){perspectiveCamera->setPosition(glm::vec3 (direction.x + activeModel->getPosition().x,
                                                                                            2.0f + direction.y + activeModel->getPosition().y,
                                                                                            5.0f + direction.z + activeModel->getPosition().z ));}
-        else if (currentCamera == firstPOVCamera){firstPOVCamera->setPosition(glm::vec3(activeModel->getPosition().x,
-                                                                              1.0f + activeModel->getPosition().y,
-                                                                              0.5f + activeModel->getPosition().z));}
+        else if (currentCamera == firstPOVCamera){firstPOVCamera->setPosition(glm::vec3(direction.x + activeModel->getPosition().x,
+                                                                              direction.y + 1.0f + activeModel->getPosition().y,
+                                                                              direction.z + 0.5f + activeModel->getPosition().z));}
         else if (currentCamera == orthographicCamera){orthographicCamera->setPosition(glm::vec3(x_mod + activeModel->getPosition().x,
                                                                                                10.0f + activeModel->getPosition().y,
                                                                                                z_mod + 5.0f + activeModel->getPosition().z));}
