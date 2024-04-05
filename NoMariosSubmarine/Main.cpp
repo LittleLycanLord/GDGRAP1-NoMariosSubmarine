@@ -54,7 +54,62 @@ float yaw = -90.0f;
 float pitch;
 float lastX, lastY;
 float x_direction = 0.0f, z_direction = 0.0f;
+glm::vec3 direction;
+glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
 //* - - - - - END OF POINTERS AND CONTAINERS - - - - -
+
+void mouse_callback(GLFWwindow* window, double xpos, double ypos)
+{
+    if (firstMouse)
+    {
+        lastX = xpos;
+        lastY = ypos;
+        firstMouse = false;
+    }
+  
+    float xoffset = xpos - lastX;
+    float yoffset = lastY - ypos; 
+    lastX = xpos;
+    lastY = ypos;
+
+    float sensitivity = 0.1f;
+    xoffset *= sensitivity;
+    yoffset *= sensitivity;
+
+    yaw   += xoffset;
+    pitch += yoffset;
+
+    if(pitch > 89.0f)
+        pitch = 89.0f;
+    if(pitch < -89.0f)
+        pitch = -89.0f;
+
+
+    direction.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
+    direction.y = sin(glm::radians(pitch));
+    direction.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
+    cameraFront = glm::normalize(direction);
+}  
+
+/*GLFW built-in method that checks if the mouse is within the program's window, else otherwise*/
+void cursor_enter_callback(GLFWwindow* window, int entered)
+{
+    //if the mouse enters the screen and the current camera is the perspective Camera
+    if (entered)
+    {
+        std::cout << "mouse enters window" << std::endl;
+        if(bPerspective) {
+         
+             glfwGetCursorPos(window, &xpos, &ypos);
+             glfwSetCursorPosCallback(window, mouse_callback);
+        }
+    }
+    else
+    {
+        std::cout << "mouse leaves window" << std::endl;
+        //restats cameraFront
+    }
+}
 
 //? Reserved GLFW Function for Keyboard Inputs
 void Key_Callback(
@@ -384,9 +439,13 @@ int main(void) {
         player->movePlayer();
 
         //cameras position updates when the sub moves && the panning of the birds eye view
-        //currentCamera->setPosition();
+        if (currentCamera == perspectiveCamera){ glfwSetCursorEnterCallback(window, cursor_enter_callback);}
+        else if (currentCamera == orthographicCamera){std::cout << "orthogrpahic" << std::endl;}
+        else if (currentCamera == firstPOVCamera){std::cout << "first person" << std::endl;}
 
         //the rotation of the 3rd pov camera
+
+        //update with the sup coordinates
         //copy paste from old code
         player->turnPlayer();
         player->resetInputs();
