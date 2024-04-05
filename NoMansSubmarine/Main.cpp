@@ -59,42 +59,41 @@ void Key_Callback(
             }
             break;
         case GLFW_KEY_UP:
-            if (currentCamera->getName() == "Bird's Eye View" &&
-                currentCamera->getPosition().z >= player->getModel()->getPosition().z - 50.f) {
+            if (currentCamera->getName() == "Bird's Eye View") {
                 currentCamera->setPosition(glm::vec3(currentCamera->getPosition().x,
                                                      currentCamera->getPosition().y,
                                                      currentCamera->getPosition().z - MOVE_SPEED));
             }
             break;
         case GLFW_KEY_DOWN:
-            if (currentCamera->getName() == "Bird's Eye View" &&
-                currentCamera->getPosition().z <= player->getModel()->getPosition().z + 50.f) {
+            if (currentCamera->getName() == "Bird's Eye View") {
                 currentCamera->setPosition(glm::vec3(currentCamera->getPosition().x,
                                                      currentCamera->getPosition().y,
                                                      currentCamera->getPosition().z + MOVE_SPEED));
             }
             break;
         case GLFW_KEY_LEFT:
-            if (currentCamera->getName() == "Bird's Eye View" &&
-                currentCamera->getPosition().x >= player->getModel()->getPosition().x - 50.f) {
+            if (currentCamera->getName() == "Bird's Eye View") {
                 currentCamera->setPosition(glm::vec3(currentCamera->getPosition().x - MOVE_SPEED,
                                                      currentCamera->getPosition().y,
                                                      currentCamera->getPosition().z));
             }
             break;
         case GLFW_KEY_RIGHT:
-            if (currentCamera->getName() == "Bird's Eye View" &&
-                currentCamera->getPosition().x <= player->getModel()->getPosition().x + 50.f) {
+            if (currentCamera->getName() == "Bird's Eye View") {
                 currentCamera->setPosition(glm::vec3(currentCamera->getPosition().x + MOVE_SPEED,
                                                      currentCamera->getPosition().y,
                                                      currentCamera->getPosition().z));
             }
             break;
         default:
-            player->playerKeyboardInput(key, action);
-            if (key == GLFW_KEY_1 && action == GLFW_PRESS) {
-                currentCamera = player->getActiveCamera();
+            if (currentCamera->getName() != "Bird's Eye View") {
+                player->playerKeyboardInput(key, action);
+                if (key == GLFW_KEY_1 && action == GLFW_PRESS) {
+                    currentCamera = player->getActiveCamera();
+                }
             }
+            break;
     }
 }
 
@@ -239,16 +238,7 @@ int main(void) {
     //* - - - - - END OF SKYBOX TEXTURING - - - - -
 
     //* - - - - - CAMERAS - - - - -
-    cameras           = {player->getActiveCamera(),
-                         new OrthographicCamera("Bird's Eye View",
-                                      glm::vec3(0.0f, 0.0f, 0.0f),
-                                      glm::vec3(0.0f, 0.0f, 0.0f),
-                                      -10.0f,
-                                      10.0f,
-                                      -10.0f,
-                                      10.0f,
-                                      0.01f,
-                                      100.0f)};
+    cameras           = {player->getActiveCamera(), new OrthographicCamera("Bird's Eye View")};
 
     //? You may use this value however you need.
     currentCamera     = cameras.front();
@@ -317,7 +307,7 @@ int main(void) {
                    "Assets/MeepballSub.obj",          //? Model Path
                    "Assets/Enemies/Enemy_1.png",      //? Texture Path
                    "",                                //? Normal Path
-                   glm::vec3(-1.0f, 0.0f, 18.0f),     //? Position
+                   glm::vec3(0.0f, -10.0f, 0.0f),     //? Position
                    glm::mat4(1.0f),                   //? Position Matrix
                    glm::vec3(1.0f),                   //? Scale
                    glm::vec3(180.0f, 180.0f, 0.0f)),  //? Orientation
@@ -333,7 +323,7 @@ int main(void) {
                    "Assets/MeepballSub.obj",          //? Model Path
                    "Assets/Enemies/Enemy_3.png",      //? Texture Path
                    "",                                //? Normal Path
-                   glm::vec3(-3.0f, 0.0f, -14.0f),    //? Position
+                   glm::vec3(-3.0f, -3.0f, -14.0f),   //? Position
                    glm::mat4(1.0f),                   //? Position Matrix
                    glm::vec3(1.0f),                   //? Scale
                    glm::vec3(0.0f, 0.0f, 0.0f)),      //? Orientation
@@ -349,7 +339,7 @@ int main(void) {
                    "Assets/MeepballSub.obj",          //? Model Path
                    "Assets/Enemies/Enemy_5.png",      //? Texture Path
                    "",                                //? Normal Path
-                   glm::vec3(-5.0f, -20.0f, -4.0f),   //? Position
+                   glm::vec3(-5.0f, -20.0f, 12.0f),   //? Position
                    glm::mat4(1.0f),                   //? Position Matrix
                    glm::vec3(1.0f),                   //? Scale
                    glm::vec3(0.0f, 270.0f, 0.0f)),    //? Orientation
@@ -357,7 +347,7 @@ int main(void) {
                    "Assets/MeepballSub.obj",          //? Model Path
                    "Assets/Enemies/Enemy_6.png",      //? Texture Path
                    "",                                //? Normal Path
-                   glm::vec3(3.0f, 0.0f, 15.0f),      //? Position
+                   glm::vec3(4.0f, 0.0f, 4.0f),       //? Position
                    glm::mat4(1.0f),                   //? Position Matrix
                    glm::vec3(1.0f),                   //? Scale
                    glm::vec3(0.0f, 0.0f, 90.0f)),     //? Orientation
@@ -365,7 +355,7 @@ int main(void) {
                    "Assets/plane.obj",                //? Model Path
                    "Assets/greenTint.png",            //? Texture Path
                    "",                                //? Normal Path
-                   glm::vec3(0.0f, 0.0f, -0.15f),      //? Position
+                   glm::vec3(0.0f, 0.0f, -0.15f),     //? Position
                    glm::mat4(1.0f),                   //? Position Matrix
                    glm::vec3(0.1f),                   //? Scale
                    glm::vec3(0.0f, 0.0f, 0.0f)),      //? Orientation
@@ -395,7 +385,7 @@ int main(void) {
         model3ds[7]->setPosition(glm::vec3(player->getModel()->getPosition().x,
                                            player->getModel()->getPosition().y,
                                            player->getModel()->getPosition().z - 0.15));
-        // model3ds[7]->setOrientation(player->getModel()->getOrientation());
+        model3ds[7]->setOrientation(player->getModel()->getOrientation());
         if (DEBUG_MODE) std::cout << "Current Camera: " + currentCamera->getName() << std::endl;
         //* - - - - - END OF UPDATE - - - - -
 
