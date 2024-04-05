@@ -49,11 +49,11 @@ float x_mod = 0.0f, y_mod = 0.0f, z_mod = 0.0f;
 bool bStart = true;
 int nCameraCounter = 1;
 
-bool firstMouse = true, bPerspective = true;
+bool firstMouse = true, bPerspective = false;
 float yaw = -90.0f;
 float pitch;
 float lastX, lastY;
-float x_direction = 0.0f, z_direction = 0.0f;
+float x_direction = 0.0f, z_direction = 0.0f, y_direction = 0.0f;
 glm::vec3 direction;
 glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
 //* - - - - - END OF POINTERS AND CONTAINERS - - - - -
@@ -98,11 +98,8 @@ void cursor_enter_callback(GLFWwindow* window, int entered)
     if (entered)
     {
         std::cout << "mouse enters window" << std::endl;
-        if(bPerspective) {
-         
              glfwGetCursorPos(window, &xpos, &ypos);
              glfwSetCursorPosCallback(window, mouse_callback);
-        }
     }
     else
     {
@@ -126,11 +123,9 @@ void Key_Callback(
         case GLFW_KEY_1:
             if (nCameraCounter % 2 != 0) {
                 currentCamera = firstPOVCamera;
-                bPerspective = false;
             }
             else {
                 currentCamera = perspectiveCamera;
-                bPerspective = true;
             }
             std::cout << currentCamera->getName() << " has been enabled!" << std::endl;
 
@@ -138,11 +133,11 @@ void Key_Callback(
             break;
         case GLFW_KEY_2:
             currentCamera = orthographicCamera;
-            bPerspective = false;
             std::cout << "Orthographic Camera has been enabled!" << std::endl;
             break;
             
         //| TODO: Pan Bird's Eye View Camera: Player does NOT own this camera.)
+        case GLFW_KEY_UP:
             break;
             z_mod += 1.0f;
             break;
@@ -391,7 +386,7 @@ int main(void) {
                    "Assets/MeepballSub.obj",        //? Model Path
                    "Assets/Enemies/Enemy_3.png",    //? Texture Path
                    "",                              //? Normal Path
-                   glm::vec3(4.0f, 0.0f, -2.0f),    //? Position
+                   glm::vec3(2.0f, 0.0f, -2.0f),    //? Position
                    glm::mat4(1.0f),                 //? Position Matrix
                    glm::vec3(1.0f),                 //? Scale
                    glm::vec3(0.0f, 180.0f, 0.0f)),  //? Orientation
@@ -399,7 +394,7 @@ int main(void) {
                    "Assets/MeepballSub.obj",        //? Model Path
                    "Assets/Enemies/Enemy_4.png",    //? Texture Path
                    "",                              //? Normal Path
-                   glm::vec3(-4.0f, 0.0f, -2.0f),    //? Position
+                   glm::vec3(-2.0f, 0.0f, -2.0f),    //? Position
                    glm::mat4(1.0f),                 //? Position Matrix
                    glm::vec3(1.0f),                 //? Scale
                    glm::vec3(0.0f, 180.0f, 0.0f)),  //? Orientation
@@ -407,7 +402,7 @@ int main(void) {
                    "Assets/MeepballSub.obj",        //? Model Path
                    "Assets/Enemies/Enemy_5.png",    //? Texture Path
                    "",                              //? Normal Path
-                   glm::vec3(6.0f, 0.0f, -2.0f),    //? Position
+                   glm::vec3(3.0f, 0.0f, -2.0f),    //? Position
                    glm::mat4(1.0f),                 //? Position Matrix
                    glm::vec3(1.0f),                 //? Scale
                    glm::vec3(0.0f, 180.0f, 0.0f)),  //? Orientation
@@ -415,7 +410,7 @@ int main(void) {
                    "Assets/MeepballSub.obj",        //? Model Path
                    "Assets/Enemies/Enemy_6.png",    //? Texture Path
                    "",                              //? Normal Path
-                   glm::vec3(-6.0f, 0.0f, -2.0f),    //? Position
+                   glm::vec3(-3.0f, 0.0f, -2.0f),    //? Position
                    glm::mat4(1.0f),                 //? Position Matrix
                    glm::vec3(1.0f),                 //? Scale
                    glm::vec3(0.0f, 180.0f, 0.0f)),  //? Orientation
@@ -438,18 +433,21 @@ int main(void) {
         //| TODO: Add here the stuff you need to happen every frame, like moving some of the enemy subs
         player->movePlayer();
 
-        //cameras position updates when the sub moves && the panning of the birds eye view
-        if (currentCamera == perspectiveCamera){ glfwSetCursorEnterCallback(window, cursor_enter_callback);}
-        else if (currentCamera == orthographicCamera){std::cout << "orthogrpahic" << std::endl;}
-        else if (currentCamera == firstPOVCamera){std::cout << "first person" << std::endl;}
 
-        //the rotation of the 3rd pov camera
+        glfwSetCursorEnterCallback(window, cursor_enter_callback);
 
-        //update with the sup coordinates
-        //copy paste from old code
+        if (currentCamera == perspectiveCamera){perspectiveCamera->setPosition(direction + activeModel->getPosition());}
+        else if (currentCamera == firstPOVCamera){firstPOVCamera->setPosition(glm::vec3(activeModel->getPosition().x,
+                                                                              1.0f + activeModel->getPosition().y,
+                                                                              0.5f + activeModel->getPosition().z));}
+        else if (currentCamera == orthographicCamera){orthographicCamera->setPosition(glm::vec3(x_mod + activeModel->getPosition().x,
+                                                                                               10.0f + activeModel->getPosition().y,
+                                                                                               z_mod + 5.0f + activeModel->getPosition().z));}
+
+
         player->turnPlayer();
         player->resetInputs();
-        player->displayDepth();
+        //player->displayDepth();
         player->haveSpotlightFollowModel();
         //* - - - - - END OF UPDATE - - - - -
 
