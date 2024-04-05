@@ -48,25 +48,53 @@ void Key_Callback(
     int mods) {  //? Which modifer keys are held? [alt, control, shift, Super, num lock, and caps
                  //?lock]
     switch (key) {
-        //| TODO: Toggle Bird's Eye View: Choose whether the player can still press 1 to exit
-        //| bird's eye view, or require them to toggle back using 2 before being able to switch to
-        //| 1st & 3rd  person view
         case GLFW_KEY_2:
             if (action == GLFW_PRESS) {
+                if (currentCamera->getName() == "Bird's Eye View") {
+                    currentCamera = cameras[0];  //? Should be Player's Active Camera
+                } else {
+                    currentCamera = cameras[1];  //? Should be Bird's Eye View Camera
+                }
+                if (DEBUG_MODE) std::cout << "Swapped to " + currentCamera->getName() << std::endl;
             }
             break;
-        //| TODO: Pan Bird's Eye View Camera: Player does NOT own this camera.)
         case GLFW_KEY_UP:
+            if (currentCamera->getName() == "Bird's Eye View" &&
+                currentCamera->getPosition().z >= player->getModel()->getPosition().z - 50.f) {
+                currentCamera->setPosition(glm::vec3(currentCamera->getPosition().x,
+                                                     currentCamera->getPosition().y,
+                                                     currentCamera->getPosition().z - MOVE_SPEED));
+            }
             break;
         case GLFW_KEY_DOWN:
+            if (currentCamera->getName() == "Bird's Eye View" &&
+                currentCamera->getPosition().z <= player->getModel()->getPosition().z + 50.f) {
+                currentCamera->setPosition(glm::vec3(currentCamera->getPosition().x,
+                                                     currentCamera->getPosition().y,
+                                                     currentCamera->getPosition().z + MOVE_SPEED));
+            }
             break;
         case GLFW_KEY_LEFT:
+            if (currentCamera->getName() == "Bird's Eye View" &&
+                currentCamera->getPosition().x >= player->getModel()->getPosition().x - 50.f) {
+                currentCamera->setPosition(glm::vec3(currentCamera->getPosition().x - MOVE_SPEED,
+                                                     currentCamera->getPosition().y,
+                                                     currentCamera->getPosition().z));
+            }
             break;
         case GLFW_KEY_RIGHT:
+            if (currentCamera->getName() == "Bird's Eye View" &&
+                currentCamera->getPosition().x <= player->getModel()->getPosition().x + 50.f) {
+                currentCamera->setPosition(glm::vec3(currentCamera->getPosition().x + MOVE_SPEED,
+                                                     currentCamera->getPosition().y,
+                                                     currentCamera->getPosition().z));
+            }
             break;
         default:
             player->playerKeyboardInput(key, action);
-            break;
+            if (key == GLFW_KEY_1 && action == GLFW_PRESS) {
+                currentCamera = player->getActiveCamera();
+            }
     }
 }
 
@@ -211,10 +239,16 @@ int main(void) {
     //* - - - - - END OF SKYBOX TEXTURING - - - - -
 
     //* - - - - - CAMERAS - - - - -
-    //| TODO: Add the Bird's Eye View Camera to the vector below using:
-    //| new OrthographicCamera()
-    //| Tip: Checkout MODEL LOADING & LIGHTS
-    cameras           = {player->getThirdPersonView(), player->getFirstPersonView()};
+    cameras           = {player->getActiveCamera(),
+                         new OrthographicCamera("Bird's Eye View",
+                                      glm::vec3(0.0f, 1.0f, 0.0f),
+                                      glm::vec3(0.0f, 0.0f, 0.0f),
+                                      10.0f,
+                                      10.0f,
+                                      10.0f,
+                                      10.0f,
+                                      -2.0f,
+                                      1000.0f)};
 
     //? You may use this value however you need.
     currentCamera     = cameras.front();
@@ -248,9 +282,9 @@ int main(void) {
        //    new PointLight("White Point Light",
        //                   true,
        //                   glm::vec3(0.0f, 0.8f, 0.2f),  //? Position
-       //                   glm::vec3(1.0f, 1.0f, 1.0f),     //? Color
+       //                   glm::vec3(1.0f, 1.0f, 1.0f),  //? Color
        //                   0.1f,                         //? Ambient Strength
-       //                   glm::vec3(1.0f, 1.0f, 1.0f),     //? Ambient Color
+       //                   glm::vec3(1.0f, 1.0f, 1.0f),  //? Ambient Color
        //                   0.5f,                         //? Specular Strength
        //                   16,                           //? Specular Phong
        //                   1.2f),                        //? Brightness
@@ -262,13 +296,13 @@ int main(void) {
        //                  false,
        //                  glm::vec3(0.0f, 1.0f, 0.0f),   //? Position
        //                  glm::vec3(0.0f, -1.0f, 0.0f),  //? Direction
-       //                  12.5f,                        //? Cone Size
-       //                  glm::vec3(1.0f, 1.0f, 1.0f),     //? Color
-       //                  0.1f,                         //? Ambient Strength
-       //                  glm::vec3(1.0f, 1.0f, 1.0f),     //? Ambient Color
-       //                  0.5f,                         //? Specular Strength
-       //                  16,                           //? Specular Phong
-       //                  1.0f),                        //? Brightness
+       //                  12.5f,                         //? Cone Size
+       //                  glm::vec3(1.0f, 1.0f, 1.0f),   //? Color
+       //                  0.1f,                          //? Ambient Strength
+       //                  glm::vec3(1.0f, 1.0f, 1.0f),   //? Ambient Color
+       //                  0.5f,                          //? Specular Strength
+       //                  16,                            //? Specular Phong
+       //                  1.0f),                         //? Brightness
     };
     spotLights.push_back(player->getSpotLight());
     for (SpotLight* spotLight : spotLights) lights.push_back(spotLight);
@@ -283,18 +317,50 @@ int main(void) {
                    "Assets/MeepballSub.obj",        //? Model Path
                    "Assets/Enemies/Enemy_1.png",    //? Texture Path
                    "",                              //? Normal Path
-                   glm::vec3(-1.0f, 0.0f, -2.0f),   //? Position
+                   glm::vec3(-1.0f, 0.0f, 18.0f),    //? Position
                    glm::mat4(1.0f),                 //? Position Matrix
                    glm::vec3(1.0f),                 //? Scale
-                   glm::vec3(0.0f, 180.0f, 0.0f)),  //? Orientation
+                   glm::vec3(180.0f, 180.0f, 0.0f)),  //? Orientation
        new Model3D("Enemy Submarine 2",             //? Model Name
                    "Assets/MeepballSub.obj",        //? Model Path
                    "Assets/Enemies/Enemy_2.png",    //? Texture Path
                    "",                              //? Normal Path
-                   glm::vec3(1.0f, 0.0f, -2.0f),    //? Position
+                   glm::vec3(10.0f, -5.0f, -3.0f),    //? Position
                    glm::mat4(1.0f),                 //? Position Matrix
                    glm::vec3(1.0f),                 //? Scale
                    glm::vec3(0.0f, 180.0f, 0.0f)),  //? Orientation
+       new Model3D("Enemy Submarine 3",             //? Model Name
+                   "Assets/MeepballSub.obj",        //? Model Path
+                   "Assets/Enemies/Enemy_3.png",    //? Texture Path
+                   "",                              //? Normal Path
+                   glm::vec3(-3.0f, 0.0f, -14.0f),   //? Position
+                   glm::mat4(1.0f),                 //? Position Matrix
+                   glm::vec3(1.0f),                 //? Scale
+                   glm::vec3(0.0f, 0.0f, 0.0f)),  //? Orientation
+       new Model3D("Enemy Submarine 4",             //? Model Name
+                   "Assets/MeepballSub.obj",        //? Model Path
+                   "Assets/Enemies/Enemy_4.png",    //? Texture Path
+                   "",                              //? Normal Path
+                   glm::vec3(4.0f, -10.0f, -4.0f),    //? Position
+                   glm::mat4(1.0f),                 //? Position Matrix
+                   glm::vec3(1.0f),                 //? Scale
+                   glm::vec3(90.0f, 90.0f, 0.0f)),  //? Orientation
+       new Model3D("Enemy Submarine 5",             //? Model Name
+                   "Assets/MeepballSub.obj",        //? Model Path
+                   "Assets/Enemies/Enemy_5.png",    //? Texture Path
+                   "",                              //? Normal Path
+                   glm::vec3(-5.0f, -20.0f, -4.0f),   //? Position
+                   glm::mat4(1.0f),                 //? Position Matrix
+                   glm::vec3(1.0f),                 //? Scale
+                   glm::vec3(0.0f, 270.0f, 0.0f)),  //? Orientation
+       new Model3D("Enemy Submarine 6",             //? Model Name
+                   "Assets/MeepballSub.obj",        //? Model Path
+                   "Assets/Enemies/Enemy_6.png",    //? Texture Path
+                   "",                              //? Normal Path
+                   glm::vec3(3.0f, 0.0f, 15.0f),     //? Position
+                   glm::mat4(1.0f),                 //? Position Matrix
+                   glm::vec3(1.0f),                 //? Scale
+                   glm::vec3(0.0f, 0.0f, 90.0f)),  //? Orientation
     };
     activeModel = model3ds.front();
 
@@ -309,12 +375,15 @@ int main(void) {
             glm::lookAt(currentCamera->getPosition(), currentCamera->getViewCenter(), WorldUp));
 
         //* - - - - - UPDATE - - - - -
-        //| TODO: Add here the stuff you need to happen every frame, like moving some of the enemy subs
+        //| TODO: Add here the stuff you need to happen every frame, like moving some of the enemy
+        // subs
         player->movePlayer();
         player->turnPlayer();
         player->resetInputs();
         player->displayDepth();
         player->haveSpotlightFollowModel();
+        player->haveCamerasFollowModel();
+        if (DEBUG_MODE) std::cout << "Current Camera: " + currentCamera->getName() << std::endl;
         //* - - - - - END OF UPDATE - - - - -
 
         //* - - - - - SKYBOX SHADER SWITCH - - - - -

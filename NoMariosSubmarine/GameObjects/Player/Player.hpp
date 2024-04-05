@@ -1,4 +1,5 @@
 #pragma once
+#include "../Cameras/Camera.hpp"
 #include "../Cameras/OrthographicCamera/OrthographicCamera.hpp"
 #include "../Cameras/PerspectiveCamera/PerspectiveCamera.hpp"
 #include "../Lights/DirectionalLight/DirectionalLight.hpp"
@@ -6,9 +7,10 @@
 #include "../Lights/SpotLight/SpotLight.hpp"
 #include "../Model3D/Model3D.hpp"
 #include "../MyNormal/MyNormal.hpp"
-#include "iomanip"
-#include "cstdlib"
 #include "../MyTexture/MyTexture.hpp"
+#include "cstdlib"
+#include "glm/gtx/transform.hpp"
+#include "iomanip"
 // clang-format off
 #include "glad/glad.h"
 #include "GLFW/glfw3.h"
@@ -25,6 +27,7 @@ protected:
     SpotLight* spotLight;
     PerspectiveCamera* firstPersonView;
     PerspectiveCamera* thirdPersonView;
+    Camera* activeCamera;
     float turnInput;
     float yInput;
     float zInput;
@@ -51,6 +54,7 @@ public:
     void resetInputs();
     void displayDepth();
     void haveSpotlightFollowModel();
+    void haveCamerasFollowModel();
 
     //* ╔═══════════════════╗
     //* ║ Getters & Setters ║
@@ -60,5 +64,6 @@ public:
     SpotLight* getSpotLight();
     PerspectiveCamera* getFirstPersonView();
     PerspectiveCamera* getThirdPersonView();
+    Camera* getActiveCamera();
 };
 }  // namespace models

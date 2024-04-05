@@ -18,9 +18,9 @@ Player::Player()
             ),
       spotLight(new SpotLight("Player Spotlight",
                               true,
-                              glm::vec3(0.0f, 0.0f, 0.0f),     //? Position
-                              glm::vec3(0.0f, 0.0f, 1.0f),     //? Direction
-                              100.0f,                          //? Cone Size
+                              glm::vec3(0.0f, 1.0f, 0.0f),     //? Position
+                              glm::vec3(0.0f, 0.0f, -1.0f),    //? Direction
+                              12.5f,                           //? Cone Size
                               glm::vec3(0.99f, 0.97f, 0.91f),  //? Color
                               0.1f,                            //? Ambient Strength
                               glm::vec3(0.99f, 0.97f, 0.91f),  //? Ambient Color
@@ -28,12 +28,21 @@ Player::Player()
                               16,                              //? Specular Phong
                               2.0f)                            //? Brightness
                 ),
-      firstPersonView(new PerspectiveCamera("First Person View", 60.0f)),
-      thirdPersonView(new PerspectiveCamera("Third Person View", 60.0f)),
+      firstPersonView(new PerspectiveCamera("First Person View",
+                                            glm::vec3(0.0f, 0.0f, 0.0f),
+                                            glm::vec3(0.0f, 0.0f, -1.0f),
+                                            60.0f,
+                                            1000.0f)),
+      thirdPersonView(new PerspectiveCamera("Third Person View",
+                                            glm::vec3(0.0f, 5.0f, 5.0f),
+                                            glm::vec3(0.0f, 0.0f, -1.0f),
+                                            60.0f,
+                                            100.0f)),
       turnInput(0.0f),
       yInput(0.0f),
       zInput(0.0f),
-      lightIntensity(0) {}
+      lightIntensity(0),
+      activeCamera(this->thirdPersonView) {}
 
 //* ╔═════════╗
 //* ║ Methods ║
@@ -65,8 +74,14 @@ void Player::playerKeyboardInput(int key, int action) {
         this->cycleLightIntensity();
     }
 
-    //| TODO: Swap between 1st and 3rd Person View
     if (key == GLFW_KEY_1 && action == GLFW_PRESS) {
+        if (this->activeCamera == (Camera*)this->firstPersonView) {
+            this->activeCamera = this->thirdPersonView;
+            if (DEBUG_MODE) std::cout << "Swapped to Third Person View" << std::endl;
+        } else {
+            this->activeCamera = this->firstPersonView;
+            if (DEBUG_MODE) std::cout << "Swapped to First Person View" << std::endl;
+        }
     }
     //* Shoot Torpedo
     if (key == GLFW_KEY_SPACE && action == GLFW_PRESS) {
@@ -182,10 +197,25 @@ void Player::displayDepth() {
                   << this->model->getPosition().y * -1 << " M] BELOW SEA LEVEL" << std::endl;
 }
 void Player::haveSpotlightFollowModel() {
-    this->spotLight->setPosition(this->model->getPosition());
+    this->spotLight->setPosition(glm::vec3(this->model->getPosition().x,
+                                           this->model->getPosition().y + 1,
+                                           this->model->getPosition().z));
     this->spotLight->setDirection(glm::vec3(-1 * abs(sin(this->model->getOrientation().x)),
                                             -1 * abs(this->model->getOrientation().y),
                                             -1 * abs(cos(this->model->getOrientation().z))));
+}
+void Player::haveCamerasFollowModel() {
+    this->firstPersonView->setPosition(this->model->getPosition());
+    this->firstPersonView->setViewCenter(
+        glm::vec3(cos(glm::radians(this->model->getOrientation().y)) *
+                      cos(glm::radians(this->model->getOrientation().x)),
+                  sin(glm::radians(this->model->getOrientation().x)),
+                  sin(glm::radians(this->model->getOrientation().y)) *
+                      cos(glm::radians(this->model->getOrientation().x))));
+    this->thirdPersonView->setPosition(glm::vec3(this->model->getPosition().x,
+                                                 this->model->getPosition().y + 5,
+                                                 this->model->getPosition().z + 5));
+    this->thirdPersonView->setViewCenter(glm::vec3(this->model->getPosition()));
 }
 //* ╔═══════════════════╗
 //* ║ Getters & Setters ║
@@ -194,3 +224,4 @@ Model3D* Player::getModel() { return this->model; }
 SpotLight* Player::getSpotLight() { return this->spotLight; }
 PerspectiveCamera* Player::getFirstPersonView() { return this->firstPersonView; }
 PerspectiveCamera* Player::getThirdPersonView() { return this->thirdPersonView; }
+Camera* Player::getActiveCamera() { return this->activeCamera; }

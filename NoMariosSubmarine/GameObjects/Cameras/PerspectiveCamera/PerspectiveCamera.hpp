@@ -8,13 +8,15 @@ class PerspectiveCamera : public Camera {
     //* ║ Attributes ║
     //* ╚════════════╝
 private:
-    float fieldOfView;
-    
     //* ╔═══════════════════════════════╗
     //* ║ Constructors & Deconstructors ║
     //* ╚═══════════════════════════════╝
 public:
-    PerspectiveCamera(std::string name, float fieldOfView);
+    PerspectiveCamera(std::string name,
+                      glm::vec3 position,
+                      glm::vec3 viewCenter,
+                      float fieldOfView,
+                      float farClippingPlane);
 
     //* ╔═════════╗
     //* ║ Methods ║

@@ -12,7 +12,15 @@ private:
     //* ║ Constructors & Deconstructors ║
     //* ╚═══════════════════════════════╝
 public:
-    OrthographicCamera(std::string name);
+    OrthographicCamera(std::string name,
+                       glm::vec3 position,
+                       glm::vec3 viewCenter,
+                       float left,
+                       float right,
+                       float bottom,
+                       float top,
+                       float near,
+                       float far);
     //* ╔═════════╗
     //* ║ Methods ║
     //* ╚═════════╝
