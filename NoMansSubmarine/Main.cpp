@@ -18,9 +18,6 @@
 #include "stdafx.h"
 // clang-format on
 
-/*References used:
-Camera Rotation: Camera(n.d.).LearnOpenGL.https://learnopengl.com/Getting-started/Camera
-*/
 
 using namespace std;
 using namespace models;
@@ -37,7 +34,33 @@ Player* player                              = NULL;
 
 vector<Camera*> cameras                     = {};
 Camera* currentCamera                       = NULL;
+
 //* - - - - - END OF POINTERS AND CONTAINERS - - - - -
+
+//? Reserved GLFW Function for Keyboard Inputs
+void mouse_callback(GLFWwindow* window, double xpos, double ypos) {
+
+    glm::vec2 mouseDelta =
+        glm::vec2(xpos/100.0f, ypos/100.0f) - glm::vec2(currentCamera->getPrevX(), currentCamera->getPrevY());
+
+    glm::vec3 vecData = currentCamera->getPosition() + currentCamera->getViewCenter();
+
+    currentCamera->setViewCenter(
+        glm::mat3(glm::rotate(-mouseDelta.x, glm::vec3(0.0f, 1.0f, 0.0f))) *
+        currentCamera->getPosition());
+
+    currentCamera->setViewCenter(glm::mat3(glm::rotate(mouseDelta.y,
+                                glm::cross(currentCamera->getViewCenter(),
+                                glm::vec3(0.0f, 1.0f, 0.0f)))) *
+                                currentCamera->getViewCenter());
+
+    glm::vec2(currentCamera->getPrevX(), currentCamera->getPrevY()) = glm::vec2(xpos/100.0f, ypos/100.0f);
+
+    currentCamera->setView(
+        glm::lookAt(currentCamera->getPosition(),
+                    currentCamera->getPosition() + currentCamera->getViewCenter(),
+                    glm::vec3(0.0f, 1.0f, 0.0f)));
+}
 
 //? Reserved GLFW Function for Keyboard Inputs
 void Key_Callback(
@@ -368,6 +391,8 @@ int main(void) {
     //* - - - - - RUNTIME - - - - -
     while (!glfwWindowShouldClose(window)) {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        glfwSetCursorPosCallback(window, mouse_callback);
 
         currentCamera->setView(
             glm::lookAt(currentCamera->getPosition(), currentCamera->getViewCenter(), WorldUp));

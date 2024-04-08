@@ -11,26 +11,13 @@ Camera::Camera(std::string name, glm::mat4 projection, glm::vec3 position, glm::
       position(position),
       positionMatrix(glm::translate(glm::mat4(1.0f), position * -1.0f)),
       view(glm::mat4(1.0f)),
-      viewCenter(viewCenter)
-      {
-       
-      }
+      viewCenter(viewCenter),
+      prevX(300.0f),prevY(300.0f)
+      {}
 
 //* ╔═════════╗
 //* ║ Methods ║
 //* ╚═════════╝
-
-// void Camera::turnCamera(Camera* camera) {
-//    if (camera == this->perspectiveCamera)
-//    {
-//     camera->setOrientation(
-//             glm::vec3(camera->getOrientation().x,
-//                       camera->getOrientation().y + (turnInput * ROTATE_SPEED),
-//                       camera->getOrientation().z));
-
-//    }
-        
-//     }
 
 //* ╔═══════════════════╗
 //* ║ Getters & Setters ║
@@ -52,5 +39,11 @@ void Camera::setView(glm::mat4 view) { this->view = view; }
 
 glm::vec3 Camera::getViewCenter() { return this->viewCenter; }
 void Camera::setViewCenter(glm::vec3 viewCenter) { this->viewCenter = viewCenter; }
+
+float Camera::getPrevX(){return this->prevX;}
+void Camera::setPrevX(float prevX) {this->prevX = prevX;}
+
+float Camera::getPrevY(){return this->prevY;}
+void Camera::setPrevY(float prevY){ this->prevY = prevY;}
 
 // namespace models

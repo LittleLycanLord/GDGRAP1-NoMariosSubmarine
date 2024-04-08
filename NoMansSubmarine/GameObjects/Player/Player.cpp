@@ -218,7 +218,7 @@ void Player::haveCamerasFollowModel() {
     this->thirdPersonView->setPosition(glm::vec3(this->model->getPosition().x,
                                                  this->model->getPosition().y + 3,
                                                  this->model->getPosition().z + 5));
-    this->thirdPersonView->setViewCenter(glm::vec3(this->model->getPosition()));
+    //this->thirdPersonView->setViewCenter(glm::vec3(this->model->getPosition()));
 }
 //* ╔═══════════════════╗
 //* ║ Getters & Setters ║

@@ -15,7 +15,9 @@ protected:
     glm::mat4 view;
     glm::mat4 projection;
     glm::vec3 viewCenter;
+    float prevX,prevY;
 
+    
     // Player* player;
     // PerspectiveCamera* perspectiveCamera;
     //* ╔═══════════════════════════════╗
@@ -49,5 +51,11 @@ public:
 
     glm::vec3 getViewCenter();
     void setViewCenter(glm::vec3 viewCenter);
+
+    float getPrevX();
+    void setPrevX(float prevX);
+
+    float getPrevY();
+    void setPrevY(float prevY);
 };
 }  // namespace models
