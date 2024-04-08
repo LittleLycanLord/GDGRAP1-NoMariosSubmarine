@@ -11,11 +11,26 @@ Camera::Camera(std::string name, glm::mat4 projection, glm::vec3 position, glm::
       position(position),
       positionMatrix(glm::translate(glm::mat4(1.0f), position * -1.0f)),
       view(glm::mat4(1.0f)),
-      viewCenter(viewCenter) {}
+      viewCenter(viewCenter)
+      {
+       
+      }
 
 //* ╔═════════╗
 //* ║ Methods ║
 //* ╚═════════╝
+
+// void Camera::turnCamera(Camera* camera) {
+//    if (camera == this->perspectiveCamera)
+//    {
+//     camera->setOrientation(
+//             glm::vec3(camera->getOrientation().x,
+//                       camera->getOrientation().y + (turnInput * ROTATE_SPEED),
+//                       camera->getOrientation().z));
+
+//    }
+        
+//     }
 
 //* ╔═══════════════════╗
 //* ║ Getters & Setters ║

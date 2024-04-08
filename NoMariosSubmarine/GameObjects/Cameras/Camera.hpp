@@ -1,5 +1,7 @@
 #pragma once
 #include "stdafx.h"
+// #include "PerspectiveCamera/PerspectiveCamera.hpp"
+// #include "../Player/Player.hpp"
 
 namespace models {
 class Camera {
@@ -14,6 +16,8 @@ protected:
     glm::mat4 projection;
     glm::vec3 viewCenter;
 
+    // Player* player;
+    // PerspectiveCamera* perspectiveCamera;
     //* ╔═══════════════════════════════╗
     //* ║ Constructors & Deconstructors ║
     //* ╚═══════════════════════════════╝
@@ -23,6 +27,7 @@ public:
     //* ║ Methods ║
     //* ╚═════════╝
 public:
+    //void turnCamera(Camera* camera);
     //* ╔═══════════════════╗
     //* ║ Getters & Setters ║
     //* ╚═══════════════════╝

@@ -242,10 +242,10 @@ int main(void) {
     cameras           = {player->getActiveCamera(),
                          new OrthographicCamera("Bird's Eye View",
                                       glm::vec3(0.0f, 1.0f, 0.0f),
-                                      glm::vec3(0.0f, 0.0f, 0.0f),
+                                      glm::vec3(0.0f, 0.0f, -1.0f),
+                                      -10.0f,
                                       10.0f,
-                                      10.0f,
-                                      10.0f,
+                                      -10.0f,
                                       10.0f,
                                       -2.0f,
                                       1000.0f)};
@@ -375,14 +375,17 @@ int main(void) {
             glm::lookAt(currentCamera->getPosition(), currentCamera->getViewCenter(), WorldUp));
 
         //* - - - - - UPDATE - - - - -
-        //| TODO: Add here the stuff you need to happen every frame, like moving some of the enemy
-        // subs
+        //| TODO: Add here the stuff you need to happen every frame, like moving some of the enemy subs
         player->movePlayer();
         player->turnPlayer();
+
+        //currentCamera->turnCamera(currentCamera);
+
         player->resetInputs();
         player->displayDepth();
         player->haveSpotlightFollowModel();
         player->haveCamerasFollowModel();
+
         if (DEBUG_MODE) std::cout << "Current Camera: " + currentCamera->getName() << std::endl;
         //* - - - - - END OF UPDATE - - - - -
 
