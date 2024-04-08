@@ -138,7 +138,7 @@ void main() {
     //* - - - - - BLENDING - - - - -
     vec4 pixelColor = texture(modelTexture, textureCoordinate);
 
-    if(pixelColor.a < 0.0001) {
+    if(pixelColor.a < 0.001) {
         discard;
     }
     //* - - - - - END OF BLENDING - - - - -
